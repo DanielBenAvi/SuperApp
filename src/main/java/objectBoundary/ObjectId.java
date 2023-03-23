@@ -1,11 +1,15 @@
 package objectBoundary;
 
+import java.util.UUID;
+
 public class ObjectId {
 	
 	private String superApp;
-	private int internalObjectId;
+	private String internalObjectId;
 	
 	public ObjectId() {
+		UUID uuid = UUID.randomUUID();
+		internalObjectId = uuid.toString();
 	}
 
 	public String getSuperApp() {
@@ -16,11 +20,11 @@ public class ObjectId {
 		this.superApp = superApp;
 	}
 
-	public int getInternalObjectId() {
+	public String getInternalObjectId() {
 		return internalObjectId;
 	}
 
-	public void setInternalObjectId(int internalObjectId) {
+	public void setInternalObjectId(String internalObjectId) {
 		this.internalObjectId = internalObjectId;
 	}
 

@@ -5,7 +5,8 @@ import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import marketplace.Product;
+
+import marketplaceMiniApp.Product;
 
 
 @RestController

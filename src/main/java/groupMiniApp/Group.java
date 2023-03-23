@@ -1,13 +1,14 @@
 package groupMiniApp;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import demo.User;
 
 public class Group {
 	
 	private String groupName; 
-	private ArrayList<User> users;
+	private Map<String, User> users;
 	
 	
 	public Group() {
@@ -25,6 +26,15 @@ public class Group {
 	
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+	
+
+	public Map<String, User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(Map<String, User> users) {
+		this.users = users;
 	}
 	
 	@Override

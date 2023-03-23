@@ -1,4 +1,4 @@
-package marketplace;
+package marketplaceMiniApp;
 
 import demo.NewUser;
 
