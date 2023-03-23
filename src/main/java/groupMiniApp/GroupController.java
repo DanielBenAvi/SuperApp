@@ -1,4 +1,4 @@
-package demo;
+package groupMiniApp;
 
 import java.util.HashMap;
 import java.util.Map;

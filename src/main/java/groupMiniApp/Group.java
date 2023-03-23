@@ -1,6 +1,8 @@
-package demo;
+package groupMiniApp;
 
 import java.util.ArrayList;
+
+import demo.User;
 
 public class Group {
 	
