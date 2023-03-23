@@ -1,7 +1,11 @@
 package demo;
 
+import java.util.ArrayList;
+
 public class Group {
+	
 	private String groupName; 
+	private ArrayList<User> users;
 	
 	
 	public Group() {

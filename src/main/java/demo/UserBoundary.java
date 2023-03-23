@@ -1,5 +1,6 @@
 package demo;
 
+import objectBoundary.UserID;
 
 /**
  * Class UserBoundary Represent the User Boundary
