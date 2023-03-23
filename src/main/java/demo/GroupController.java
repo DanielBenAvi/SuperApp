@@ -93,7 +93,7 @@ public class GroupController {
 			@PathVariable("superapp") String superapp,
 			@PathVariable("internalObjectId") String internalObjectId,
 			@RequestBody ObjectBoundary updatedGropu) {
-		System.err.println("updating group #" + internalObjectId + " using: " + updatedGropu);
+		System.err.println("Updating group #" + internalObjectId + " using: " + updatedGropu);
 	}
 	
 }

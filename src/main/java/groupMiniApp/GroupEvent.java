@@ -1,6 +1,7 @@
 package groupMiniApp;
 
 import java.util.Date;
+import java.util.Map;
 
 import objectBoundary.Location;
 
@@ -9,7 +10,10 @@ public class GroupEvent {
 	private Date date;
 	private Location location;
 	private String groupId;
+	private Map<String, String> status;
 	
+	
+
 	public GroupEvent() {
 	}
 
@@ -37,10 +41,20 @@ public class GroupEvent {
 		this.groupId = groupId;
 	}
 
+	public Map<String, String> getStatus() {
+		return status;
+	}
+
+	public void setStatus(Map<String, String> status) {
+		this.status = status;
+	}
+
 	@Override
 	public String toString() {
-		return "GroupEvent [date=" + date + ", location=" + location + ", groupId=" + groupId + "]";
+		return "GroupEvent [date=" + date + ", location=" + location + ", groupId=" + groupId + ", status=" + status
+				+ "]";
 	}
+
 	
 	
 }
