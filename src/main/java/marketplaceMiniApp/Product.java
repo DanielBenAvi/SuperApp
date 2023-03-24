@@ -1,6 +1,5 @@
 package marketplaceMiniApp;
 
-import demo.NewUser;
 
 public class Product {
 	
@@ -9,15 +8,13 @@ public class Product {
 	private String name;
 	private String category;
 	
-	private NewUser seller;
+	
 	
 	private double price;
 	private String currency;
 	
 	
 	private String imageUrl;
-	
-	private String location;
 	private String status;
 	
 	
@@ -65,15 +62,6 @@ public class Product {
 		return this;
 	}
 
-	public NewUser getSeller() {
-		return seller;
-	}
-
-
-	public Product setSeller(NewUser seller) {
-		this.seller = seller;
-		return this;
-	}
 
 	public double getPrice() {
 		return price;
@@ -102,15 +90,6 @@ public class Product {
 		return this;
 	}
 
-
-	public String getLocation() {
-		return location;
-	}
-
-	public Product setLocation(String location) {
-		this.location = location;
-		return this;
-	}
 
 	public String getStatus() {
 		return status;

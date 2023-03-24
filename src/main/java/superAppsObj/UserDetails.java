@@ -1,4 +1,4 @@
-package demo;
+package superAppsObj;
 
 import java.util.ArrayList;
 
@@ -14,7 +14,6 @@ public class UserDetails {
 	private ArrayList<String> intrests;
 	private String gender;
 	private ArrayList<String> sexPrefrences;
-	// location ?? define in objectDetails (Eyal defenition)
 	
 	public UserDetails() {}
 	

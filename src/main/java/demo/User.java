@@ -2,16 +2,32 @@ package demo;
 
 
 /**
- * 
+ * Class User Represent the NewUser Boundary
  * @author Ido & Yosef
  */
-public abstract class User {
-
-	protected String role;
-	protected String userName;
-	protected String avatar;
+public class User {
+	
+	private String email;
+	private String role;
+	private String userName;
+	private String avatar;
 	
 	public User () {}
+	
+	public User(String email, String role, String userName, String avatar) {
+		this.email = email;
+		this.role = role;
+		this.userName = userName;
+		this.avatar = avatar;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 	
 	public String getRole() {
 		return role;
@@ -36,4 +52,5 @@ public abstract class User {
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
+	
 }
