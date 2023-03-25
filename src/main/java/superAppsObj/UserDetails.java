@@ -67,4 +67,11 @@ public class UserDetails {
 		this.sexPrefrences = sexPrefrences;
 	}
 
+	@Override
+	public String toString() {
+		return "UserDetails [name=" + name + ", phoneNum=" + phoneNum + ", intrests=" + intrests + ", gender=" + gender
+				+ ", sexPrefrences=" + sexPrefrences + "]";
+	}
+	
+
 }

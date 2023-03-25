@@ -28,7 +28,7 @@ public class UserController {
 
 	@GetMapping(path = {"/superapp/users/login/{superapp}/{email}"},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
-	public UserBoundary Login(@PathVariable("email") String email, @PathVariable("superapp") String superapp) {
+	public UserBoundary login(@PathVariable("email") String email, @PathVariable("superapp") String superapp) {
 		UserID userId = new UserID(superapp, email);
 		return new UserBoundary(userId, "Student", "Dani", "avatar");
 	}
