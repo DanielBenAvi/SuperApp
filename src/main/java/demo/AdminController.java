@@ -40,10 +40,9 @@ public class AdminController {
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	
-	public Map<String, Object> specificMiniAppCommands(){
+	public Map<String, Object> specificMiniAppCommands(@PathVariable("miniAppName") String miniAppName){
 		Map<String, Object> specificMiniAppCommands = new HashMap<>();
-		specificMiniAppCommands.put("1", "Post event");
-		specificMiniAppCommands.put("2", "Modify location");
+		specificMiniAppCommands.put(miniAppName, "Post event");
 		return specificMiniAppCommands;
 	}
 	
@@ -59,12 +58,37 @@ public class AdminController {
 	
 	public Map<String, Object> miniAppCommands(){
 		Map<String, Object> miniAppCommands = new HashMap<>();
-		for(int i=0; i<specificMiniAppCommands().size(); i++)
-		{
-			miniAppCommands.put("1", specificMiniAppCommands().get(i).toString());
-		}
+		miniAppCommands.put("1", "Post event");
+		miniAppCommands.put("2", "Match");
+		miniAppCommands.put("3", "Modify location");
 		return miniAppCommands;
 	}
 	
 	
+	// delete all the users in the superapp.
+	@RequestMapping(
+			path = {"/superapp/admin/users"},
+			method = {RequestMethod.DELETE})
+	public void deleteAllUsers() {
+		// do nothing
+		System.err.println("delete all users ");
+	}
+	
+	//delete all the objects in the superapp.
+	@RequestMapping(
+			path = {"/superapp/admin/objects"},
+			method = {RequestMethod.DELETE})
+	public void deleteAllObjects() {
+		// do nothing
+		System.err.println("delete all objects ");
+	}
+	
+	//delete all command history.
+	@RequestMapping(
+			path = {"/superapp/admin/miniapp"},
+			method = {RequestMethod.DELETE})
+	public void deleteAllcommnads() {
+		// do nothing
+		System.err.println("delete all commands ");
+	}
 }
