@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import objectBoundary.UserID;
+import superAppsObjects.User;
+import superAppsObjects.UserBoundary;
 
 @RestController
 public class UserController {

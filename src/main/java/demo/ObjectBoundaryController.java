@@ -18,7 +18,7 @@ import objectBoundary.ObjectBoundary;
 import objectBoundary.ObjectId;
 
 @RestController
-public class GroupController {
+public class ObjectBoundaryController {
 	
 	/**
 	 * Request specific group
@@ -50,18 +50,12 @@ public class GroupController {
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public Map<String, ObjectBoundary> getAllGroup(){
 		Map<String, ObjectBoundary> groups = new HashMap<>();
+//		hard code
 		groups.put("1", new ObjectBoundary());
 		groups.put("2", new ObjectBoundary());
 		
 		return groups;
 	}
-//	public Group[] group(int size){
-//		return IntStream.range(0, size) // Stream<Integer>
-//				.map(x->x+1) // Stream<Integer>
-//				.mapToObj(id->new Group("Message #" + id)) // Stream<Message>
-//				.toList() // List<Message>
-//				.toArray(new Group[0]); // Message[]
-//	}
 	
 	/**
 	 * Create new Group
@@ -79,12 +73,20 @@ public class GroupController {
 	public ObjectBoundary createGroup(
 			@PathVariable("superapp") String superapp, 
 			@RequestBody ObjectBoundary objectBoundary) {
+//		hard code
 		objectBoundary.setCreateTimeStamp(new Date());
 		objectBoundary.setObjectId(new ObjectId());
 		System.err.println(objectBoundary.getObjectId().getInternalObjectId());
 		return objectBoundary;
 	}
 	
+	
+	/**
+	 * updateGroup 
+	 * @param superapp name of the superapp
+	 * @param internalObjectId the object id
+	 * @param updatedGrop
+	 */
 	@RequestMapping(
 			path = {"/superapp/objects/{superapp}/{internalObjectId}"},
 			method = {RequestMethod.PUT},
@@ -92,8 +94,8 @@ public class GroupController {
 	public void updateGroup(
 			@PathVariable("superapp") String superapp,
 			@PathVariable("internalObjectId") String internalObjectId,
-			@RequestBody ObjectBoundary updatedGropu) {
-		System.err.println("Updating group #" + internalObjectId + " using: " + updatedGropu);
+			@RequestBody ObjectBoundary updatedGroup) {
+		System.err.println("Updating group #" + internalObjectId + " using: " + updatedGroup);
 	}
 	
 }

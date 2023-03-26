@@ -3,9 +3,9 @@ package eventsMiniApp;
 import java.util.Date;
 import java.util.Map;
 
-import demo.User;
 import objectBoundary.Location;
 import objectBoundary.UserID;
+import superAppsObjects.User;
 
 public class Event {
 	

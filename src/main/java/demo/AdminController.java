@@ -23,7 +23,7 @@ public class AdminController {
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	
 	public Map<String, Object> allusers(){
-		//Hard coded for now, In the future intended to be "new User"
+		// Hard coded for now, In the future intended to be "new User"
 		Map<String, Object> allUsers = new HashMap<>();
 		allUsers.put("User 1", "Omer Lande");
 		allUsers.put("User 2", "Lior Ariely");

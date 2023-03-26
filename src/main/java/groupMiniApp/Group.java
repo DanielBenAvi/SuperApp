@@ -3,7 +3,7 @@ package groupMiniApp;
 import java.util.ArrayList;
 import java.util.Map;
 
-import demo.User;
+import superAppsObjects.User;
 
 public class Group {
 	

@@ -1,4 +1,4 @@
-package demo;
+package superAppsObjects;
 
 import objectBoundary.UserID;
 

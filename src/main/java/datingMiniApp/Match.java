@@ -2,7 +2,7 @@ package datingMiniApp;
 
 import java.util.Arrays;
 
-import demo.User;
+import superAppsObjects.User;
 
 public class Match {
 
