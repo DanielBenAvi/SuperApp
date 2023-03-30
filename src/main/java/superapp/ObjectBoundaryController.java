@@ -1,4 +1,4 @@
-package demo;
+package superapp;
 
 import java.util.Date;
 import java.util.HashMap;

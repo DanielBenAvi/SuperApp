@@ -1,4 +1,4 @@
-package demo.commandBoundary;
+package superapp.commandBoundary;
 
 /**
  * @author Ido & Yosef

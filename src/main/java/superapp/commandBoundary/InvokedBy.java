@@ -1,4 +1,4 @@
-package demo.commandBoundary;
+package superapp.commandBoundary;
 
 import objectBoundary.UserID;
 

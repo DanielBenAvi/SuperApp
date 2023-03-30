@@ -1,4 +1,4 @@
-package demo;
+package superapp;
 
 import java.util.Date;
 import java.util.UUID;
@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import demo.commandBoundary.CommandBoundary;
+
 import groupMiniApp.Group;
 import superAppsObjects.UserDetails;
+import superapp.commandBoundary.CommandBoundary;
 
 /**
 
