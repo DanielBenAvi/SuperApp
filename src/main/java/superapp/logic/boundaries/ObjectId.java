@@ -1,15 +1,11 @@
 package superapp.logic.boundaries;
 
-import java.util.UUID;
-
 public class ObjectId {
 	
 	private String superApp;
 	private String internalObjectId;
 	
 	public ObjectId() {
-		UUID uuid = UUID.randomUUID();
-		internalObjectId = uuid.toString();
 	}
 
 	public String getSuperApp() {
@@ -31,12 +27,7 @@ public class ObjectId {
 	@Override
 	public String toString() {
 		return "ObjectId [superApp=" + superApp + ", "
-				+ "internalObjectId=" + internalObjectId + 
-				"]";
+				+ "internalObjectId=" + internalObjectId + "]";
 	}
-	
-	
-	
-	
 
 }

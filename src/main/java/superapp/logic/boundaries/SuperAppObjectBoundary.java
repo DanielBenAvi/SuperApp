@@ -82,13 +82,9 @@ public class SuperAppObjectBoundary {
 
 	@Override
 	public String toString() {
-		return "ObjectBoundary [objectId=" + objectId + ", type=" + type + ", alias=" + alias + ", active=" + active
+		return "SuperAppObjectBoundary [objectId=" + objectId + ", type=" + type + ", alias=" + alias + ", active=" + active
 				+ ", createTimeStamp=" + createTimeStamp + ", location=" + location + ", createdBy=" + createdBy
 				+ ", objectDetails=" + objectDetails + "]";
 	}
-	
-	
-	
-	
 
 }
