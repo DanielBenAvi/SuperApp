@@ -3,8 +3,6 @@ package superapp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
-import java.util.stream.IntStream;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,11 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import groupMiniApp.Group;
-import objectBoundary.CreatedBy;
-import objectBoundary.ObjectBoundary;
-import objectBoundary.ObjectId;
-import objectBoundary.UserID;
+import superapp.logic.boundaries.CreatedBy;
+import superapp.logic.boundaries.SuperAppObjectBoundary;
+import superapp.logic.boundaries.ObjectId;
+import superapp.logic.boundaries.UserID;
 
 @RestController
 public class ObjectBoundaryController {
@@ -32,10 +29,10 @@ public class ObjectBoundaryController {
 			path = {"/superapp/objects/{superapp}/{internalObjectId}"},
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
-	public ObjectBoundary retriveObject(
+	public SuperAppObjectBoundary retriveObject(
 			@PathVariable("superapp") String superapp,
 			@PathVariable("internalObjectId") String internalObjectId){
-		ObjectBoundary ob = new ObjectBoundary();
+		SuperAppObjectBoundary ob = new SuperAppObjectBoundary();
 		// hardCode
 		ob.setObjectId(new ObjectId());
 		ob.getObjectId().setInternalObjectId(internalObjectId);
@@ -63,11 +60,11 @@ public class ObjectBoundaryController {
 			path = {"/superapp/objects"},
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
-	public Map<String, ObjectBoundary> getAllObjects(){
-		Map<String, ObjectBoundary> objectBoundaryHash = new HashMap<>();
+	public Map<String, SuperAppObjectBoundary> getAllObjects(){
+		Map<String, SuperAppObjectBoundary> objectBoundaryHash = new HashMap<>();
 //		hard code
-		objectBoundaryHash.put("1", new ObjectBoundary());
-		objectBoundaryHash.put("2", new ObjectBoundary());
+		objectBoundaryHash.put("1", new SuperAppObjectBoundary());
+		objectBoundaryHash.put("2", new SuperAppObjectBoundary());
 		
 		return objectBoundaryHash;
 	}
@@ -75,7 +72,7 @@ public class ObjectBoundaryController {
 	/**
 	 * Create new Object
 	 * @return Object Boundary
-	 * @param objectBoundary as ObjectBoundary
+	 * @param superAppObjectBoundary as ObjectBoundary
 	 * 
 	 * @author Daniel & Yaniv
 	 */
@@ -84,12 +81,12 @@ public class ObjectBoundaryController {
 			method = {RequestMethod.POST},
 			produces = {MediaType.APPLICATION_JSON_VALUE},
 			consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public ObjectBoundary createObject(@RequestBody ObjectBoundary objectBoundary) {
+	public SuperAppObjectBoundary createObject(@RequestBody SuperAppObjectBoundary superAppObjectBoundary) {
 //		hard code
-		objectBoundary.setObjectId(new ObjectId());
-		objectBoundary.getObjectId().setSuperApp("2023b.liorAriely");
-		System.err.println(objectBoundary.getObjectId().getInternalObjectId());
-		return objectBoundary;
+		superAppObjectBoundary.setObjectId(new ObjectId());
+		superAppObjectBoundary.getObjectId().setSuperApp("2023b.liorAriely");
+		System.err.println(superAppObjectBoundary.getObjectId().getInternalObjectId());
+		return superAppObjectBoundary;
 	}
 	
 	
@@ -106,7 +103,7 @@ public class ObjectBoundaryController {
 	public void updateObject(
 			@PathVariable("superapp") String superapp,
 			@PathVariable("internalObjectId") String internalObjectId,
-			@RequestBody ObjectBoundary updatedObject) {
+			@RequestBody SuperAppObjectBoundary updatedObject) {
 		
 		if (updatedObject.getObjectId() == null || 
 				updatedObject.getObjectId().getInternalObjectId() == null) {

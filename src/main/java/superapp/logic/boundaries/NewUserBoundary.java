@@ -1,20 +1,20 @@
-package superAppsObjects;
+package superapp.logic.boundaries;
 
 
 /**
  * Class User Represent the NewUser Boundary
  * @author Ido & Yosef
  */
-public class User {
+public class NewUserBoundary {
 	
 	private String email;
 	private String role;
 	private String userName;
 	private String avatar;
 	
-	public User () {}
+	public NewUserBoundary() {}
 	
-	public User(String email, String role, String userName, String avatar) {
+	public NewUserBoundary(String email, String role, String userName, String avatar) {
 		this.email = email;
 		this.role = role;
 		this.userName = userName;

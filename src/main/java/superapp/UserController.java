@@ -1,7 +1,5 @@
 package superapp;
 
-import java.util.ArrayList;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,9 +8,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import objectBoundary.UserID;
-import superAppsObjects.User;
-import superAppsObjects.UserBoundary;
+import superapp.logic.boundaries.UserID;
+import superapp.logic.boundaries.NewUserBoundary;
+import superapp.logic.boundaries.UserBoundary;
 
 @RestController
 public class UserController {
@@ -41,7 +39,7 @@ public class UserController {
 	@PostMapping(path = {"/superapp/users"},
 			produces = {MediaType.APPLICATION_JSON_VALUE},
 			consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public UserBoundary createUser(@RequestBody User newUser) {
+	public UserBoundary createUser(@RequestBody NewUserBoundary newUser) {
 		UserID userId = new UserID("SocialHive", newUser.getEmail());
 		return new UserBoundary(userId, newUser.getRole(),newUser.getUserName(),newUser.getAvatar());
 	}

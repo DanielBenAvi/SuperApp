@@ -1,6 +1,4 @@
-package superAppsObjects;
-
-import objectBoundary.UserID;
+package superapp.logic.boundaries;
 
 /**
  * Class UserBoundary Represent the User Boundary

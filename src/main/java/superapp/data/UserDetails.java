@@ -1,4 +1,4 @@
-package superAppsObjects;
+package superapp.data;
 
 import java.util.ArrayList;
 

@@ -1,6 +1,4 @@
-package superapp.commandBoundary;
-
-import objectBoundary.ObjectId;
+package superapp.logic.boundaries;
 
 /**
  * @author Ido & Yosef

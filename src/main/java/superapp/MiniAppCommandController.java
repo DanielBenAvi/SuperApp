@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import groupMiniApp.Group;
-import superAppsObjects.UserDetails;
-import superapp.commandBoundary.CommandBoundary;
+import superapp.data.groupMiniApp.Group;
+import superapp.data.UserDetails;
+import superapp.logic.boundaries.MiniAppCommandBoundary;
 
 /**
 
@@ -23,14 +23,14 @@ public class MiniAppCommandController {
 	@PostMapping(path = {"/superapp/miniapp/{miniAppName}"},
 			produces = {MediaType.APPLICATION_JSON_VALUE},
 			consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public Object command(@PathVariable("miniAppName") String miniAppName, @RequestBody CommandBoundary commandBoundary) {
+	public Object command(@PathVariable("miniAppName") String miniAppName, @RequestBody MiniAppCommandBoundary miniAppCommandBoundary) {
 		UUID uuid = UUID.randomUUID();
-		commandBoundary.getCommandId().setInternalCommandId(uuid.toString());
-		commandBoundary.getCommandId().setMiniapp(miniAppName);
-		commandBoundary.setInvocationTimestamp(new Date());
-		System.err.println(commandBoundary.toString());
+		miniAppCommandBoundary.getCommandId().setInternalCommandId(uuid.toString());
+		miniAppCommandBoundary.getCommandId().setMiniapp(miniAppName);
+		miniAppCommandBoundary.setInvocationTimestamp(new Date());
+		System.err.println(miniAppCommandBoundary.toString());
 		
-		switch (commandBoundary.getCommand()) {
+		switch (miniAppCommandBoundary.getCommand()) {
 		case "return UserDetails": {
 			return new UserDetails("Guy","050-0000000",null,"male",null);
 		}

@@ -1,4 +1,4 @@
-package objectBoundary;
+package superapp.logic.boundaries;
 
 
 /**

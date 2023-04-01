@@ -1,4 +1,4 @@
-package marketplaceMiniApp;
+package superapp.data.marketplaceMiniApp;
 
 
 public class Product {

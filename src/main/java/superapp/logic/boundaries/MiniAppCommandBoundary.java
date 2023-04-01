@@ -1,4 +1,4 @@
-package superapp.commandBoundary;
+package superapp.logic.boundaries;
 
 
 import java.util.Date;
@@ -7,7 +7,7 @@ import java.util.Date;
  * @author Ido & Yosef
  */
 
-public class CommandBoundary {
+public class MiniAppCommandBoundary {
 	private CommandId commandId;
 	private String command;
 	private TargetObject targetObject;
@@ -15,11 +15,11 @@ public class CommandBoundary {
 	private InvokedBy invokedBy;
 	private CommandAttributes commandAttributes;
 	
-	public CommandBoundary() {
+	public MiniAppCommandBoundary() {
 	}
 
-	public CommandBoundary(CommandId commandId, String command, TargetObject targetObject, Date invocationTimestamp,
-			InvokedBy invokedBy, CommandAttributes commandAttributes) {
+	public MiniAppCommandBoundary(CommandId commandId, String command, TargetObject targetObject, Date invocationTimestamp,
+								  InvokedBy invokedBy, CommandAttributes commandAttributes) {
 		this.commandId = commandId;
 		this.command = command;
 		this.targetObject = targetObject;

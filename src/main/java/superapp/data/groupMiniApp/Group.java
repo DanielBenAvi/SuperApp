@@ -1,14 +1,13 @@
-package groupMiniApp;
+package superapp.data.groupMiniApp;
 
-import java.util.ArrayList;
 import java.util.Map;
 
-import superAppsObjects.User;
+import superapp.logic.boundaries.NewUserBoundary;
 
 public class Group {
 	
 	private String groupName; 
-	private Map<String, User> users;
+	private Map<String, NewUserBoundary> users;
 	
 	
 	public Group() {
@@ -29,11 +28,11 @@ public class Group {
 	}
 	
 
-	public Map<String, User> getUsers() {
+	public Map<String, NewUserBoundary> getUsers() {
 		return users;
 	}
 
-	public void setUsers(Map<String, User> users) {
+	public void setUsers(Map<String, NewUserBoundary> users) {
 		this.users = users;
 	}
 	

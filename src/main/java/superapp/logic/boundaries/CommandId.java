@@ -1,4 +1,4 @@
-package superapp.commandBoundary;
+package superapp.logic.boundaries;
 
 /**
  * @author Ido & Yosef
