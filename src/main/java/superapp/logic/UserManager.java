@@ -40,7 +40,7 @@ public class UserManager implements UsersService{
         UserEntity userEntity = new UserEntity();
 
         String email = userBoundary.getUserID().getEmail();
-        String userID = ConvertHelp.userIdBoundaryToStr(new UserID(superappName,email),ConvertHelp.DELIMITER);
+        String userID = ConvertHelp.userIdBoundaryToStr(new UserID(superappName,email));
 
         userEntity.setUserID(userID);
 
@@ -60,7 +60,7 @@ public class UserManager implements UsersService{
      */
     private UserBoundary entityToBoundary(UserEntity userEntity) {
         UserBoundary userBoundary = new UserBoundary();
-        UserID userID = ConvertHelp.strUserIdToBoundary(userEntity.getUserID(), ConvertHelp.DELIMITER);
+        UserID userID = ConvertHelp.strUserIdToBoundary(userEntity.getUserID());
         userBoundary.setUserID(userID);
         userBoundary.setUserName(userEntity.getUserName());
         userBoundary.setRole(userEntity.getRole());
@@ -113,7 +113,7 @@ public class UserManager implements UsersService{
      */
     @Override
     public Optional<UserBoundary> login(String userSuperApp, String userEmail) {
-        String userID = ConvertHelp.concatenateIds(new String[]{superappName,userEmail},ConvertHelp.DELIMITER);
+        String userID = ConvertHelp.concatenateIds(new String[]{superappName,userEmail});
         UserEntity userEntity = this.databaseMockup.get(userID);
         if (userEntity == null){
             return Optional.empty();
@@ -134,7 +134,7 @@ public class UserManager implements UsersService{
     @Override
     public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update) {
 
-        String userID = ConvertHelp.concatenateIds(new String[]{userSuperApp,userEmail},ConvertHelp.DELIMITER);
+        String userID = ConvertHelp.concatenateIds(new String[]{userSuperApp,userEmail});
 
         UserEntity existing = this.databaseMockup.get(userID);
 
