@@ -3,13 +3,15 @@ package superapp.logic;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import superapp.data.SuperAppObjectEntity;
+import superapp.data.entities.SuperAppObjectEntity;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 
 import java.util.*;
 
 @Service
 public class ObjectsManager implements ObjectsService {
+
+    final private String DELIMITER = "_";
 
     private Map<String, SuperAppObjectEntity> objectsDatabaseMockup;
     private String superappName;
@@ -40,7 +42,10 @@ public class ObjectsManager implements ObjectsService {
 
         SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
 
-        String objectId = superappName + "_" + UUID.randomUUID().toString();
+        String objectId = ConvertHelp
+                            .concatenateIds(
+                                    new String [] {superappName, UUID.randomUUID().toString()},
+                                    DELIMITER);
 
         entity.setObjectId(objectId);
         entity.setCreateTimeStamp(new Date());
@@ -53,9 +58,14 @@ public class ObjectsManager implements ObjectsService {
     }
 
     @Override
-    public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId, SuperAppObjectBoundary update) {
+    public SuperAppObjectBoundary updateObject(String objectSuperApp,
+                                               String internalObjectId,
+                                               SuperAppObjectBoundary update) {
 
-        String objectId = objectSuperApp + "_" + internalObjectId;
+        String objectId = ConvertHelp
+                            .concatenateIds(
+                                    new String [] {objectSuperApp, internalObjectId},
+                                    DELIMITER);
 
         // todo: not sure if attributes : type, alias, active. can be changed by client
         // createdBy, createTimeStamp ,objectId : not changed by client.
@@ -92,7 +102,7 @@ public class ObjectsManager implements ObjectsService {
     @Override
     public SuperAppObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId) {
 
-        String objectId = objectSuperApp + "_" + internalObjectId;
+        String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId}, DELIMITER);
 
         if (objectsDatabaseMockup.containsKey(objectId)) {
             return this.convertEntityToBoundary(objectsDatabaseMockup.get(objectId));
@@ -106,7 +116,6 @@ public class ObjectsManager implements ObjectsService {
     @Override
     public List<SuperAppObjectBoundary> getAllObjects() {
 
-        // TODO: is necessary to check if map is empty?
         return this.objectsDatabaseMockup.values()
                 .stream()
                 .map(this::convertEntityToBoundary)
@@ -119,12 +128,37 @@ public class ObjectsManager implements ObjectsService {
     }
 
     private SuperAppObjectBoundary convertEntityToBoundary(SuperAppObjectEntity entity) {
-        // TODO: complete methode
-        return new SuperAppObjectBoundary();
+
+        SuperAppObjectBoundary boundary = new SuperAppObjectBoundary();
+
+        boundary.setObjectId(ConvertHelp.strObjectIdToBoundary(entity.getObjectId(), DELIMITER));
+        boundary.setType(entity.getType());
+        boundary.setAlias(entity.getAlias());
+        boundary.setActive(entity.getActive());
+        boundary.setCreateTimeStamp(entity.getCreateTimeStamp());
+        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
+        boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy(), DELIMITER));
+        boundary.setObjectDetails(entity.getObjectDetails());
+
+        return boundary;
     }
 
     private SuperAppObjectEntity convertBoundaryToEntity(SuperAppObjectBoundary boundary) {
-        // TODO: complete methode
-        return new SuperAppObjectEntity();
+        SuperAppObjectEntity entity = new SuperAppObjectEntity();
+
+        entity.setType(boundary.getType());
+        entity.setAlias(boundary.getAlias());
+
+        if (boundary.getActive() != null)
+            entity.setActive(boundary.getActive());
+        else
+            entity.setActive(false); // TODO what value shall be
+
+        entity.setLocation(ConvertHelp.locationBoundaryToEntity(boundary.getLocation()));
+        entity.setCreatedBy(ConvertHelp.createByBoundaryToStr(boundary.getCreatedBy(), DELIMITER));
+        entity.setObjectDetails(boundary.getObjectDetails());
+
+        return entity;
     }
+
 }

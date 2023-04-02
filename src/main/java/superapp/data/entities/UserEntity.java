@@ -1,4 +1,4 @@
-package superapp.data;
+package superapp.data.entities;
 
 public class UserEntity {
 

@@ -1,4 +1,4 @@
-package superapp.data;
+package superapp.data.entities;
 
 import java.util.Date;
 
