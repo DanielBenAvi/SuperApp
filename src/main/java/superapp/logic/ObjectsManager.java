@@ -11,8 +11,6 @@ import java.util.*;
 @Service
 public class ObjectsManager implements ObjectsService {
 
-    final private String DELIMITER = "_";
-
     private Map<String, SuperAppObjectEntity> objectsDatabaseMockup;
     private String superappName;
 
@@ -42,10 +40,7 @@ public class ObjectsManager implements ObjectsService {
 
         SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
 
-        String objectId = ConvertHelp
-                            .concatenateIds(
-                                    new String [] {superappName, UUID.randomUUID().toString()},
-                                    DELIMITER);
+        String objectId = ConvertHelp.concatenateIds(new String [] {superappName, UUID.randomUUID().toString()});
 
         entity.setObjectId(objectId);
         entity.setCreateTimeStamp(new Date());
@@ -62,10 +57,7 @@ public class ObjectsManager implements ObjectsService {
                                                String internalObjectId,
                                                SuperAppObjectBoundary update) {
 
-        String objectId = ConvertHelp
-                            .concatenateIds(
-                                    new String [] {objectSuperApp, internalObjectId},
-                                    DELIMITER);
+        String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId});
 
         // todo: not sure if attributes : type, alias, active. can be changed by client
         // createdBy, createTimeStamp ,objectId : not changed by client.
@@ -102,7 +94,7 @@ public class ObjectsManager implements ObjectsService {
     @Override
     public SuperAppObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId) {
 
-        String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId}, DELIMITER);
+        String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId});
 
         if (objectsDatabaseMockup.containsKey(objectId)) {
             return this.convertEntityToBoundary(objectsDatabaseMockup.get(objectId));
@@ -131,13 +123,13 @@ public class ObjectsManager implements ObjectsService {
 
         SuperAppObjectBoundary boundary = new SuperAppObjectBoundary();
 
-        boundary.setObjectId(ConvertHelp.strObjectIdToBoundary(entity.getObjectId(), DELIMITER));
+        boundary.setObjectId(ConvertHelp.strObjectIdToBoundary(entity.getObjectId()));
         boundary.setType(entity.getType());
         boundary.setAlias(entity.getAlias());
         boundary.setActive(entity.getActive());
         boundary.setCreateTimeStamp(entity.getCreateTimeStamp());
         boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
-        boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy(), DELIMITER));
+        boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
         boundary.setObjectDetails(entity.getObjectDetails());
 
         return boundary;
@@ -155,7 +147,7 @@ public class ObjectsManager implements ObjectsService {
             entity.setActive(false); // TODO what value shall be
 
         entity.setLocation(ConvertHelp.locationBoundaryToEntity(boundary.getLocation()));
-        entity.setCreatedBy(ConvertHelp.createByBoundaryToStr(boundary.getCreatedBy(), DELIMITER));
+        entity.setCreatedBy(ConvertHelp.createByBoundaryToStr(boundary.getCreatedBy()));
         entity.setObjectDetails(boundary.getObjectDetails());
 
         return entity;

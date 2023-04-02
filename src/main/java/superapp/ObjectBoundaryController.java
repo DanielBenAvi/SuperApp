@@ -7,11 +7,15 @@ import org.springframework.web.bind.annotation.*;
 import superapp.logic.ObjectsService;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 
+/**
+ * @author Daniel & Yaniv create this class
+ */
 
 @RestController
 public class ObjectBoundaryController {
 
-	private ObjectsService objectsService;
+	private ObjectsService objectsService; // objectsService interface
+
 
 	@Autowired
 	public void setObjectsService(ObjectsService objectsService) {
@@ -20,8 +24,10 @@ public class ObjectBoundaryController {
 
 	/**
 	 * Request specific Object Boundary
-	 * @return Object Boundary
-	 * @author Daniel & Yaniv
+	 *
+	 * @param superapp
+	 * @param internalObjectId
+	 * @return SuperAppObjectBoundary
 	 */
 	@GetMapping(path = {"/superapp/objects/{superapp}/{internalObjectId}"},
 				produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -30,31 +36,28 @@ public class ObjectBoundaryController {
 
 		return objectsService.getSpecificObject(superapp, internalObjectId);
 	}
-	
+
 	/**
 	 * Request all Object Boundary
-	 * @return List of Object Boundary
-	 * 
-	 * @author Daniel & Yaniv
+	 *
+	 * @return SuperAppObjectBoundary Array
 	 */
 	@GetMapping(path = {"/superapp/objects"},
 				produces = {MediaType.APPLICATION_JSON_VALUE})
 	public SuperAppObjectBoundary[] getAllObjects() {
 
-		return this.objectsService.getAllObjects()
-				.toArray(new SuperAppObjectBoundary[0]);
+		return this.objectsService.getAllObjects().toArray(new SuperAppObjectBoundary[0]);
 	}
-	
+
 	/**
 	 * Create new Object
-	 * @return Object Boundary
-	 * @param superAppObjectBoundary as ObjectBoundary
-	 * @author Daniel & Yaniv
+	 *
+	 * @param superAppObjectBoundary
+	 * @return SuperAppObjectBoundary
 	 */
-	@PostMapping(
-			path = {"/superapp/objects"},
-			produces = {MediaType.APPLICATION_JSON_VALUE},
-			consumes = {MediaType.APPLICATION_JSON_VALUE})
+	@PostMapping(path = {"/superapp/objects"},
+				 produces = {MediaType.APPLICATION_JSON_VALUE},
+				 consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public SuperAppObjectBoundary createObject(@RequestBody SuperAppObjectBoundary superAppObjectBoundary) {
 
 		// TODO : question about path (user ID), Ido & Yosef
@@ -62,15 +65,16 @@ public class ObjectBoundaryController {
 	}
 	
 	
+
 	/**
-	 * updateObject 
-	 * @param superapp name of the superapp
-	 * @param internalObjectId the object id
+	 * Update exist object, updated object included only updated attr
+	 *
+	 * @param superapp
+	 * @param internalObjectId
 	 * @param updatedObject
 	 */
-	@PutMapping(
-			path = {"/superapp/objects/{superapp}/{internalObjectId}"},
-			consumes = {MediaType.APPLICATION_JSON_VALUE})
+	@PutMapping(path = {"/superapp/objects/{superapp}/{internalObjectId}"},
+				consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public void updateObject(@PathVariable("superapp") String superapp,
 							 @PathVariable("internalObjectId") String internalObjectId,
 							 @RequestBody SuperAppObjectBoundary updatedObject) {
