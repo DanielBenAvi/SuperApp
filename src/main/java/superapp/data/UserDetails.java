@@ -11,20 +11,20 @@ public class UserDetails {
 	
 	private String name;
 	private String phoneNum;
-	private ArrayList<String> intrests;
+	private ArrayList<String> interests;
 	private String gender;
-	private ArrayList<String> sexPrefrences;
+	private ArrayList<String> sexPreferences;
 	
 	public UserDetails() {}
 	
-	public UserDetails(String name, String phoneNum, ArrayList<String> intrests, String gender,
-			ArrayList<String> sexPrefrences) {
+	public UserDetails(String name, String phoneNum, ArrayList<String> interests, String gender,
+			ArrayList<String> sexPreferences) {
 		super();
 		this.name = name;
 		this.phoneNum = phoneNum;
-		this.intrests = intrests;
+		this.interests = interests;
 		this.gender = gender;
-		this.sexPrefrences = sexPrefrences;
+		this.sexPreferences = sexPreferences;
 	}
 	
 	public String getName() {
@@ -43,12 +43,12 @@ public class UserDetails {
 		this.phoneNum = phoneNum;
 	}
 	
-	public ArrayList<String> getIntrests() {
-		return intrests;
+	public ArrayList<String> getInterests() {
+		return interests;
 	}
 	
-	public void setIntrests(ArrayList<String> intrests) {
-		this.intrests = intrests;
+	public void setInterests(ArrayList<String> interests) {
+		this.interests = interests;
 	}
 	
 	public String getGender() {
@@ -59,19 +59,22 @@ public class UserDetails {
 		this.gender = gender;
 	}
 	
-	public ArrayList<String> getSexPrefrences() {
-		return sexPrefrences;
+	public ArrayList<String> getSexPreferences() {
+		return sexPreferences;
 	}
 	
-	public void setSexPrefrences(ArrayList<String> sexPrefrences) {
-		this.sexPrefrences = sexPrefrences;
+	public void setSexPreferences(ArrayList<String> sexPreferences) {
+		this.sexPreferences = sexPreferences;
 	}
 
 	@Override
 	public String toString() {
-		return "UserDetails [name=" + name + ", phoneNum=" + phoneNum + ", intrests=" + intrests + ", gender=" + gender
-				+ ", sexPrefrences=" + sexPrefrences + "]";
+		return "UserDetails{" +
+				"name='" + name + '\'' +
+				", phoneNum='" + phoneNum + '\'' +
+				", interests=" + interests +
+				", gender='" + gender + '\'' +
+				", sexPreferences=" + sexPreferences +
+				'}';
 	}
-	
-
 }

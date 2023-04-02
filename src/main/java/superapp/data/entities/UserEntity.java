@@ -2,7 +2,7 @@ package superapp.data.entities;
 
 public class UserEntity {
 
-    private String email;
+    private String userID;
     private String role;
     private String userName;
     private String avatar;
@@ -10,18 +10,18 @@ public class UserEntity {
     public UserEntity() {}
 
     public UserEntity(String email, String role, String userName, String avatar) {
-        this.email = email;
+        this.userID = email;
         this.role = role;
         this.userName = userName;
         this.avatar = avatar;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUserID() {
+        return userID;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public String getRole() {

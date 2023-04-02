@@ -8,6 +8,7 @@ import superapp.logic.boundaries.UserID;
 
 public class ConvertHelp {
 
+    final public static String DELIMITER = "_";
 
     /*
         Boundary To Entity methods
