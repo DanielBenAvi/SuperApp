@@ -60,7 +60,6 @@ public class ObjectBoundaryController {
 				 consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public SuperAppObjectBoundary createObject(@RequestBody SuperAppObjectBoundary superAppObjectBoundary) {
 
-		// TODO : question about path (user ID), Ido & Yosef
 		return this.objectsService.createObject(superAppObjectBoundary);
 	}
 	
@@ -81,13 +80,4 @@ public class ObjectBoundaryController {
 
 		this.objectsService.updateObject(superapp, internalObjectId, updatedObject);
 	}
-
-
-	// just for testing
-//	@DeleteMapping(path = {"/superapp/admin/objects"})
-//	public void deleteAllObjects() {
-//		// do nothing
-//		this.objectsService.deleteAllObjects();
-//		System.err.println("all objects deleted ");
-//	}
 }

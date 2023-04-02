@@ -8,50 +8,74 @@ import superapp.logic.boundaries.SuperAppObjectBoundary;
 
 import java.util.*;
 
+/**
+ * @author Ido & Yosef
+ */
 @Service
 public class ObjectsManager implements ObjectsService {
 
     private Map<String, SuperAppObjectEntity> objectsDatabaseMockup;
     private String superappName;
 
-    // injects a configuration value of spring
+
+    /**
+     * This methode injects a configuration value of spring.
+     *
+     * @param springApplicationName String
+     */
     @Value("${spring.application.name:defaultAppName}")
     public void setApplicationName(String springApplicationName) {
         this.superappName = springApplicationName;
     }
 
-    // invoked after values are injected to instance
+
+    /**
+     * This methode invoked after values are injected to instance.
+     * the methode init database mockup as thread saf Map
+     *
+     */
     @PostConstruct
     public void init() {
         this.objectsDatabaseMockup = Collections.synchronizedMap(new HashMap<>());
     }
 
+    /**
+     * This methode create new SuperAppObjectEntity, init ObjectId,
+     * init CreatedBy, init CreateTimeStamp and save the SuperAppObjectEntity to database.
+     *
+     * @param objectBoundary SuperAppObjectBoundary
+     * @return SuperAppObjectBoundary
+     */
     @Override
     public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objectBoundary) {
 
         if (objectBoundary == null)
             throw new RuntimeException("null object cant be created");
 
-        if (objectBoundary.getType() == null)
-            throw new RuntimeException("Object type missing");
-
-        if (objectBoundary.getObjectDetails() == null)
-            throw new RuntimeException("Object details cant be null");
+        // TODO: verify if user exist in next phase
 
         SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
 
         String objectId = ConvertHelp.concatenateIds(new String [] {superappName, UUID.randomUUID().toString()});
-
         entity.setObjectId(objectId);
         entity.setCreateTimeStamp(new Date());
-        // TODO: verify if user exist
-        entity.setCreatedBy(""); // TODO: ask eyal
+
+        entity.setCreatedBy("superappDefault_yo@gmail.com");
 
         this.objectsDatabaseMockup.put(objectId, entity);
 
         return this.convertEntityToBoundary(entity);
     }
 
+    /**
+     * This methode update not null attr of SuperAppObjectEntity in database.
+     * all attr can be updated except : createdBy, createTimeStamp ,objectId.
+     *
+     * @param objectSuperApp String
+     * @param internalObjectId String
+     * @param update SuperAppObjectBoundary
+     * @return SuperAppObjectBoundary
+     */
     @Override
     public SuperAppObjectBoundary updateObject(String objectSuperApp,
                                                String internalObjectId,
@@ -59,66 +83,77 @@ public class ObjectsManager implements ObjectsService {
 
         String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId});
 
-        // todo: not sure if attributes : type, alias, active. can be changed by client
-        // createdBy, createTimeStamp ,objectId : not changed by client.
-
-        if (!objectsDatabaseMockup.containsKey(objectId)) {
+        if (!objectsDatabaseMockup.containsKey(objectId))
             throw new RuntimeException("Could not find object by id: " + objectId);
-        }
 
-        SuperAppObjectEntity entity = this.objectsDatabaseMockup.get(objectId);
+        SuperAppObjectEntity existingEntity = this.objectsDatabaseMockup.get(objectId);
 
-        SuperAppObjectEntity newEntity = this.convertBoundaryToEntity(update);
+        if (update.getType() != null)
+            existingEntity.setType(update.getType());
 
-        boolean dirtyFlag = false;
+        if (update.getAlias() != null)
+            existingEntity.setAlias(update.getAlias());
 
-        if (newEntity.getLocation() != null) {
-            entity.setLocation(newEntity.getLocation());
-            dirtyFlag = true;
-        }
+        if (update.getActive() != null)
+            existingEntity.setActive(update.getActive());
 
-        if (newEntity.getObjectDetails() != null) {
-            // TODO: need to check ObjectDetails attributes
-            entity.setObjectDetails(newEntity.getObjectDetails());
-            dirtyFlag = true;
-        }
+        if (update.getLocation() != null)
+            existingEntity.setLocation(ConvertHelp.locationBoundaryToEntity(update.getLocation()));
 
-        // todo unknown if necessary
-        if (dirtyFlag) {
-            this.objectsDatabaseMockup.put(objectId, entity);
-        }
+        // TODO: need to check ObjectDetails attributes
+        if (update.getObjectDetails() != null)
+            existingEntity.setObjectDetails(update.getObjectDetails());
 
-        return this.convertEntityToBoundary(entity);
+        return this.convertEntityToBoundary(existingEntity);
     }
 
+    /**
+     * This methode return a specific object according to id.
+     * id represent by @params.
+     *
+     * @param objectSuperApp String
+     * @param internalObjectId String
+     * @return SuperAppObjectBoundary
+     */
     @Override
     public SuperAppObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId) {
 
         String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId});
 
-        if (objectsDatabaseMockup.containsKey(objectId)) {
+        if (objectsDatabaseMockup.containsKey(objectId))
             return this.convertEntityToBoundary(objectsDatabaseMockup.get(objectId));
-        }
-        else {
+        else
             throw new RuntimeException("Could not find object by id: " + objectId);
-        }
 
     }
 
+    /**
+     * This methode return all existing objects in database.
+     * @return
+     */
     @Override
     public List<SuperAppObjectBoundary> getAllObjects() {
 
         return this.objectsDatabaseMockup.values()
-                .stream()
-                .map(this::convertEntityToBoundary)
-                .toList();
+                                                .stream()
+                                                .map(this::convertEntityToBoundary)
+                                                .toList();
     }
 
+    /**
+     * This methode delete all objects in database.
+     */
     @Override
     public void deleteAllObjects() {
         objectsDatabaseMockup.clear();
     }
 
+    /**
+     * This methode convert SuperAppObjectEntity to SuperAppObjectBoundary.
+     *
+     * @param entity SuperAppObjectEntity
+     * @return boundary SuperAppObjectBoundary
+     */
     private SuperAppObjectBoundary convertEntityToBoundary(SuperAppObjectEntity entity) {
 
         SuperAppObjectBoundary boundary = new SuperAppObjectBoundary();
@@ -135,6 +170,13 @@ public class ObjectsManager implements ObjectsService {
         return boundary;
     }
 
+
+    /**
+     * This methode convert SuperAppObjectBoundary to SuperAppObjectEntity.
+     *
+     * @param boundary SuperAppObjectBoundary
+     * @return entity SuperAppObjectEntity
+     */
     private SuperAppObjectEntity convertBoundaryToEntity(SuperAppObjectBoundary boundary) {
         SuperAppObjectEntity entity = new SuperAppObjectEntity();
 
@@ -144,7 +186,7 @@ public class ObjectsManager implements ObjectsService {
         if (boundary.getActive() != null)
             entity.setActive(boundary.getActive());
         else
-            entity.setActive(false); // TODO what value shall be
+            entity.setActive(false);
 
         entity.setLocation(ConvertHelp.locationBoundaryToEntity(boundary.getLocation()));
         entity.setCreatedBy(ConvertHelp.createByBoundaryToStr(boundary.getCreatedBy()));
