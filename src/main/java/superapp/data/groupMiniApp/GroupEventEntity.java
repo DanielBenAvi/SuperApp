@@ -5,7 +5,7 @@ import java.util.Map;
 
 import superapp.logic.boundaries.Location;
 
-public class GroupEvent {
+public class GroupEventEntity {
 	
 	private Date date;
 	private Location location;
@@ -14,7 +14,7 @@ public class GroupEvent {
 	
 	
 
-	public GroupEvent() {
+	public GroupEventEntity() {
 	}
 
 	public Date getDate() {

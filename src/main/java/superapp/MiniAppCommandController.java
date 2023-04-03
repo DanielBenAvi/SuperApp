@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import superapp.data.groupMiniApp.Group;
+import superapp.data.groupMiniApp.GroupEntity;
 import superapp.data.UserDetails;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 
@@ -35,7 +35,7 @@ public class MiniAppCommandController {
 			return new UserDetails("Guy","050-0000000",null,"male",null);
 		}
 		case "CreateGroup": {
-			return new Group();
+			return new GroupEntity();
 		}
 		default:
 			System.err.println("Does not recognise this command");

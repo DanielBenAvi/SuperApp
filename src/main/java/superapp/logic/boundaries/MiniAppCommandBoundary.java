@@ -2,6 +2,7 @@ package superapp.logic.boundaries;
 
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author Ido & Yosef
@@ -13,13 +14,13 @@ public class MiniAppCommandBoundary {
 	private TargetObject targetObject;
 	private Date invocationTimestamp;
 	private InvokedBy invokedBy;
-	private CommandAttributes commandAttributes;
+	private Map<String,Object> commandAttributes;
 	
 	public MiniAppCommandBoundary() {
 	}
 
 	public MiniAppCommandBoundary(CommandId commandId, String command, TargetObject targetObject, Date invocationTimestamp,
-								  InvokedBy invokedBy, CommandAttributes commandAttributes) {
+								  InvokedBy invokedBy, Map<String,Object> commandAttributes) {
 		this.commandId = commandId;
 		this.command = command;
 		this.targetObject = targetObject;
@@ -69,11 +70,11 @@ public class MiniAppCommandBoundary {
 		this.invokedBy = invokedBy;
 	}
 
-	public CommandAttributes getCommandAttributes() {
+	public Map<String,Object> getCommandAttributes() {
 		return commandAttributes;
 	}
 
-	public void setCommandAttributes(CommandAttributes commandAttributes) {
+	public void setCommandAttributes(Map<String,Object> commandAttributes) {
 		this.commandAttributes = commandAttributes;
 	}
 

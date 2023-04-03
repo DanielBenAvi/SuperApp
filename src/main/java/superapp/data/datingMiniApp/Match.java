@@ -6,7 +6,6 @@ public class Match {
 	private String user2;
 	
 	public Match() {
-		
 	}
 
 	public String getUser1() {

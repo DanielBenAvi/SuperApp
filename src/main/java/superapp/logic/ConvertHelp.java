@@ -1,9 +1,12 @@
 package superapp.logic;
 
 import superapp.data.entities.LocationEntity;
+import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.CreatedBy;
+import superapp.logic.boundaries.InvokedBy;
 import superapp.logic.boundaries.Location;
 import superapp.logic.boundaries.ObjectId;
+import superapp.logic.boundaries.TargetObject;
 import superapp.logic.boundaries.UserID;
 
 public class ConvertHelp {
@@ -133,4 +136,22 @@ public class ConvertHelp {
         String id = String.join(DELIMITER_ID, ids);
         return id;
     }
+    
+    public static CommandId convertStrToCmd(String cmdId) {
+    	String[] str = cmdId.split(DELIMITER_ID);
+    	return new CommandId(str[0],str[1],str[2]);
+    }
+    
+    public static InvokedBy convertStrToInvokedBy(String strInvoke) {
+    	InvokedBy ib = new InvokedBy();
+    	ib.setUserId(strUserIdToBoundary(strInvoke));
+    	return ib;
+    }
+    
+    public static TargetObject convertStrToTargetObject(String strTarget) {
+    	TargetObject to = new TargetObject();
+    	to.setObjectid(strObjectIdToBoundary(strTarget));
+    	return to;
+    }
+    
 }

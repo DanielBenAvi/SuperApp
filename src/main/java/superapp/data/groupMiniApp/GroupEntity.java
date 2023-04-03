@@ -4,17 +4,15 @@ import java.util.Map;
 
 import superapp.logic.boundaries.NewUserBoundary;
 
-public class Group {
+public class GroupEntity {
 	
 	private String groupName; 
 	private Map<String, NewUserBoundary> users;
 	
-	
-	public Group() {
+	public GroupEntity() {
 	}
 	
-	public Group(String _groupName) {
-		super();
+	public GroupEntity(String _groupName) {
 		this.groupName = _groupName; 
 	}
 	

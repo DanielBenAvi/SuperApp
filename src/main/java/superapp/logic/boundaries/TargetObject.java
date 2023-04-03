@@ -1,9 +1,5 @@
 package superapp.logic.boundaries;
 
-/**
- * @author Ido & Yosef
- */
-
 public class TargetObject {
 	private ObjectId objectid;
 	
