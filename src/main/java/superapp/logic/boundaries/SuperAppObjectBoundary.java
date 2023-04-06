@@ -11,6 +11,8 @@ public class SuperAppObjectBoundary {
 	private Date createTimeStamp;
 	private Location location;
 	private CreatedBy createdBy;
+
+//	TODO - change to map<String,Object>
 	private Object objectDetails;
 	
 	public SuperAppObjectBoundary() {

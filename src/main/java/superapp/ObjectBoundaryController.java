@@ -59,7 +59,7 @@ public class ObjectBoundaryController {
 				 produces = {MediaType.APPLICATION_JSON_VALUE},
 				 consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public SuperAppObjectBoundary createObject(@RequestBody SuperAppObjectBoundary superAppObjectBoundary) {
-
+		
 		return this.objectsService.createObject(superAppObjectBoundary);
 	}
 	

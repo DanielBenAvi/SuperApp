@@ -2,12 +2,13 @@ package superapp.logic;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import superapp.data.entities.UserEntity;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
 
 import java.util.*;
-
+@Service
 public class UserManager implements UsersService{
     private String superappName;
     private Map<String, UserEntity> databaseMockup;
