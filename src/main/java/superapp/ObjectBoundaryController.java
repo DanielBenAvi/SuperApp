@@ -45,7 +45,6 @@ public class ObjectBoundaryController {
 	@GetMapping(path = {"/superapp/objects"},
 				produces = {MediaType.APPLICATION_JSON_VALUE})
 	public SuperAppObjectBoundary[] getAllObjects() {
-
 		return this.objectsService.getAllObjects().toArray(new SuperAppObjectBoundary[0]);
 	}
 
@@ -59,7 +58,6 @@ public class ObjectBoundaryController {
 				 produces = {MediaType.APPLICATION_JSON_VALUE},
 				 consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public SuperAppObjectBoundary createObject(@RequestBody SuperAppObjectBoundary superAppObjectBoundary) {
-		
 		return this.objectsService.createObject(superAppObjectBoundary);
 	}
 	

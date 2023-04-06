@@ -2,23 +2,23 @@ package superapp.logic.boundaries;
 
 public class ObjectId {
 	
-	private String superApp;
+	private String superapp;
 	private String internalObjectId;
 	
 	public ObjectId() {
 	}
 
 	public ObjectId(String superApp, String internalObjectId) {
-		this.superApp = superApp;
+		this.superapp = superApp;
 		this.internalObjectId = internalObjectId;
 	}
 
-	public String getSuperApp() {
-		return superApp;
+	public String getSuperapp() {
+		return superapp;
 	}
 
-	public void setSuperApp(String superApp) {
-		this.superApp = superApp;
+	public void setSuperapp(String superapp) {
+		this.superapp = superapp;
 	}
 
 	public String getInternalObjectId() {
@@ -31,7 +31,7 @@ public class ObjectId {
 
 	@Override
 	public String toString() {
-		return "ObjectId [superApp=" + superApp + ", "
+		return "ObjectId [superApp=" + superapp + ", "
 				+ "internalObjectId=" + internalObjectId + "]";
 	}
 

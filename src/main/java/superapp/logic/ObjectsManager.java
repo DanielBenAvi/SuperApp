@@ -162,7 +162,7 @@ public class ObjectsManager implements ObjectsService {
         boundary.setType(entity.getType());
         boundary.setAlias(entity.getAlias());
         boundary.setActive(entity.getActive());
-        boundary.setCreateTimeStamp(entity.getCreateTimeStamp());
+        boundary.setCreateTimestamp(entity.getCreateTimeStamp());
         boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
         boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
         boundary.setObjectDetails(entity.getObjectDetails());

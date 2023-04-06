@@ -50,9 +50,9 @@ public class UserController {
 		// convert NewUserBoundary to UserBoundary
 		UserBoundary userBoundary= new UserBoundary();
 		// crate a userID object
-		userBoundary.setUserID(new UserID("SocialHive", newUser.getEmail()));
-		userBoundary.setUserName(newUser.getUserName());
-		userBoundary.setUserName(newUser.getAvatar());
+		userBoundary.setUserId(new UserID("SocialHive", newUser.getEmail()));
+		userBoundary.setUsername(newUser.getUsername());
+		userBoundary.setUsername(newUser.getAvatar());
 		userBoundary.setRole(newUser.getRole());
 
 		return this.usersService.createUser(userBoundary);

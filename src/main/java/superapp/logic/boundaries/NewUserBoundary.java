@@ -1,6 +1,8 @@
 package superapp.logic.boundaries;
 
 
+import superapp.data.UserRole;
+
 /**
  * Class User Represent the NewUser Boundary
  * @author Ido & Yosef
@@ -9,7 +11,7 @@ public class NewUserBoundary {
 	
 	private String email;
 	private String role;
-	private String userName;
+	private String username;
 	private String avatar;
 	
 	public NewUserBoundary() {}
@@ -17,7 +19,7 @@ public class NewUserBoundary {
 	public NewUserBoundary(String email, String role, String userName, String avatar) {
 		this.email = email;
 		this.role = role;
-		this.userName = userName;
+		this.username = userName;
 		this.avatar = avatar;
 	}
 
@@ -37,12 +39,12 @@ public class NewUserBoundary {
 		this.role = role;
 	}
 	
-	public String getUserName() {
-		return userName;
+	public String getUsername() {
+		return username;
 	}
 	
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 	public String getAvatar() {

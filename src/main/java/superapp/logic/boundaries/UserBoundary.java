@@ -6,26 +6,26 @@ package superapp.logic.boundaries;
  */
 public class UserBoundary {
 
-	private UserID userID;
+	private UserID userId;
 	private String role;
-	private String userName;
+	private String username;
 	private String avatar;
 
 	public UserBoundary() {}
 
 	public UserBoundary(UserID userID, String role, String userName, String avatar) {
-		this.userID = userID;
+		this.userId = userID;
 		this.role = role;
-		this.userName = userName;
+		this.username = userName;
 		this.avatar = avatar;
 	}
 	
-	public UserID getUserID() {
-		return userID;
+	public UserID getUserId() {
+		return userId;
 	}
 
-	public void setUserID(UserID userID) {
-		this.userID = userID;
+	public void setUserId(UserID userId) {
+		this.userId = userId;
 	}
 	
 	public String getRole() {
@@ -35,11 +35,11 @@ public class UserBoundary {
 		this.role = role;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getUsername() {
+		return username;
 	}
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getAvatar() {
@@ -51,7 +51,7 @@ public class UserBoundary {
 	
 	@Override
 	public String toString() {
-		return "UserBoundary [userID=" + userID.toString() + ", role=" + role + ", userName=" + userName + ", avatar=" + avatar
+		return "UserBoundary [userID=" + userId.toString() + ", role=" + role + ", userName=" + username + ", avatar=" + avatar
 				+ "]";
 	}
 

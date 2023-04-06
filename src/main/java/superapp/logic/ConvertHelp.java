@@ -46,7 +46,7 @@ public class ConvertHelp {
      * @return objectId String
      */
     public static String objectIdBoundaryToStr(ObjectId objectIdBoundary) {
-        String objectId = objectIdBoundary.getSuperApp() + DELIMITER_ID + objectIdBoundary.getInternalObjectId();
+        String objectId = objectIdBoundary.getSuperapp() + DELIMITER_ID + objectIdBoundary.getInternalObjectId();
         return objectId;
     }
 
@@ -150,7 +150,7 @@ public class ConvertHelp {
     
     public static TargetObject convertStrToTargetObject(String strTarget) {
     	TargetObject to = new TargetObject();
-    	to.setObjectid(strObjectIdToBoundary(strTarget));
+    	to.setObjectId(strObjectIdToBoundary(strTarget));
     	return to;
     }
     

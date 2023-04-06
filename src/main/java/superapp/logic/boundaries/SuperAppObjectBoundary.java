@@ -8,7 +8,7 @@ public class SuperAppObjectBoundary {
 	private String type;
 	private String alias;
 	private Boolean active;
-	private Date createTimeStamp;
+	private Date createTimestamp;
 	private Location location;
 	private CreatedBy createdBy;
 
@@ -50,12 +50,12 @@ public class SuperAppObjectBoundary {
 		this.active = active;
 	}
 
-	public Date getCreateTimeStamp() {
-		return createTimeStamp;
+	public Date getCreateTimestamp() {
+		return createTimestamp;
 	}
 
-	public void setCreateTimeStamp(Date createTimeStamp) {
-		this.createTimeStamp = createTimeStamp;
+	public void setCreateTimestamp(Date createTimestamp) {
+		this.createTimestamp = createTimestamp;
 	}
 
 	public Location getLocation() {
@@ -85,7 +85,7 @@ public class SuperAppObjectBoundary {
 	@Override
 	public String toString() {
 		return "SuperAppObjectBoundary [objectId=" + objectId + ", type=" + type + ", alias=" + alias + ", active=" + active
-				+ ", createTimeStamp=" + createTimeStamp + ", location=" + location + ", createdBy=" + createdBy
+				+ ", createTimeStamp=" + createTimestamp + ", location=" + location + ", createdBy=" + createdBy
 				+ ", objectDetails=" + objectDetails + "]";
 	}
 

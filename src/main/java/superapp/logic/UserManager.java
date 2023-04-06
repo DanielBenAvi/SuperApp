@@ -40,12 +40,12 @@ public class UserManager implements UsersService{
     private UserEntity boundaryToEntity(UserBoundary userBoundary) {
         UserEntity userEntity = new UserEntity();
 
-        String email = userBoundary.getUserID().getEmail();
+        String email = userBoundary.getUserId().getEmail();
         String userID = ConvertHelp.userIdBoundaryToStr(new UserID(superappName,email));
 
         userEntity.setUserID(userID);
 
-        userEntity.setUserName(userBoundary.getUserName());
+        userEntity.setUserName(userBoundary.getUsername());
 
         userEntity.setAvatar(userBoundary.getAvatar());
 
@@ -62,8 +62,8 @@ public class UserManager implements UsersService{
     private UserBoundary entityToBoundary(UserEntity userEntity) {
         UserBoundary userBoundary = new UserBoundary();
         UserID userID = ConvertHelp.strUserIdToBoundary(userEntity.getUserID());
-        userBoundary.setUserID(userID);
-        userBoundary.setUserName(userEntity.getUserName());
+        userBoundary.setUserId(userID);
+        userBoundary.setUsername(userEntity.getUserName());
         userBoundary.setRole(userEntity.getRole());
         userBoundary.setAvatar(userEntity.getAvatar());
 
@@ -81,7 +81,7 @@ public class UserManager implements UsersService{
             throw new RuntimeException("null UserBoundary can't be created");
         }
 
-        if (userBoundary.getUserID().getEmail() == null){
+        if (userBoundary.getUserId().getEmail() == null){
             throw new RuntimeException("null Email can't be created");
         }
 
@@ -89,7 +89,7 @@ public class UserManager implements UsersService{
             throw new RuntimeException("null Roll can't be created");
         }
 
-        if (userBoundary.getUserName() == null){
+        if (userBoundary.getUsername() == null){
             throw new RuntimeException("null UserName can't be created");
         }
 
@@ -145,8 +145,8 @@ public class UserManager implements UsersService{
 
         boolean dirtyFlag = false;
 
-        if (update.getUserName() != null){
-            existing.setUserName(update.getUserName());
+        if (update.getUsername() != null){
+            existing.setUserName(update.getUsername());
             dirtyFlag = true;
         }
 

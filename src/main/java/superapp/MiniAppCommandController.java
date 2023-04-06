@@ -25,6 +25,7 @@ public class MiniAppCommandController {
 			consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public Object command(@PathVariable("miniAppName") String miniAppName, @RequestBody MiniAppCommandBoundary miniAppCommandBoundary) {
 		UUID uuid = UUID.randomUUID();
+		// TODO - ??
 		miniAppCommandBoundary.getCommandId().setInternalCommandId(uuid.toString());
 		miniAppCommandBoundary.getCommandId().setMiniapp(miniAppName);
 		miniAppCommandBoundary.setInvocationTimestamp(new Date());

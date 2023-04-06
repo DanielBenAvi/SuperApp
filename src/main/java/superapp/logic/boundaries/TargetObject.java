@@ -1,26 +1,26 @@
 package superapp.logic.boundaries;
 
 public class TargetObject {
-	private ObjectId objectid;
+	private ObjectId objectId;
 	
 	public TargetObject() {
 	}
 
 	public TargetObject(ObjectId objectid) {
-		this.objectid = objectid;
+		this.objectId = objectid;
 	}
 
-	public ObjectId getObjectid() {
-		return objectid;
+	public ObjectId getObjectId() {
+		return objectId;
 	}
 
-	public void setObjectid(ObjectId objectid) {
-		this.objectid = objectid;
+	public void setObjectId(ObjectId objectId) {
+		this.objectId = objectId;
 	}
 
 	@Override
 	public String toString() {
-		return "TargetObject [objectid=" + objectid + "]";
+		return "TargetObject [objectid=" + objectId + "]";
 	}
 	
 	
