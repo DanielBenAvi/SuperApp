@@ -11,8 +11,10 @@ public class GroupEventEntity {
 	private Location location;
 	private String groupId;
 	private Map<String, String> status;
-	
-	
+
+	private String eventName;
+	private String eventDescription;
+
 
 	public GroupEventEntity() {
 	}
@@ -49,12 +51,32 @@ public class GroupEventEntity {
 		this.status = status;
 	}
 
-	@Override
-	public String toString() {
-		return "GroupEvent [date=" + date + ", location=" + location + ", groupId=" + groupId + ", status=" + status
-				+ "]";
+
+	public String getEventName() {
+		return eventName;
 	}
 
-	
-	
+	public void setEventName(String eventName) {
+		this.eventName = eventName;
+	}
+
+	public String getEventDescription() {
+		return eventDescription;
+	}
+
+	public void setEventDescription(String eventDescription) {
+		this.eventDescription = eventDescription;
+	}
+
+	@Override
+	public String toString() {
+		return "GroupEventEntity{" +
+				"date=" + date +
+				", location=" + location +
+				", groupId='" + groupId + '\'' +
+				", status=" + status +
+				", eventName='" + eventName + '\'' +
+				", eventDescription='" + eventDescription + '\'' +
+				'}';
+	}
 }
