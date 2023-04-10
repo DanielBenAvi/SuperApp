@@ -99,5 +99,18 @@ public class Product {
 		this.status = status;
 		return this;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Product{" +
+				"id='" + id + '\'' +
+				", description='" + description + '\'' +
+				", name='" + name + '\'' +
+				", category='" + category + '\'' +
+				", price=" + price +
+				", currency='" + currency + '\'' +
+				", imageUrl='" + imageUrl + '\'' +
+				", status='" + status + '\'' +
+				'}';
+	}
 }
