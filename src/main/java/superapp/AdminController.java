@@ -3,30 +3,43 @@ package superapp;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import superapp.logic.UsersService;
+import superapp.logic.boundaries.UserBoundary;
 
 @RestController
 public class AdminController {
+
+	private UsersService usersService;
+
+	@Autowired
+	public void setUsersService(UsersService usersService){
+		this.usersService = usersService;
+	}
+
+
+
 	/**
 	 * Export all users
 	 * @return Array of all users
-	 * @author Omer&Lior
 	 */
 	@RequestMapping(
 			path = {"/superapp/admin/users"},
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	
-	public Map<String, Object> allusers(){
+	public UserBoundary[] allusers(){
 		// Hard coded for now, In the future intended to be "new User"
-		Map<String, Object> allUsers = new HashMap<>();
-		allUsers.put("User 1", "Omer Lande");
-		allUsers.put("User 2", "Lior Ariely");
-		return allUsers;
+//		Map<String, Object> allUsers = new HashMap<>();
+//		allUsers.put("User 1", "Omer Lande");
+//		allUsers.put("User 2", "Lior Ariely");
+
+		return usersService.getAllUsers().toArray(new UserBoundary[0]);
 	}
 	
 	/**
@@ -64,12 +77,15 @@ public class AdminController {
 	}
 	
 	
-	// delete all the users in the superapp.
+
+	/**
+	 * Delete all users
+	 */
 	@RequestMapping(
 			path = {"/superapp/admin/users"},
 			method = {RequestMethod.DELETE})
 	public void deleteAllUsers() {
-		// do nothing
+		usersService.deleteAllUsers();
 		System.err.println("delete all users ");
 	}
 	

@@ -33,8 +33,8 @@ public class UserController {
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public UserBoundary login(@PathVariable("email") String email, @PathVariable("superapp") String superapp) {
 //		UserID userId = new UserID(superapp, email);
-		return this.usersService.login(superapp,email).orElseThrow(() -> new RuntimeException("Could not login: "+superapp+" "+email));
 //		return new UserBoundary(userId, "Student", "Dani", "avatar");
+		return this.usersService.login(superapp,email).orElseThrow(() -> new RuntimeException("Could not login: "+superapp+" "+email));
 	}
 
 
