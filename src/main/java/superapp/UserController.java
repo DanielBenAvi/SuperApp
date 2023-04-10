@@ -52,7 +52,7 @@ public class UserController {
 		// crate a userID object
 		userBoundary.setUserId(new UserID("SocialHive", newUser.getEmail()));
 		userBoundary.setUsername(newUser.getUsername());
-		userBoundary.setUsername(newUser.getAvatar());
+		userBoundary.setAvatar(newUser.getAvatar());
 		userBoundary.setRole(newUser.getRole());
 
 		return this.usersService.createUser(userBoundary);

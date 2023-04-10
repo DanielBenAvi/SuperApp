@@ -135,7 +135,7 @@ public class UserManager implements UsersService{
     @Override
     public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update) {
 
-        String userID = ConvertHelp.concatenateIds(new String[]{userSuperApp,userEmail});
+        String userID = ConvertHelp.concatenateIds(new String[]{userEmail, userSuperApp});
 
         UserEntity existing = this.databaseMockup.get(userID);
 
