@@ -60,6 +60,7 @@ public class ObjectsManager implements ObjectsService {
         entity.setObjectId(objectId);
         entity.setCreateTimeStamp(new Date());
 
+        // TODO why?? if in convertBoundaryToEntity we already set the createdBy (from Yaniv&Daniel)
         entity.setCreatedBy("superappDefault_yo@gmail.com");
 
         this.objectsDatabaseMockup.put(objectId, entity);
