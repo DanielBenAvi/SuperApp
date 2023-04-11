@@ -1,6 +1,5 @@
 package superapp.logic;
 
-import superapp.data.entities.LocationEntity;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.InvokedBy;
@@ -51,29 +50,44 @@ public class ConvertHelp {
     }
 
     /**
-     * This methode convert LocationEntity to Location boundary
+     * This methode convert Location boundary to Location Entity as String
      *
-     * @param locationEntity
+     * @param locationBoundary Location
+     * @return locationEntity String
+     */
+    public static String locationBoundaryToStr(Location locationBoundary) {
+
+        if (locationBoundary == null)
+            return null;
+
+        String locationEntity = locationBoundary.getLat() + DELIMITER_ID + locationBoundary.getLng();
+
+        return locationEntity;
+    }
+
+    /**
+     * This methode convert LocationEntity as String to Location boundary
+     *
+     * @param locationEntity String
      * @return locationBoundary Location
      */
-    public static Location locationEntityToBoundary(LocationEntity locationEntity) {
+    public static Location strLocationEntityToBoundary(String locationEntity) {
 
         if (locationEntity == null)
             return null;
 
-        Location locationBoundary = new Location();
-        locationBoundary.setLat(locationEntity.getLat());
-        locationBoundary.setLng(locationEntity.getLng());
+        String[] attr = locationEntity.split(DELIMITER_ID);
 
-        return locationBoundary;
+        return new Location(Double.parseDouble(attr[0]), Double.parseDouble(attr[1]));
+
     }
 
 
     /**
      * This methode convert String CreatedBy to CreatedBy object boundary
      *
-     * @param createdByStr
-     * @return createdBy Object
+     * @param createdByStr String
+     * @return CreatedBy
      */
     public static CreatedBy strCreateByToBoundary(String createdByStr) {
 
@@ -106,23 +120,6 @@ public class ConvertHelp {
         return new ObjectId(attr[0], attr[1]);
     }
 
-    /**
-     * This methode convert Location boundary to LocationEntity
-     *
-     * @param locationBoundary
-     * @return
-     */
-    public static LocationEntity locationBoundaryToEntity(Location locationBoundary) {
-
-        if (locationBoundary == null)
-            return null;
-
-        LocationEntity locationEntity = new LocationEntity();
-        locationEntity.setLat(locationBoundary.getLat());
-        locationEntity.setLng(locationBoundary.getLng());
-
-        return locationEntity;
-    }
 
     /**
      * This methode concatenate the array of ids to one id.

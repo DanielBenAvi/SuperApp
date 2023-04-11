@@ -1,6 +1,7 @@
 package superapp.data.entities;
 
 import java.util.Date;
+import java.util.Map;
 
 public class SuperAppObjectEntity {
 
@@ -9,9 +10,9 @@ public class SuperAppObjectEntity {
 	private String alias;
 	private boolean active;
 	private Date createTimeStamp;
-	private LocationEntity location;
+	private String location;
 	private String createdBy; // createdBy is a userId boundary concatenate
-	private Object objectDetails;
+	private Map<String, Object> objectDetails;
 
 	public SuperAppObjectEntity() {
 	}
@@ -56,11 +57,11 @@ public class SuperAppObjectEntity {
 		this.createTimeStamp = createTimeStamp;
 	}
 
-	public LocationEntity getLocation() {
+	public String getLocation() {
 		return location;
 	}
 
-	public void setLocation(LocationEntity location) {
+	public void setLocation(String location) {
 		this.location = location;
 	}
 
@@ -72,11 +73,11 @@ public class SuperAppObjectEntity {
 		this.createdBy = createdBy;
 	}
 
-	public Object getObjectDetails() {
+	public Map<String, Object> getObjectDetails() {
 		return objectDetails;
 	}
 
-	public void setObjectDetails(Object objectDetails) {
+	public void setObjectDetails(Map<String, Object> objectDetails) {
 		this.objectDetails = objectDetails;
 	}
 

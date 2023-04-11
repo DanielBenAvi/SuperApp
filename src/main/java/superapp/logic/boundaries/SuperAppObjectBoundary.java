@@ -1,6 +1,7 @@
 package superapp.logic.boundaries;
 
 import java.util.Date;
+import java.util.Map;
 
 public class SuperAppObjectBoundary {
 	
@@ -11,9 +12,7 @@ public class SuperAppObjectBoundary {
 	private Date createTimestamp;
 	private Location location;
 	private CreatedBy createdBy;
-
-//	TODO - change to map<String,Object>
-	private Object objectDetails;
+	private Map<String, Object> objectDetails;
 	
 	public SuperAppObjectBoundary() {
 	}
@@ -74,11 +73,11 @@ public class SuperAppObjectBoundary {
 		this.createdBy = createdBy;
 	}
 
-	public Object getObjectDetails() {
+	public Map<String, Object> getObjectDetails() {
 		return objectDetails;
 	}
 
-	public void setObjectDetails(Object objectDetails) {
+	public void setObjectDetails(Map<String, Object> objectDetails) {
 		this.objectDetails = objectDetails;
 	}
 

@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import superapp.logic.ObjectsService;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 
+import java.util.List;
+
 /**
  * @author Daniel & Yaniv create this class
  */
@@ -45,7 +47,11 @@ public class ObjectBoundaryController {
 	@GetMapping(path = {"/superapp/objects"},
 				produces = {MediaType.APPLICATION_JSON_VALUE})
 	public SuperAppObjectBoundary[] getAllObjects() {
-		return this.objectsService.getAllObjects().toArray(new SuperAppObjectBoundary[0]);
+
+		SuperAppObjectBoundary[] ObjectBoundaryArray = new SuperAppObjectBoundary[] {};
+		List<SuperAppObjectBoundary> ObjectBoundaryList = this.objectsService.getAllObjects();
+
+		return ObjectBoundaryList.toArray(ObjectBoundaryArray);
 	}
 
 	/**
@@ -78,4 +84,5 @@ public class ObjectBoundaryController {
 
 		this.objectsService.updateObject(superapp, internalObjectId, updatedObject);
 	}
+
 }

@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import superapp.data.entities.SuperAppObjectEntity;
+import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 
 import java.util.*;
@@ -39,8 +40,9 @@ public class ObjectsManager implements ObjectsService {
         this.objectsDatabaseMockup = Collections.synchronizedMap(new HashMap<>());
     }
 
+
     /**
-     * This methode create new SuperAppObjectEntity, init ObjectId,
+     * This method create new SuperAppObjectEntity, init ObjectId,
      * init CreatedBy, init CreateTimeStamp and save the SuperAppObjectEntity to database.
      *
      * @param objectBoundary SuperAppObjectBoundary
@@ -49,10 +51,14 @@ public class ObjectsManager implements ObjectsService {
     @Override
     public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objectBoundary) {
 
+
         if (objectBoundary == null)
             throw new RuntimeException("null object cant be created");
 
-        // TODO: verify if user exist in next phase
+        if (!this.isCreateByExist(objectBoundary.getCreatedBy()))
+            throw new RuntimeException("Created By object cant be empty");
+
+        // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
 
         SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
 
@@ -60,13 +66,11 @@ public class ObjectsManager implements ObjectsService {
         entity.setObjectId(objectId);
         entity.setCreateTimeStamp(new Date());
 
-        // TODO why?? if in convertBoundaryToEntity we already set the createdBy (from Yaniv&Daniel)
-        entity.setCreatedBy("superappDefault_yo@gmail.com");
-
         this.objectsDatabaseMockup.put(objectId, entity);
 
         return this.convertEntityToBoundary(entity);
     }
+
 
     /**
      * This methode update not null attr of SuperAppObjectEntity in database.
@@ -84,6 +88,8 @@ public class ObjectsManager implements ObjectsService {
 
         String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId});
 
+        // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
+
         if (!objectsDatabaseMockup.containsKey(objectId))
             throw new RuntimeException("Could not find object by id: " + objectId);
 
@@ -99,7 +105,7 @@ public class ObjectsManager implements ObjectsService {
             existingEntity.setActive(update.getActive());
 
         if (update.getLocation() != null)
-            existingEntity.setLocation(ConvertHelp.locationBoundaryToEntity(update.getLocation()));
+            existingEntity.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()));
 
         // TODO: need to check ObjectDetails attributes
         if (update.getObjectDetails() != null)
@@ -107,6 +113,7 @@ public class ObjectsManager implements ObjectsService {
 
         return this.convertEntityToBoundary(existingEntity);
     }
+
 
     /**
      * This methode return a specific object according to id.
@@ -125,8 +132,8 @@ public class ObjectsManager implements ObjectsService {
             return this.convertEntityToBoundary(objectsDatabaseMockup.get(objectId));
         else
             throw new RuntimeException("Could not find object by id: " + objectId);
-
     }
+
 
     /**
      * This methode return all existing objects in database.
@@ -141,6 +148,7 @@ public class ObjectsManager implements ObjectsService {
                                                 .toList();
     }
 
+
     /**
      * This methode delete all objects in database.
      */
@@ -148,6 +156,7 @@ public class ObjectsManager implements ObjectsService {
     public void deleteAllObjects() {
         objectsDatabaseMockup.clear();
     }
+
 
     /**
      * This methode convert SuperAppObjectEntity to SuperAppObjectBoundary.
@@ -164,8 +173,9 @@ public class ObjectsManager implements ObjectsService {
         boundary.setAlias(entity.getAlias());
         boundary.setActive(entity.getActive());
         boundary.setCreateTimestamp(entity.getCreateTimeStamp());
-        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
+        boundary.setLocation(ConvertHelp.strLocationEntityToBoundary(entity.getLocation()));
         boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
+
         boundary.setObjectDetails(entity.getObjectDetails());
 
         return boundary;
@@ -179,6 +189,7 @@ public class ObjectsManager implements ObjectsService {
      * @return entity SuperAppObjectEntity
      */
     private SuperAppObjectEntity convertBoundaryToEntity(SuperAppObjectBoundary boundary) {
+
         SuperAppObjectEntity entity = new SuperAppObjectEntity();
 
         entity.setType(boundary.getType());
@@ -189,11 +200,35 @@ public class ObjectsManager implements ObjectsService {
         else
             entity.setActive(false);
 
-        entity.setLocation(ConvertHelp.locationBoundaryToEntity(boundary.getLocation()));
+        entity.setLocation(ConvertHelp.locationBoundaryToStr(boundary.getLocation()));
         entity.setCreatedBy(ConvertHelp.createByBoundaryToStr(boundary.getCreatedBy()));
         entity.setObjectDetails(boundary.getObjectDetails());
 
         return entity;
+    }
+
+
+    /**
+     * This method check if attributes of CreatedBy object (boundary)
+     * are not null
+     *
+     * @param createdBy
+     * @return boolean
+     */
+    private boolean isCreateByExist(CreatedBy createdBy) {
+
+        if (createdBy == null)
+            return false;
+
+        if (createdBy.getUserId() == null)
+            return false;
+
+        // todo: may add check if strings is empty
+        if (createdBy.getUserId().getSuperapp() == null ||
+                createdBy.getUserId().getEmail() == null)
+            return false;
+
+        return true;
     }
 
 }
