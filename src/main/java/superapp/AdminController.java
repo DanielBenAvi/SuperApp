@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import superapp.logic.ObjectsService;
 import superapp.logic.UsersService;
 import superapp.logic.boundaries.UserBoundary;
 
@@ -16,37 +17,42 @@ import superapp.logic.boundaries.UserBoundary;
 public class AdminController {
 
 	private UsersService usersService;
+	private ObjectsService objectsService;
+
 
 	@Autowired
 	public void setUsersService(UsersService usersService){
 		this.usersService = usersService;
 	}
 
+	@Autowired
+	public void setObjectsService(ObjectsService objectsService) {
+		this.objectsService = objectsService;
+	}
 
 
 	/**
-	 * Export all users
-	 * @return Array of all users
+	 * This method exports all users
+	 *
+	 * @return UserBoundary[]
 	 */
 	@RequestMapping(
 			path = {"/superapp/admin/users"},
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	
-	public UserBoundary[] allusers(){
-		// Hard coded for now, In the future intended to be "new User"
-//		Map<String, Object> allUsers = new HashMap<>();
-//		allUsers.put("User 1", "Omer Lande");
-//		allUsers.put("User 2", "Lior Ariely");
+	public UserBoundary[] allUsers(){
 
 		return usersService.getAllUsers().toArray(new UserBoundary[0]);
 	}
 	
+
 	/**
-	 * Export all history commands of specific miniapps 
-	 * @return Array of history commands of specific miniapps 
-	 * @author Omer&Lior
-	 */ 
+	 * This method exports all history commands of specific miniapps
+	 *
+	 * @param miniAppName String
+	 * @return
+	 */
 	@RequestMapping(
 			path = {"/superapp/admin/miniapp/{miniAppName}"},
 			method = {RequestMethod.GET},
@@ -60,8 +66,7 @@ public class AdminController {
 	
 	/**
 	 * Export all history commands
-	 * @return Array of history commands
-	 * @author Omer&Lior
+	 * @return
 	 */ 
 	@RequestMapping(
 			path = {"/superapp/admin/miniapp"},
@@ -86,24 +91,28 @@ public class AdminController {
 			method = {RequestMethod.DELETE})
 	public void deleteAllUsers() {
 		usersService.deleteAllUsers();
-		System.err.println("delete all users ");
+		System.err.println("delete all users");
 	}
-	
-	//delete all the objects in the superapp.
+
+
+	/**
+	 * This method delete all objects of superapp.
+	 */
 	@RequestMapping(
 			path = {"/superapp/admin/objects"},
 			method = {RequestMethod.DELETE})
 	public void deleteAllObjects() {
-		// do nothing
-		System.err.println("delete all objects ");
+
+		this.objectsService.deleteAllObjects();
+		System.err.println("delete all superapp objects");
 	}
 	
 	//delete all command history.
 	@RequestMapping(
 			path = {"/superapp/admin/miniapp"},
 			method = {RequestMethod.DELETE})
-	public void deleteAllcommnads() {
+	public void deleteAllCommands() {
 		// do nothing
-		System.err.println("delete all commands ");
+		System.err.println("delete all commands");
 	}
 }
