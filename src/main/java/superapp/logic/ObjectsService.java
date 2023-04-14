@@ -3,12 +3,13 @@ package superapp.logic;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ObjectsService {
 
     SuperAppObjectBoundary createObject(SuperAppObjectBoundary objectBoundary);
     SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId, SuperAppObjectBoundary update);
-    SuperAppObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId);
+    Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId);
     List<SuperAppObjectBoundary> getAllObjects();
     void deleteAllObjects();
 }

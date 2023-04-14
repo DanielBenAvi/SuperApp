@@ -124,14 +124,17 @@ public class ObjectsManager implements ObjectsService {
      * @return SuperAppObjectBoundary
      */
     @Override
-    public SuperAppObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId) {
+    public Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId) {
 
         String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId});
 
-        if (objectsDatabaseMockup.containsKey(objectId))
-            return this.convertEntityToBoundary(objectsDatabaseMockup.get(objectId));
-        else
-            throw new RuntimeException("Could not find object by id: " + objectId);
+        if (objectsDatabaseMockup.containsKey(objectId)) {
+            SuperAppObjectBoundary boundary = this.convertEntityToBoundary(objectsDatabaseMockup.get(objectId));
+            return Optional.of(boundary);
+        }
+        else {
+            return Optional.empty();
+        }
     }
 
 
@@ -224,8 +227,7 @@ public class ObjectsManager implements ObjectsService {
             return false;
 
         // todo: may add check if strings is empty
-        if (createdBy.getUserId().getSuperapp() == null ||
-                createdBy.getUserId().getEmail() == null)
+        if (createdBy.getUserId().getSuperapp() == null || createdBy.getUserId().getEmail() == null)
             return false;
 
         return true;

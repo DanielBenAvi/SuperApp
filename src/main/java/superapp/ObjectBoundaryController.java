@@ -36,7 +36,8 @@ public class ObjectBoundaryController {
 	public SuperAppObjectBoundary getObject(@PathVariable("superapp") String superapp,
 											@PathVariable("internalObjectId") String internalObjectId) {
 
-		return objectsService.getSpecificObject(superapp, internalObjectId);
+		return objectsService.getSpecificObject(superapp, internalObjectId)
+				.orElseThrow(() -> new RuntimeException("Could not find object by id: " + superapp + " " + internalObjectId));
 	}
 
 	/**
