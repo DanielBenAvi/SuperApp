@@ -47,10 +47,13 @@ public class UserController {
 			produces = {MediaType.APPLICATION_JSON_VALUE},
 			consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public UserBoundary createUser(@RequestBody NewUserBoundary newUser) {
+
+
 		// convert NewUserBoundary to UserBoundary
 		UserBoundary userBoundary= new UserBoundary();
 		// crate a userID object
 		userBoundary.setUserId(new UserID("${spring.application.name:defaultAppName}", newUser.getEmail()));
+
 		userBoundary.setUsername(newUser.getUsername());
 		userBoundary.setAvatar(newUser.getAvatar());
 		userBoundary.setRole(newUser.getRole());
