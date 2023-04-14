@@ -1,5 +1,6 @@
 package superapp;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import superapp.logic.ObjectsService;
 import superapp.logic.UsersService;
+import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.UserBoundary;
 
 @RestController
@@ -58,9 +60,9 @@ public class AdminController {
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	
-	public Map<String, Object> specificMiniAppCommands(@PathVariable("miniAppName") String miniAppName){
-		Map<String, Object> specificMiniAppCommands = new HashMap<>();
-		specificMiniAppCommands.put(miniAppName, "Post event");
+	public ArrayList<MiniAppCommandBoundary> specificMiniAppCommands(@PathVariable("miniAppName") String miniAppName){
+		ArrayList<MiniAppCommandBoundary> specificMiniAppCommands = new ArrayList<MiniAppCommandBoundary>();
+		specificMiniAppCommands.add(new MiniAppCommandBoundary(null, miniAppName, null, null, null, null));
 		return specificMiniAppCommands;
 	}
 	
@@ -73,11 +75,11 @@ public class AdminController {
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	
-	public Map<String, Object> miniAppCommands(){
-		Map<String, Object> miniAppCommands = new HashMap<>();
-		miniAppCommands.put("1", "Post event");
-		miniAppCommands.put("2", "Match");
-		miniAppCommands.put("3", "Modify location");
+	public ArrayList<MiniAppCommandBoundary> miniAppCommands(){
+		ArrayList<MiniAppCommandBoundary> miniAppCommands = new ArrayList<MiniAppCommandBoundary>();
+		miniAppCommands.add(new MiniAppCommandBoundary());
+		miniAppCommands.add(new MiniAppCommandBoundary());
+		miniAppCommands.add(new MiniAppCommandBoundary());
 		return miniAppCommands;
 	}
 	
