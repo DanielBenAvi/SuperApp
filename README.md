@@ -1,8 +1,8 @@
 # SocialHive
 
 ## What is SocialHive?
-social hive is a super app intended for social networking.
-The system includes 4 main mini-apps:
+### social hive is a super app intended for social networking.
+### The system includes 4 main mini-apps:
 - Events mini app - users can create public events.
 - Groups mini app - users can create groups and create an event for the group.
 - Dating mini app - users can create a profile and search for other users.
