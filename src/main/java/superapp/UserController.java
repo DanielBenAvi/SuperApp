@@ -50,7 +50,7 @@ public class UserController {
 		// convert NewUserBoundary to UserBoundary
 		UserBoundary userBoundary= new UserBoundary();
 		// crate a userID object
-		userBoundary.setUserId(new UserID("SocialHive", newUser.getEmail()));
+		userBoundary.setUserId(new UserID("${spring.application.name:defaultAppName}", newUser.getEmail()));
 		userBoundary.setUsername(newUser.getUsername());
 		userBoundary.setAvatar(newUser.getAvatar());
 		userBoundary.setRole(newUser.getRole());
