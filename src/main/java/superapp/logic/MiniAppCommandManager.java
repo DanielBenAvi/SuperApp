@@ -1,14 +1,13 @@
 package superapp.logic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
 
 import superapp.data.entities.MiniAppCommandEntity;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.logic.ConvertHelp;
 
 public class MiniAppCommandManager implements MiniAppCommandService {
 
@@ -30,8 +29,11 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 	}
 	
 	@Override
+	//TODO empty json
 	public Object invokeCommand(MiniAppCommandBoundary command) {
-		// TODO Auto-generated method stub
+		Map<String, MiniAppCommandEntity> defualtJSON = new HashMap<String, MiniAppCommandEntity>();
+		if(command.equals(null))
+			defualtJSON.put(command.toString(), null);
 		return null;
 	}
 
@@ -41,16 +43,22 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 				.stream().map(this::convertToBoundry).toList();
 	}
 
-	@Override
-	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
-		boolean check = true;
-		List<MiniAppCommandBoundary> specificCommands = new ArrayList<MiniAppCommandBoundary>();
-		if(!this.dataBaseMockup.containsKey(miniAppName)) {
-			check = false;
-			System.err.println("there is not a mini app with that name. ");
-		}		
-		return null;
-	}
+	@Override//Override
+    public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
+        List<MiniAppCommandBoundary> specificCommands = new ArrayList<MiniAppCommandBoundary>();
+        if(!this.dataBaseMockup.containsKey(miniAppName)) {
+            System.err.println("there is not a mini app with that name. ");
+        }
+        else {
+            for(Entry<String, MiniAppCommandEntity> entry: dataBaseMockup.entrySet())
+            {
+                if(entry.getKey().equalsIgnoreCase(miniAppName))
+                    specificCommands.add(convertToBoundry(entry.getValue()));
+            }
+        }
+        return specificCommands;
+    }
+	
 
 	@Override
 	public void deleteAllCommands() {
