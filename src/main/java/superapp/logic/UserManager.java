@@ -3,6 +3,8 @@ package superapp.logic;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import superapp.data.UserRole;
 import superapp.data.entities.UserEntity;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
@@ -49,7 +51,8 @@ public class UserManager implements UsersService{
 
         userEntity.setAvatar(userBoundary.getAvatar());
 
-        userEntity.setRole(userBoundary.getRole());
+        userEntity.setRole(ConvertHelp.convertStrToUserRole(userBoundary.getRole()));
+
 
         return userEntity;
     }
@@ -60,11 +63,18 @@ public class UserManager implements UsersService{
      * @return userBoundary
      */
     private UserBoundary entityToBoundary(UserEntity userEntity) {
+
         UserBoundary userBoundary = new UserBoundary();
+
+        // crate a userID object
         UserID userID = ConvertHelp.strUserIdToBoundary(userEntity.getUserID());
+
+        // set the userID object
         userBoundary.setUserId(userID);
+
+        // set the rest of the fields
         userBoundary.setUsername(userEntity.getUserName());
-        userBoundary.setRole(userEntity.getRole());
+        userBoundary.setRole(ConvertHelp.convertUserRoleToStr(userEntity.getRole()));
         userBoundary.setAvatar(userEntity.getAvatar());
 
         return userBoundary;
@@ -84,7 +94,6 @@ public class UserManager implements UsersService{
         if (userBoundary.getUserId().getEmail() == null){
             throw new RuntimeException("null Email can't be created");
         }
-
         if (userBoundary.getRole() == null){
             throw new RuntimeException("null Roll can't be created");
         }
@@ -99,6 +108,10 @@ public class UserManager implements UsersService{
 
         UserEntity userEntity = this.boundaryToEntity(userBoundary);
 
+        if (this.databaseMockup.containsKey(userEntity.getUserID())){
+
+            throw new RuntimeException("User already exists: "+userEntity.getUserID());
+        }
 
         this.databaseMockup.put(userEntity.getUserID(), userEntity);
 
@@ -114,7 +127,8 @@ public class UserManager implements UsersService{
      */
     @Override
     public Optional<UserBoundary> login(String userSuperApp, String userEmail) {
-        String userID = ConvertHelp.concatenateIds(new String[]{superappName,userEmail});
+        String userID = ConvertHelp.concatenateIds(new String[]{ userSuperApp,userEmail});
+
         UserEntity userEntity = this.databaseMockup.get(userID);
         if (userEntity == null){
             return Optional.empty();
@@ -137,6 +151,7 @@ public class UserManager implements UsersService{
 
         String userID = ConvertHelp.concatenateIds(new String[]{userEmail, userSuperApp});
 
+
         UserEntity existing = this.databaseMockup.get(userID);
 
         if (existing == null){
@@ -150,8 +165,10 @@ public class UserManager implements UsersService{
             dirtyFlag = true;
         }
 
+
+
         if (update.getRole()!= null){
-            existing.setRole(update.getRole());
+            existing.setRole(ConvertHelp.convertStrToUserRole(update.getRole()));
             dirtyFlag = true;
         }
 

@@ -1,15 +1,18 @@
 package superapp.data.entities;
 
+import superapp.data.UserRole;
+
 public class UserEntity {
 
     private String userID;
-    private String role;
+//    private String role; // TODO: change to enum
+    private UserRole role;
     private String userName;
     private String avatar;
 
     public UserEntity() {}
 
-    public UserEntity(String email, String role, String userName, String avatar) {
+    public UserEntity(String email, UserRole role, String userName, String avatar) {
         this.userID = email;
         this.role = role;
         this.userName = userName;
@@ -24,11 +27,11 @@ public class UserEntity {
         this.userID = userID;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 

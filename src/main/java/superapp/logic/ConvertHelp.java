@@ -1,5 +1,6 @@
 package superapp.logic;
 
+import superapp.data.UserRole;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.InvokedBy;
@@ -165,5 +166,23 @@ public class ConvertHelp {
     	to.setObjectId(strObjectIdToBoundary(strTarget));
     	return to;
     }
-    
+
+    /**
+     * This methode convert UserRole to String,
+     */
+    public static String convertUserRoleToStr(UserRole userRole) {
+        	return userRole.toString();
+    }
+
+    /**
+     * This methode convert String to UserRole,
+     */
+    public static UserRole convertStrToUserRole(String strUserRole) {
+        try {
+            return UserRole.valueOf(strUserRole);
+        }catch (Exception e){
+            throw new RuntimeException("Role not found");
+        }
+    }
+
 }
