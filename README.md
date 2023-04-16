@@ -10,7 +10,7 @@
 ## How to use SocialHive?
 just register and start using the app.
 ## Technologies
-we used the following technologies:
+### we used the following technologies:
 - Rest API (Spring Boot)
 - Flutter (IOS, Android, and Web) client
 - SQL Database
