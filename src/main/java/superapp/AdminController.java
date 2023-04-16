@@ -1,15 +1,13 @@
 package superapp;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import superapp.logic.MiniAppCommandService;
 import superapp.logic.ObjectsService;
 import superapp.logic.UsersService;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
@@ -20,6 +18,7 @@ public class AdminController {
 
 	private UsersService usersService;
 	private ObjectsService objectsService;
+	private MiniAppCommandService miniAppCommandService;
 
 
 	@Autowired
@@ -32,7 +31,11 @@ public class AdminController {
 		this.objectsService = objectsService;
 	}
 
-
+	@Autowired
+	public void setMiniAppCmdService(MiniAppCommandService miniAppCmdService) {
+		this.miniAppCommandService = miniAppCmdService;
+	}
+	
 	/**
 	 * This method exports all users
 	 *
@@ -60,10 +63,10 @@ public class AdminController {
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	
-	public ArrayList<MiniAppCommandBoundary> specificMiniAppCommands(@PathVariable("miniAppName") String miniAppName){
-		ArrayList<MiniAppCommandBoundary> specificMiniAppCommands = new ArrayList<MiniAppCommandBoundary>();
-		specificMiniAppCommands.add(new MiniAppCommandBoundary(null, miniAppName, null, null, null, null));
-		return specificMiniAppCommands;
+	public MiniAppCommandBoundary[] specificMiniAppCommands(@PathVariable("miniAppName") String miniAppName){
+		MiniAppCommandBoundary[] cmds = new MiniAppCommandBoundary[miniAppCommandService.getAllCommands().size()];
+		//return miniAppCommandService.getAllMiniAppCommands(miniAppName).toArray(new MiniAppCommandBoundary[0]);
+		return miniAppCommandService.getAllMiniAppCommands(miniAppName).toArray(cmds);
 	}
 	
 	/**
@@ -75,12 +78,10 @@ public class AdminController {
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	
-	public ArrayList<MiniAppCommandBoundary> miniAppCommands(){
-		ArrayList<MiniAppCommandBoundary> miniAppCommands = new ArrayList<MiniAppCommandBoundary>();
-		miniAppCommands.add(new MiniAppCommandBoundary());
-		miniAppCommands.add(new MiniAppCommandBoundary());
-		miniAppCommands.add(new MiniAppCommandBoundary());
-		return miniAppCommands;
+	public MiniAppCommandBoundary[] miniAppCommands(){
+		MiniAppCommandBoundary[] cmds = new MiniAppCommandBoundary[miniAppCommandService.getAllCommands().size()];
+		//return miniAppCommandService.getAllCommands().toArray(new MiniAppCommandBoundary[0]);
+		return miniAppCommandService.getAllCommands().toArray(cmds);
 	}
 	
 	
@@ -114,7 +115,7 @@ public class AdminController {
 			path = {"/superapp/admin/miniapp"},
 			method = {RequestMethod.DELETE})
 	public void deleteAllCommands() {
-		// do nothing
+		this.miniAppCommandService.deleteAllCommands();
 		System.err.println("delete all commands");
 	}
 }

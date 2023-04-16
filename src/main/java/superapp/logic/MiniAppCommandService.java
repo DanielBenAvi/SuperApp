@@ -1,8 +1,9 @@
 package superapp.logic;
 
 import java.util.List;
-
+import org.springframework.stereotype.Service;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
+
 
 public interface MiniAppCommandService {
 	

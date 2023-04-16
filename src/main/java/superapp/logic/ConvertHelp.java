@@ -139,10 +139,25 @@ public class ConvertHelp {
     	return new CommandId(str[0],str[1],str[2]);
     }
     
+    public static String convertCmdIDtoStr(CommandId cmdId) {
+    	String str = cmdId.getSuperapp()+DELIMITER_ID+cmdId.getMiniapp()+DELIMITER_ID+cmdId.getInternalCommandId();
+    	return str;
+    }
+    
+    public static String convertTargetObjToStr(TargetObject trgObj) {
+    	String str = objectIdBoundaryToStr(trgObj.getObjectId());
+    	return str;
+    }
+    
     public static InvokedBy convertStrToInvokedBy(String strInvoke) {
     	InvokedBy ib = new InvokedBy();
     	ib.setUserId(strUserIdToBoundary(strInvoke));
     	return ib;
+    }
+    
+    public static String convertInvokedByToStr(InvokedBy invokedBy) {
+    	String str = userIdBoundaryToStr(invokedBy.getUserId());
+    	return str;
     }
     
     public static TargetObject convertStrToTargetObject(String strTarget) {

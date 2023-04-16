@@ -1,21 +1,39 @@
 package superapp.logic;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import jakarta.annotation.PostConstruct;
 import superapp.data.entities.MiniAppCommandEntity;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 
+ @Service
 public class MiniAppCommandManager implements MiniAppCommandService {
 
 	
 	private Map<String, MiniAppCommandEntity> dataBaseMockup;
+	private String superAppName;
 	
-	public MiniAppCommandManager() {
-	}
+	
+    //injects a configuration value of spring
+    @Value("${spring.application.name:defaultAppName}")
+    public void setApplicationName(String springApplicationName) {
+        this.superAppName = springApplicationName;
+    }
+      
+    //init the database mockup
+    @PostConstruct
+    public void init(){
+        this.dataBaseMockup = Collections.synchronizedMap(new HashMap<>());
+        System.err.println("****** "+ this.superAppName);
+    }
 	
 	public MiniAppCommandBoundary convertToBoundry(MiniAppCommandEntity commandEntity) {
 		MiniAppCommandBoundary cmd = new MiniAppCommandBoundary();
@@ -28,13 +46,34 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 		return cmd;
 	}
 	
+	public MiniAppCommandEntity convertToEntity(MiniAppCommandBoundary cmdBoundary) {
+		MiniAppCommandEntity cmdEntity = new MiniAppCommandEntity();
+		cmdEntity.setCommand(cmdBoundary.getCommand());
+		cmdEntity.setCommandId(ConvertHelp.convertCmdIDtoStr(cmdBoundary.getCommandId()));
+		cmdEntity.setCommandAttributes(cmdBoundary.getCommandAttributes());
+		cmdEntity.setInvocationTimestamp(cmdBoundary.getInvocationTimestamp());
+		cmdEntity.setTargetObject(ConvertHelp.convertTargetObjToStr(cmdBoundary.getTargetObject()));
+		cmdEntity.setInvokedBy(ConvertHelp.convertInvokedByToStr(cmdBoundary.getInvokedBy()));
+		
+		return cmdEntity;
+		
+	}
+	
+	
 	@Override
 	//TODO empty json
 	public Object invokeCommand(MiniAppCommandBoundary command) {
 		Map<String, MiniAppCommandEntity> defualtJSON = new HashMap<String, MiniAppCommandEntity>();
-		if(command.equals(null))
+		if(command.equals(null)) {
 			defualtJSON.put(command.toString(), null);
-		return null;
+			return null;
+		}
+		else {
+			MiniAppCommandEntity cmd = new MiniAppCommandEntity();
+			cmd  = convertToEntity(command);
+			this.dataBaseMockup.put(cmd.getCommandId(), cmd);
+			return cmd; 
+		}
 	}
 
 	@Override
