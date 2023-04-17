@@ -2,9 +2,11 @@ package superapp.logic;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.PostConstruct;
 import superapp.data.entities.MiniAppCommandEntity;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
+
 
  @Service
 public class MiniAppCommandManager implements MiniAppCommandService {
@@ -64,15 +67,20 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 	//TODO empty json
 	public Object invokeCommand(MiniAppCommandBoundary command) {
 		Map<String, MiniAppCommandEntity> defualtJSON = new HashMap<String, MiniAppCommandEntity>();
-		if(command.equals(null)) {
-			defualtJSON.put(command.toString(), null);
-			return null;
+		if(command == null) {
+			defualtJSON.put("Failed to add command", null);
+			throw new RuntimeException("could not find command");
 		}
 		else {
-			MiniAppCommandEntity cmd = new MiniAppCommandEntity();
-			cmd  = convertToEntity(command);
-			this.dataBaseMockup.put(cmd.getCommandId(), cmd);
-			return cmd; 
+			UUID uuid = UUID.randomUUID();
+			command.getCommandId().setInternalCommandId(uuid.toString());
+			command.getCommandId().setSuperapp(superAppName);
+			command.setInvocationTimestamp(new Date());
+			command.getCommandId().setMiniapp(command.getCommandId().getMiniapp());
+			MiniAppCommandEntity cmdEntity = new MiniAppCommandEntity();
+			cmdEntity  = convertToEntity(command);
+			this.dataBaseMockup.put(cmdEntity.getCommandId(), cmdEntity);
+			return cmdEntity; 
 		}
 	}
 
@@ -86,7 +94,7 @@ public class MiniAppCommandManager implements MiniAppCommandService {
     public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
         List<MiniAppCommandBoundary> specificCommands = new ArrayList<MiniAppCommandBoundary>();
         if(!this.dataBaseMockup.containsKey(miniAppName)) {
-            System.err.println("there is not a mini app with that name. ");
+        	throw new RuntimeException("could not find command");
         }
         else {
             for(Entry<String, MiniAppCommandEntity> entry: dataBaseMockup.entrySet())
@@ -104,5 +112,6 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 		this.dataBaseMockup.clear();
 		
 	}
-	
+
+
 }
