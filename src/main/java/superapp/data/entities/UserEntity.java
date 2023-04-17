@@ -5,7 +5,6 @@ import superapp.data.UserRole;
 public class UserEntity {
 
     private String userID;
-//    private String role; // TODO: change to enum
     private UserRole role;
     private String userName;
     private String avatar;

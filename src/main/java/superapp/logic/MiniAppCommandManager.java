@@ -76,7 +76,7 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 			command.getCommandId().setInternalCommandId(uuid.toString());
 			command.getCommandId().setSuperapp(superAppName);
 			command.setInvocationTimestamp(new Date());
-			command.getCommandId().setMiniapp(command.getCommandId().getMiniapp());
+			command.getCommandId().setMiniapp(command.getCommandId().getMiniapp()); //TODO
 			MiniAppCommandEntity cmdEntity = new MiniAppCommandEntity();
 			cmdEntity  = convertToEntity(command);
 			this.dataBaseMockup.put(cmdEntity.getCommandId(), cmdEntity);

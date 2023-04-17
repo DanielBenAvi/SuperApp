@@ -2,6 +2,7 @@ package superapp.logic;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import superapp.data.UserRole;
@@ -109,7 +110,7 @@ public class UserManager implements UsersService{
         UserEntity userEntity = this.boundaryToEntity(userBoundary);
 
         if (this.databaseMockup.containsKey(userEntity.getUserID())){
-
+            // return error to the client
             throw new RuntimeException("User already exists: "+userEntity.getUserID());
         }
 
