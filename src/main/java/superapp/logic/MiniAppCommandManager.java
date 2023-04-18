@@ -8,9 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -131,18 +129,18 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 		}
 
 		switch (cmdToExecute) {
-		case "DO_SOMETHING":
-			commandResult.put(miniappName, "command " + cmdToExecute + " successfully executed") ;
-			this.dataBaseMockup.put(commandEntity.getCommandId(), commandEntity);
-			break;
-		case "SEND_MESSAGE":
-			// TODO: for future, extract the command attr and execute on targetObject
-			commandResult.put(miniappName, "command " + cmdToExecute + " successfully executed") ;
-			this.dataBaseMockup.put(commandEntity.getCommandId(), commandEntity);
-			break;
-		default:
-			commandResult.put(miniappName, "command " + cmdToExecute + " not recognized") ;
-			break;
+			case "DO_SOMETHING":
+				commandResult.put(miniappName, "command " + cmdToExecute + " successfully executed");
+				this.dataBaseMockup.put(commandEntity.getCommandId(), commandEntity);
+				break;
+			case "SEND_MESSAGE":
+				// TODO: for future, extract the command attr and execute on targetObject
+				commandResult.put(miniappName, "command " + cmdToExecute + " successfully executed");
+				this.dataBaseMockup.put(commandEntity.getCommandId(), commandEntity);
+				break;
+			default:
+				commandResult.put(miniappName, "command " + cmdToExecute + " not recognized") ;
+				break;
 		}
 
 		return commandResult;
@@ -172,18 +170,20 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 
 		try {
 			MiniAppNames.valueOf(miniAppName);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException("does not recognise miniapp");
 		}
+
 		List<MiniAppCommandBoundary> commandBoundaryList = new ArrayList<>();
 
 		for (Map.Entry<String, MiniAppCommandEntity> entry : this.dataBaseMockup.entrySet()) {
-			CommandId commandId = ConvertHelp.strCommandIdToBoundary(entry.getKey());
 
-			if (commandId.getMiniapp().equals(miniAppName))
+			CommandId commandId = ConvertHelp.strCommandIdToBoundary(entry.getKey());
+			if (commandId.getMiniapp().equals(miniAppName)) {
 				commandBoundaryList.add(convertToBoundary(entry.getValue()));
+			}
 		}
-		
+
 		return  commandBoundaryList;
 
 	}
