@@ -27,8 +27,8 @@ public class ObjectBoundaryController {
 	/**
 	 * Request specific Object Boundary
 	 *
-	 * @param superapp
-	 * @param internalObjectId
+	 * @param superapp String
+	 * @param internalObjectId String
 	 * @return SuperAppObjectBoundary
 	 */
 	@GetMapping(path = {"/superapp/objects/{superapp}/{internalObjectId}"},
@@ -58,13 +58,14 @@ public class ObjectBoundaryController {
 	/**
 	 * Create new Object
 	 *
-	 * @param superAppObjectBoundary
+	 * @param superAppObjectBoundary SuperAppObjectBoundary
 	 * @return SuperAppObjectBoundary
 	 */
 	@PostMapping(path = {"/superapp/objects"},
 				 produces = {MediaType.APPLICATION_JSON_VALUE},
 				 consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public SuperAppObjectBoundary createObject(@RequestBody SuperAppObjectBoundary superAppObjectBoundary) {
+
 		return this.objectsService.createObject(superAppObjectBoundary);
 	}
 	
@@ -73,9 +74,9 @@ public class ObjectBoundaryController {
 	/**
 	 * Update exist object, updated object included only updated attr
 	 *
-	 * @param superapp
-	 * @param internalObjectId
-	 * @param updatedObject
+	 * @param superapp String
+	 * @param internalObjectId String
+	 * @param updatedObject SuperAppObjectBoundary
 	 */
 	@PutMapping(path = {"/superapp/objects/{superapp}/{internalObjectId}"},
 				consumes = {MediaType.APPLICATION_JSON_VALUE})

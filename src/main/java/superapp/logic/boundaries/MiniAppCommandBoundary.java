@@ -1,12 +1,8 @@
 package superapp.logic.boundaries;
 
-
 import java.util.Date;
 import java.util.Map;
 
-/**
- * @author Ido & Yosef
- */
 
 public class MiniAppCommandBoundary {
 	private CommandId commandId;
@@ -14,22 +10,11 @@ public class MiniAppCommandBoundary {
 	private TargetObject targetObject;
 	private Date invocationTimestamp;
 	private InvokedBy invokedBy;
-	private Map<String,Object> commandAttributes;
+	private Map<String,Map<String, Object>> commandAttributes;
 	
 	public MiniAppCommandBoundary() {
 	}
 
-	public MiniAppCommandBoundary(CommandId commandId, String command, TargetObject targetObject, Date invocationTimestamp,
-								  InvokedBy invokedBy, Map<String,Object> commandAttributes) {
-		this.commandId = commandId;
-		this.command = command;
-		this.targetObject = targetObject;
-		this.invocationTimestamp = invocationTimestamp;
-		this.invokedBy = invokedBy;
-		this.commandAttributes = commandAttributes;
-	}
-
-	
 	public CommandId getCommandId() {
 		return commandId;
 	}
@@ -70,14 +55,13 @@ public class MiniAppCommandBoundary {
 		this.invokedBy = invokedBy;
 	}
 
-	public Map<String,Object> getCommandAttributes() {
+	public Map<String,Map<String, Object>> getCommandAttributes() {
 		return commandAttributes;
 	}
 
-	public void setCommandAttributes(Map<String,Object> commandAttributes) {
+	public void setCommandAttributes(Map<String,Map<String, Object>> commandAttributes) {
 		this.commandAttributes = commandAttributes;
 	}
-
 
 
 	@Override
@@ -86,7 +70,5 @@ public class MiniAppCommandBoundary {
 				+ ", invocationTimestamp=" + invocationTimestamp + ", invokedBy=" + invokedBy + ", commandAttributes="
 				+ commandAttributes + "]";
 	}
-	
-	
 	
 }

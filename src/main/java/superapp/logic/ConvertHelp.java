@@ -135,49 +135,47 @@ public class ConvertHelp {
         return id;
     }
     
-    public static CommandId convertStrToCmd(String cmdId) {
+    public static CommandId strCommandIdToBoundary(String cmdId) {
     	String[] str = cmdId.split(DELIMITER_ID);
     	return new CommandId(str[0],str[1],str[2]);
     }
+
     
-    public static String convertCmdIDtoStr(CommandId cmdId) {
-    	String str = cmdId.getSuperapp()+DELIMITER_ID+cmdId.getMiniapp()+DELIMITER_ID+cmdId.getInternalCommandId();
-    	return str;
+    public static String targetObjBoundaryToStr(TargetObject trgObj) {
+    	String targetObject = objectIdBoundaryToStr(trgObj.getObjectId());
+    	return targetObject;
     }
     
-    public static String convertTargetObjToStr(TargetObject trgObj) {
-    	String str = objectIdBoundaryToStr(trgObj.getObjectId());
-    	return str;
+    public static InvokedBy strInvokedByToBoundary(String strInvoke) {
+    	InvokedBy invokedBy = new InvokedBy();
+        invokedBy.setUserId(strUserIdToBoundary(strInvoke));
+    	return invokedBy;
     }
     
-    public static InvokedBy convertStrToInvokedBy(String strInvoke) {
-    	InvokedBy ib = new InvokedBy();
-    	ib.setUserId(strUserIdToBoundary(strInvoke));
-    	return ib;
+    public static String invokedByBoundaryToStr(InvokedBy invokedByBoundary) {
+    	String invokedBy = userIdBoundaryToStr(invokedByBoundary.getUserId());
+
+    	return invokedBy;
     }
     
-    public static String convertInvokedByToStr(InvokedBy invokedBy) {
-    	String str = userIdBoundaryToStr(invokedBy.getUserId());
-    	return str;
-    }
-    
-    public static TargetObject convertStrToTargetObject(String strTarget) {
-    	TargetObject to = new TargetObject();
-    	to.setObjectId(strObjectIdToBoundary(strTarget));
-    	return to;
+    public static TargetObject strTargetObjectToBoundary(String strTarget) {
+    	TargetObject targetObject = new TargetObject();
+        targetObject.setObjectId(strObjectIdToBoundary(strTarget));
+
+    	return targetObject;
     }
 
     /**
-     * This methode convert UserRole to String,
+     * This methode convert UserRole enum to String.
      */
-    public static String convertUserRoleToStr(UserRole userRole) {
+    public static String userRoleToStr(UserRole userRole) {
         	return userRole.toString();
     }
 
     /**
-     * This methode convert String to UserRole,
+     * This methode convert String to UserRole enum.
      */
-    public static UserRole convertStrToUserRole(String strUserRole) {
+    public static UserRole strToUserRole(String strUserRole) {
         try {
             return UserRole.valueOf(strUserRole);
         }catch (Exception e){

@@ -2,10 +2,7 @@ package superapp.logic;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import superapp.data.UserRole;
 import superapp.data.entities.UserEntity;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
@@ -52,7 +49,7 @@ public class UserManager implements UsersService{
 
         userEntity.setAvatar(userBoundary.getAvatar());
 
-        userEntity.setRole(ConvertHelp.convertStrToUserRole(userBoundary.getRole()));
+        userEntity.setRole(ConvertHelp.strToUserRole(userBoundary.getRole()));
 
 
         return userEntity;
@@ -75,7 +72,7 @@ public class UserManager implements UsersService{
 
         // set the rest of the fields
         userBoundary.setUsername(userEntity.getUserName());
-        userBoundary.setRole(ConvertHelp.convertUserRoleToStr(userEntity.getRole()));
+        userBoundary.setRole(ConvertHelp.userRoleToStr(userEntity.getRole()));
         userBoundary.setAvatar(userEntity.getAvatar());
 
         return userBoundary;
@@ -169,7 +166,7 @@ public class UserManager implements UsersService{
 
 
         if (update.getRole()!= null){
-            existing.setRole(ConvertHelp.convertStrToUserRole(update.getRole()));
+            existing.setRole(ConvertHelp.strToUserRole(update.getRole()));
             dirtyFlag = true;
         }
 

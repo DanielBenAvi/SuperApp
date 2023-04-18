@@ -5,9 +5,8 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 
 public interface MiniAppCommandService {
 	
-	public Object invokeCommand(MiniAppCommandBoundary command);
-	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName);
-	public List<MiniAppCommandBoundary> getAllCommands();
-	
-	public void deleteAllCommands();
+	Object invokeCommand(MiniAppCommandBoundary command);
+	List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName);
+	List<MiniAppCommandBoundary> getAllCommands();
+	void deleteAllCommands();
 }
