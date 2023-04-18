@@ -1,11 +1,16 @@
 package superapp.logic;
 
+
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,7 +20,7 @@ import superapp.data.MiniAppNames;
 import superapp.data.entities.MiniAppCommandEntity;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.logic.command.Commands;
+
 
 
 @Service
@@ -25,30 +30,30 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 	private String superAppName;
 
 
-	 /**
-	  * This method injects a configuration value of spring.
-	  *
-	  * @param springApplicationName String
-	  */
-    @Value("${spring.application.name:defaultAppName}")
-    public void setApplicationName(String springApplicationName) {
-        this.superAppName = springApplicationName;
-    }
+	/**
+	 * This method injects a configuration value of spring.
+	 *
+	 * @param springApplicationName String
+	 */
+	@Value("${spring.application.name:defaultAppName}")
+	public void setApplicationName(String springApplicationName) {
+		this.superAppName = springApplicationName;
+	}
 
-	 /**
-	  * This method init the database mockup with thread safe collection
-	  */
-    @PostConstruct
-    public void init(){
-        this.dataBaseMockup = Collections.synchronizedMap(new HashMap<>());
-    }
+	/**
+	 * This method init the database mockup with thread safe collection
+	 */
+	@PostConstruct
+	public void init(){
+		this.dataBaseMockup = Collections.synchronizedMap(new HashMap<>());
+	}
 
-	 /**
-	  * This method convert MiniAppCommand Entity to Boundary
-	  *
-	  * @param commandEntity MiniAppCommandEntity
-	  * @return commandBoundary MiniAppCommandBoundary
-	  */
+	/**
+	 * This method convert MiniAppCommand Entity to Boundary
+	 *
+	 * @param commandEntity MiniAppCommandEntity
+	 * @return commandBoundary MiniAppCommandBoundary
+	 */
 	public MiniAppCommandBoundary convertToBoundary(MiniAppCommandEntity commandEntity) {
 		MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary();
 		commandBoundary.setCommandId(ConvertHelp.strCommandIdToBoundary(commandEntity.getCommandId()));
@@ -61,12 +66,12 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 		return commandBoundary;
 	}
 
-	 /**
-	  * This method convert MiniAppCommand Boundary to Entity.
-	  *
-	  * @param cmdBoundary MiniAppCommandBoundary
-	  * @return cmdEntity MiniAppCommandEntity
-	  */
+	/**
+	 * This method convert MiniAppCommand Boundary to Entity.
+	 *
+	 * @param cmdBoundary MiniAppCommandBoundary
+	 * @return cmdEntity MiniAppCommandEntity
+	 */
 	public MiniAppCommandEntity convertToEntity(MiniAppCommandBoundary cmdBoundary) {
 
 		MiniAppCommandEntity cmdEntity = new MiniAppCommandEntity();
@@ -81,17 +86,17 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 		cmdEntity.setInvocationTimestamp(cmdBoundary.getInvocationTimestamp());
 		cmdEntity.setTargetObject(ConvertHelp.targetObjBoundaryToStr(cmdBoundary.getTargetObject()));
 		cmdEntity.setInvokedBy(ConvertHelp.invokedByBoundaryToStr(cmdBoundary.getInvokedBy()));
-		
+
 		return cmdEntity;
 	}
 
-	 /**
-	  * This method create the MiniAppCommandEntity, execute the command
-	  * and return an object of command result.
-	  *
-	  * @param command MiniAppCommandBoundary
-	  * @return
-	  */
+	/**
+	 * This method create the MiniAppCommandEntity, execute the command
+	 * and return an object of command result.
+	 *
+	 * @param command MiniAppCommandBoundary
+	 * @return
+	 */
 	@Override
 	public Object invokeCommand(MiniAppCommandBoundary command) {
 
@@ -117,67 +122,76 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 		MiniAppCommandEntity commandEntity = convertToEntity(commandBoundary);
 
 		// execute command
-		Object commandResult;
-		Commands cmdToExecute = Commands.valueOf(commandEntity.getCommand());
+		Map<String,Object> commandResult = new HashMap<>();
+		String cmdToExecute = commandEntity.getCommand();
 
-		switch (cmdToExecute) {
-			case DO_SOMETHING:
-				commandResult = "command " + cmdToExecute + " successfully executed";
-			case SEND_MESSAGE:
-				// TODO: for future, extract the command attr and execute on targetObject
-				commandResult = "command " + cmdToExecute + " successfully executed";
-			default:
-				commandResult = "command " + cmdToExecute + " not recognized";
+		if (cmdToExecute == null) {
+			commandResult.put(miniappName, "command cannot be null");
+			return commandResult;
 		}
 
-		// save execute command to database
-		dataBaseMockup.put(commandEntity.getCommandId(), commandEntity);
+		switch (cmdToExecute) {
+		case "DO_SOMETHING":
+			commandResult.put(miniappName, "command " + cmdToExecute + " successfully executed") ;
+			this.dataBaseMockup.put(commandEntity.getCommandId(), commandEntity);
+			break;
+		case "SEND_MESSAGE":
+			// TODO: for future, extract the command attr and execute on targetObject
+			commandResult.put(miniappName, "command " + cmdToExecute + " successfully executed") ;
+			this.dataBaseMockup.put(commandEntity.getCommandId(), commandEntity);
+			break;
+		default:
+			commandResult.put(miniappName, "command " + cmdToExecute + " not recognized") ;
+			break;
+		}
 
 		return commandResult;
 	}
 
-	 /**
-	  * This method exports commands history of all miniapps
-	  * as a List.
-	  *
-	  * @return List<MiniAppCommandBoundary>
-	  */
+	/**
+	 * This method exports commands history of all miniapps
+	 * as a List.
+	 *
+	 * @return List<MiniAppCommandBoundary>
+	 */
 	@Override
 	public List<MiniAppCommandBoundary> getAllCommands() {
 		return this.dataBaseMockup.values()
 				.stream().map(this::convertToBoundary).toList();
 	}
 
-	 /**
-	  * This method exports commands history of a specific miniapp
-	  * as a List.
-	  *
-	  * @param miniAppName String
-	  * @return miniappCommands List<MiniAppCommandBoundary>
-	  */
+	/**
+	 * This method exports commands history of a specific miniapp
+	 * as a List.
+	 *
+	 * @param miniAppName String
+	 * @return miniappCommands List<MiniAppCommandBoundary>
+	 */
 	@Override
-    public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
+	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
 
+		try {
+			MiniAppNames.valueOf(miniAppName);
+		}catch (Exception e) {
+			throw new RuntimeException("does not recognise miniapp");
+		}
+		List<MiniAppCommandBoundary> commandBoundaryList = new ArrayList<>();
 
-		List<MiniAppCommandBoundary> miniappCommands = this.dataBaseMockup
-														.values()
-														.stream()
-														.map(this::convertToBoundary)
-														.toList();
+		for (Map.Entry<String, MiniAppCommandEntity> entry : this.dataBaseMockup.entrySet()) {
+			CommandId commandId = ConvertHelp.strCommandIdToBoundary(entry.getKey());
 
-		miniappCommands.stream().filter(cmd -> cmd.getCommandId().getMiniapp().equals(miniAppName));
+			if (commandId.getMiniapp().equals(miniAppName))
+				commandBoundaryList.add(convertToBoundary(entry.getValue()));
+		}
+		
+		return  commandBoundaryList;
 
-		if (miniappCommands.isEmpty())
-			throw new RuntimeException("could not find command of " + miniAppName + " mini app");
+	}
 
-		return  miniappCommands;
-
-    }
-
-	 /**
-	  * This method delete all command history.
-	  *
-	  */
+	/**
+	 * This method delete all command history.
+	 *
+	 */
 	@Override
 	public void deleteAllCommands() {
 		this.dataBaseMockup.clear();
