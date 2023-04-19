@@ -11,7 +11,7 @@ public class MiniAppCommandEntity {
 	private String targetObject;
 	private Date invocationTimestamp;
 	private String invokedBy;
-	private Map<String, Map<String, Object>> commandAttributes;
+	private Map<String, Object> commandAttributes;
 	
 
 	public MiniAppCommandEntity(){
@@ -57,11 +57,11 @@ public class MiniAppCommandEntity {
 		this.invokedBy = invokedBy;
 	}
 
-	public Map<String, Map<String, Object>> getCommandAttributes() {
+	public Map<String, Object> getCommandAttributes() {
 		return commandAttributes;
 	}
 
-	public void setCommandAttributes(Map<String, Map<String, Object>> commandAttributes) {
+	public void setCommandAttributes(Map<String, Object> commandAttributes) {
 		this.commandAttributes = commandAttributes;
 	}
 
