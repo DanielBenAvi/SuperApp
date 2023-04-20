@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.example'
-version = '0.0.3-SPRINT3'
+version = '0.0.3-SPRINT4'
 sourceCompatibility = '17'
 
 repositories {
@@ -13,10 +13,13 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
+
+ext['spring-framework.version'] = '6.0.8'
 
 tasks.named('test') {
 	useJUnitPlatform()
