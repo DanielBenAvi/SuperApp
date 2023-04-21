@@ -92,6 +92,7 @@ public class UserManager implements UsersService{
         if (userBoundary.getUserId().getEmail() == null){
             throw new RuntimeException("null Email can't be created");
         }
+
         if (userBoundary.getRole() == null){
             throw new RuntimeException("null Roll can't be created");
         }
