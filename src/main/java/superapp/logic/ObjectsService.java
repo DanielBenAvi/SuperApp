@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface ObjectsService {
 
-    SuperAppObjectBoundary createObject(SuperAppObjectBoundary objectBoundary);
-    SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId, SuperAppObjectBoundary update);
-    Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId);
-    List<SuperAppObjectBoundary> getAllObjects();
+    public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objectBoundary);
+    public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId, SuperAppObjectBoundary update);
+    public Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId);
+    public List<SuperAppObjectBoundary> getAllObjects();
     void deleteAllObjects();
 }

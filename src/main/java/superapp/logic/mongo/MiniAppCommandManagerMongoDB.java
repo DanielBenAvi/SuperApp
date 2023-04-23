@@ -1,29 +1,31 @@
-package superapp.logic;
+package superapp.logic.mongo;
 
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Service;
+import superapp.dal.MiniAppCommandCrud;
 import superapp.dal.MiniAppNames;
 import superapp.dal.entities.MiniAppCommandEntity;
+import superapp.logic.ConvertHelp;
+import superapp.logic.MiniAppCommandService;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 
+import java.util.*;
 
-//@Service
-public class MiniAppCommandManager implements MiniAppCommandService {
+@Service
+public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
-    private Map<String, MiniAppCommandEntity> dataBaseMockup;
-    private String superAppName;
+    private MiniAppCommandCrud miniAppCommandCrud;
+    private String springApplicationName;
+
+    @Autowired
+    public MiniAppCommandManagerMongoDB(MiniAppCommandCrud miniAppCommandCrud) {
+        this.miniAppCommandCrud = miniAppCommandCrud;
+    }
 
 
     /**
@@ -33,7 +35,7 @@ public class MiniAppCommandManager implements MiniAppCommandService {
      */
     @Value("${spring.application.name:defaultAppName}")
     public void setApplicationName(String springApplicationName) {
-        this.superAppName = springApplicationName;
+        this.springApplicationName = springApplicationName;
     }
 
     /**
@@ -41,8 +43,9 @@ public class MiniAppCommandManager implements MiniAppCommandService {
      */
     @PostConstruct
     public void init() {
-        this.dataBaseMockup = Collections.synchronizedMap(new HashMap<>());
+        System.err.println("************ MiniAppCommandManagerMongoDB ************ ");
     }
+
 
     /**
      * This method convert MiniAppCommand Entity to Boundary
@@ -86,16 +89,8 @@ public class MiniAppCommandManager implements MiniAppCommandService {
         return cmdEntity;
     }
 
-    /**
-     * This method create the MiniAppCommandEntity, execute the command
-     * and return an object of command result.
-     *
-     * @param command MiniAppCommandBoundary
-     * @return
-     */
     @Override
     public Object invokeCommand(MiniAppCommandBoundary command) {
-
         MiniAppCommandBoundary commandBoundary = command;
 
         if (commandBoundary == null)
@@ -111,7 +106,7 @@ public class MiniAppCommandManager implements MiniAppCommandService {
         // TODO: for future check if targetObject existing, UserRole, and UserID.
 
         // init values of commandId, timestamp
-        commandBoundary.getCommandId().setSuperapp(superAppName);
+        commandBoundary.getCommandId().setSuperapp(springApplicationName);
         commandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
         commandBoundary.setInvocationTimestamp(new Date());
 
@@ -140,59 +135,45 @@ public class MiniAppCommandManager implements MiniAppCommandService {
                 commandResult.put(miniappName, "command " + cmdToExecute + " not recognized");
                 break;
         }
-            this.dataBaseMockup.put(commandEntity.getCommandId(), commandEntity);
+        this.miniAppCommandCrud.save(commandEntity);
 
         return commandResult;
     }
 
-    /**
-     * This method exports commands history of all miniapps
-     * as a List.
-     *
-     * @return List<MiniAppCommandBoundary>
-     */
-    @Override
-    public List<MiniAppCommandBoundary> getAllCommands() {
-        return this.dataBaseMockup.values()
-                .stream().map(this::convertToBoundary).toList();
-    }
-
-    /**
-     * This method exports commands history of a specific miniapp
-     * as a List.
-     *
-     * @param miniAppName String
-     * @return miniappCommands List<MiniAppCommandBoundary>
-     */
     @Override
     public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
 
+        // Check if the miniApp name is valid
         try {
             MiniAppNames.valueOf(miniAppName);
         } catch (Exception e) {
-            throw new RuntimeException("does not recognise miniapp");
+            throw new RuntimeException("MiniApp name is not valid");
         }
 
+        // Create a list of commands
         List<MiniAppCommandBoundary> commandBoundaryList = new ArrayList<>();
 
-        for (Map.Entry<String, MiniAppCommandEntity> entry : this.dataBaseMockup.entrySet()) {
-
-            CommandId commandId = ConvertHelp.strCommandIdToBoundary(entry.getKey());
-            if (commandId.getMiniapp().equals(miniAppName)) {
-                commandBoundaryList.add(convertToBoundary(entry.getValue()));
+        // Get all commands from the database and filter by miniApp name
+        this.miniAppCommandCrud.findAll().forEach(commandEntity -> {
+            if (commandEntity.getCommandId().contains(miniAppName)) {
+                commandBoundaryList.add(convertToBoundary(commandEntity));
             }
-        }
+        });
 
         return commandBoundaryList;
-
     }
 
-    /**
-     * This method delete all command history.
-     */
+    @Override
+    public List<MiniAppCommandBoundary> getAllCommands() {
+        return this.miniAppCommandCrud
+                .findAll()
+                .stream()
+                .map(this::convertToBoundary)
+                .toList();
+    }
+
     @Override
     public void deleteAllCommands() {
-        this.dataBaseMockup.clear();
+        this.miniAppCommandCrud.deleteAll();
     }
-
 }
