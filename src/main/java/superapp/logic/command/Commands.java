@@ -2,5 +2,7 @@ package superapp.logic.command;
 
 public enum Commands {
     DO_SOMETHING,
-    SEND_MESSAGE
+    SEND_MESSAGE,
+
+    UNKNOWN
 }

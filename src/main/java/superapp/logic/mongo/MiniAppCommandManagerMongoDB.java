@@ -4,7 +4,6 @@ package superapp.logic.mongo;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import superapp.dal.MiniAppCommandCrud;
 import superapp.dal.MiniAppNames;
@@ -13,6 +12,7 @@ import superapp.logic.ConvertHelp;
 import superapp.logic.MiniAppCommandService;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
+import superapp.logic.command.Commands;
 
 import java.util.*;
 
@@ -93,8 +93,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
     public Object invokeCommand(MiniAppCommandBoundary command) {
         MiniAppCommandBoundary commandBoundary = command;
 
-        if (commandBoundary == null)
-            throw new RuntimeException("MiniAppCommandBoundary object cant be null");
+        if (commandBoundary == null) throw new RuntimeException("MiniAppCommandBoundary object cant be null");
 
         String miniappName = commandBoundary.getCommandId().getMiniapp();
         try {
@@ -103,39 +102,41 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
             throw new RuntimeException("cant invoke command of miniapp " + miniappName);
         }
 
-        // TODO: for future check if targetObject existing, UserRole, and UserID.
-
-        // init values of commandId, timestamp
+        // set command id
         commandBoundary.getCommandId().setSuperapp(springApplicationName);
+
+        // set internal command id
         commandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
+
+        // set invocation timestamp
         commandBoundary.setInvocationTimestamp(new Date());
 
+        // convert to entity
         MiniAppCommandEntity commandEntity = convertToEntity(commandBoundary);
 
         // execute command
         Map<String, Object> commandResult = new HashMap<>();
         String cmdToExecute = commandEntity.getCommand();
 
+        // check if command is null
         if (cmdToExecute == null) {
             commandResult.put(miniappName, "command cannot be null");
             return commandResult;
         }
 
-        switch (cmdToExecute) {
-            case "DO_SOMETHING":
-                commandResult.put(miniappName, "command " + cmdToExecute + " successfully executed");
-//                this.dataBaseMockup.put(commandEntity.getCommandId(), commandEntity);
-                break;
-            case "SEND_MESSAGE":
-                // TODO: for future, extract the command attr and execute on targetObject
-                commandResult.put(miniappName, "command " + cmdToExecute + " successfully executed");
-//                this.dataBaseMockup.put(commandEntity.getCommandId(), commandEntity);
-                break;
-            default:
-                commandResult.put(miniappName, "command " + cmdToExecute + " not recognized");
-                break;
-        }
+        // save command to database
         this.miniAppCommandCrud.save(commandEntity);
+
+        // check if command is not valid
+
+
+        try {
+            Commands.valueOf(cmdToExecute);
+            commandResult.put(miniappName, Commands.UNKNOWN + " - " + cmdToExecute + " " + commandEntity.getCommandId() + " successfully executed");
+        } catch (Exception e) {
+            commandResult.put(miniappName, "command " + cmdToExecute + " " + commandEntity.getCommandId() + " not recognized");
+            return commandResult;
+        }
 
         return commandResult;
     }
@@ -165,11 +166,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
     @Override
     public List<MiniAppCommandBoundary> getAllCommands() {
-        return this.miniAppCommandCrud
-                .findAll()
-                .stream()
-                .map(this::convertToBoundary)
-                .toList();
+        return this.miniAppCommandCrud.findAll().stream().map(this::convertToBoundary).toList();
     }
 
     @Override
