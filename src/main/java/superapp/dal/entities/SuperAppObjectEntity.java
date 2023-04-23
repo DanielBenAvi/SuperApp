@@ -1,4 +1,4 @@
-package superapp.data.entities;
+package superapp.dal.entities;
 
 import java.util.Date;
 import java.util.Map;

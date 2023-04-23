@@ -1,4 +1,4 @@
-package superapp.data.datingMiniApp;
+package superapp.dal.datingMiniApp;
 
 public class Match {
 

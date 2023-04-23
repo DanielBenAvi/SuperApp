@@ -3,7 +3,7 @@ package superapp.logic;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import superapp.data.entities.UserEntity;
+import superapp.dal.entities.UserEntity;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
 

@@ -1,8 +1,6 @@
 package superapp.logic.boundaries;
 
 
-import superapp.data.UserRole;
-
 /**
  * Class User Represent the NewUser Boundary
  * @author Ido & Yosef

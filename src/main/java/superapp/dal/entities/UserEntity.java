@@ -1,6 +1,6 @@
-package superapp.data.entities;
+package superapp.dal.entities;
 
-import superapp.data.UserRole;
+import superapp.dal.UserRole;
 
 public class UserEntity {
 

@@ -1,22 +1,22 @@
-package superapp.data.entities;
+package superapp.dal.entities;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.Map;
 
-
+@Document(collection = "MINI_APP_COMMANDS")
 public class MiniAppCommandEntity {
-	
-	private String commandId; 
+	@Id	private String commandId;
 	private String command;
 	private String targetObject;
 	private Date invocationTimestamp;
 	private String invokedBy;
 	private Map<String, Object> commandAttributes;
-	
 
 	public MiniAppCommandEntity(){
 	}
-
 	public String getCommandId() {
 		return commandId;
 	}

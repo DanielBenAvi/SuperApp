@@ -1,4 +1,4 @@
-package superapp.data.groupMiniApp;
+package superapp.dal.groupMiniApp;
 
 import java.util.Date;
 import java.util.Map;
