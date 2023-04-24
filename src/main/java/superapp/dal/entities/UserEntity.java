@@ -1,10 +1,13 @@
 package superapp.dal.entities;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import superapp.dal.UserRole;
 
+@Document (collection = "USERS")
 public class UserEntity {
 
-    private String userID;
+    @Id private String userID;
     private UserRole role;
     private String userName;
     private String avatar;
