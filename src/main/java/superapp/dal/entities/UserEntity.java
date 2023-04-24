@@ -25,31 +25,35 @@ public class UserEntity {
         return userID;
     }
 
-    public void setUserID(String userID) {
+    public UserEntity setUserID(String userID) {
         this.userID = userID;
+        return this;
     }
 
     public UserRole getRole() {
         return role;
     }
 
-    public void setRole(UserRole role) {
+    public UserEntity setRole(UserRole role) {
         this.role = role;
+        return this;
     }
 
     public String getUserName() {
         return userName;
     }
 
-    public void setUserName(String userName) {
+    public UserEntity setUserName(String userName) {
         this.userName = userName;
+        return this;
     }
 
     public String getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar) {
+    public UserEntity setAvatar(String avatar) {
         this.avatar = avatar;
+        return this;
     }
 }

@@ -26,45 +26,50 @@ public class UserDetails {
 		this.gender = gender;
 		this.sexPreferences = sexPreferences;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
-	public void setName(String name) {
+
+	public UserDetails setName(String name) {
 		this.name = name;
+		return this;
 	}
-	
+
 	public String getPhoneNum() {
 		return phoneNum;
 	}
-	
-	public void setPhoneNum(String phoneNum) {
+
+	public UserDetails setPhoneNum(String phoneNum) {
 		this.phoneNum = phoneNum;
+		return this;
 	}
-	
+
 	public ArrayList<String> getInterests() {
 		return interests;
 	}
-	
-	public void setInterests(ArrayList<String> interests) {
+
+	public UserDetails setInterests(ArrayList<String> interests) {
 		this.interests = interests;
+		return this;
 	}
-	
+
 	public String getGender() {
 		return gender;
 	}
-	
-	public void setGender(String gender) {
+
+	public UserDetails setGender(String gender) {
 		this.gender = gender;
+		return this;
 	}
-	
+
 	public ArrayList<String> getSexPreferences() {
 		return sexPreferences;
 	}
-	
-	public void setSexPreferences(ArrayList<String> sexPreferences) {
+
+	public UserDetails setSexPreferences(ArrayList<String> sexPreferences) {
 		this.sexPreferences = sexPreferences;
+		return this;
 	}
 
 	@Override

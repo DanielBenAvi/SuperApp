@@ -12,16 +12,18 @@ public class Match {
 		return user1;
 	}
 
-	public void setUser1(String user1) {
+	public Match setUser1(String user1) {
 		this.user1 = user1;
+		return this;
 	}
 
 	public String getUser2() {
 		return user2;
 	}
 
-	public void setUser2(String user2) {
+	public Match setUser2(String user2) {
 		this.user2 = user2;
+		return this;
 	}
 
 	@Override

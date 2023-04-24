@@ -62,7 +62,6 @@ public class Product {
 		return this;
 	}
 
-
 	public double getPrice() {
 		return price;
 	}
@@ -89,7 +88,6 @@ public class Product {
 		this.imageUrl = imageUrl;
 		return this;
 	}
-
 
 	public String getStatus() {
 		return status;

@@ -15,25 +15,25 @@ public class GroupEntity {
 	public GroupEntity(String _groupName) {
 		this.groupName = _groupName; 
 	}
-	
-	
+
 	public String getGroupName() {
 		return groupName;
 	}
-	
-	public void setGroupName(String groupName) {
+
+	public GroupEntity setGroupName(String groupName) {
 		this.groupName = groupName;
+		return this;
 	}
-	
 
 	public Map<String, NewUserBoundary> getUsers() {
 		return users;
 	}
 
-	public void setUsers(Map<String, NewUserBoundary> users) {
+	public GroupEntity setUsers(Map<String, NewUserBoundary> users) {
 		this.users = users;
+		return this;
 	}
-	
+
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

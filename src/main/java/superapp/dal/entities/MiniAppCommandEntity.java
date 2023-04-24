@@ -17,52 +17,59 @@ public class MiniAppCommandEntity {
 
 	public MiniAppCommandEntity(){
 	}
+
 	public String getCommandId() {
 		return commandId;
 	}
 
-	public void setCommandId(String commandId) {
+	public MiniAppCommandEntity setCommandId(String commandId) {
 		this.commandId = commandId;
+		return this;
 	}
 
 	public String getCommand() {
 		return command;
 	}
 
-	public void setCommand(String command) {
+	public MiniAppCommandEntity setCommand(String command) {
 		this.command = command;
+		return this;
 	}
 
 	public String getTargetObject() {
 		return targetObject;
 	}
 
-	public void setTargetObject(String targetObject) {
+	public MiniAppCommandEntity setTargetObject(String targetObject) {
 		this.targetObject = targetObject;
+		return this;
 	}
 
 	public Date getInvocationTimestamp() {
 		return invocationTimestamp;
 	}
 
-	public void setInvocationTimestamp(Date invocationTimestamp) {
+	public MiniAppCommandEntity setInvocationTimestamp(Date invocationTimestamp) {
 		this.invocationTimestamp = invocationTimestamp;
+		return this;
 	}
 
 	public String getInvokedBy() {
 		return invokedBy;
 	}
 
-	public void setInvokedBy(String invokedBy) {
+	public MiniAppCommandEntity setInvokedBy(String invokedBy) {
 		this.invokedBy = invokedBy;
+		return this;
 	}
 
 	public Map<String, Object> getCommandAttributes() {
 		return commandAttributes;
 	}
 
-	public void setCommandAttributes(Map<String, Object> commandAttributes) {
+	public MiniAppCommandEntity setCommandAttributes(Map<String, Object> commandAttributes) {
 		this.commandAttributes = commandAttributes;
+		return this;
 	}
 
 	@Override

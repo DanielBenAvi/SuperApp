@@ -23,49 +23,54 @@ public class GroupEventEntity {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public GroupEventEntity setDate(Date date) {
 		this.date = date;
+		return this;
 	}
 
 	public Location getLocation() {
 		return location;
 	}
 
-	public void setLocation(Location location) {
+	public GroupEventEntity setLocation(Location location) {
 		this.location = location;
+		return this;
 	}
 
 	public String getGroupId() {
 		return groupId;
 	}
 
-	public void setGroupId(String groupId) {
+	public GroupEventEntity setGroupId(String groupId) {
 		this.groupId = groupId;
+		return this;
 	}
 
 	public Map<String, String> getStatus() {
 		return status;
 	}
 
-	public void setStatus(Map<String, String> status) {
+	public GroupEventEntity setStatus(Map<String, String> status) {
 		this.status = status;
+		return this;
 	}
-
 
 	public String getEventName() {
 		return eventName;
 	}
 
-	public void setEventName(String eventName) {
+	public GroupEventEntity setEventName(String eventName) {
 		this.eventName = eventName;
+		return this;
 	}
 
 	public String getEventDescription() {
 		return eventDescription;
 	}
 
-	public void setEventDescription(String eventDescription) {
+	public GroupEventEntity setEventDescription(String eventDescription) {
 		this.eventDescription = eventDescription;
+		return this;
 	}
 
 	@Override

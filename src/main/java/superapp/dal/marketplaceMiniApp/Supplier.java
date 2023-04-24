@@ -14,16 +14,18 @@ public class Supplier {
 		return products;
 	}
 
-	public void setProducts(Product[] products) {
+	public Supplier setProducts(Product[] products) {
 		this.products = products;
+		return this;
 	}
 
 	public String getBusinessName() {
 		return businessName;
 	}
 
-	public void setBusinessName(String businessName) {
+	public Supplier setBusinessName(String businessName) {
 		this.businessName = businessName;
+		return this;
 	}
 
 	@Override

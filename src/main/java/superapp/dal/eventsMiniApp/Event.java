@@ -23,48 +23,54 @@ public class Event {
 		return userId;
 	}
 
-	public void setUserId(UserID userId) {
+	public Event setUserId(UserID userId) {
 		this.userId = userId;
+		return this;
 	}
 
 	public Date getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public Event setDate(Date date) {
 		this.date = date;
+		return this;
 	}
 
 	public String getTheme() {
 		return theme;
 	}
 
-	public void setTheme(String theme) {
+	public Event setTheme(String theme) {
 		this.theme = theme;
+		return this;
 	}
 
 	public Location getLocation() {
 		return location;
 	}
 
-	public void setLocation(Location location) {
+	public Event setLocation(Location location) {
 		this.location = location;
+		return this;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public Event setDescription(String description) {
 		this.description = description;
+		return this;
 	}
 
 	public Map<String, String> getStatus() {
 		return status;
 	}
 
-	public void setStatus(Map<String, String> status) {
+	public Event setStatus(Map<String, String> status) {
 		this.status = status;
+		return this;
 	}
 
 	@Override
