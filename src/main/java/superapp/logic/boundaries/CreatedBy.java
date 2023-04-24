@@ -7,12 +7,14 @@ public class CreatedBy {
 	public CreatedBy() {
 	}
 
+
 	public UserID getUserId() {
 		return userId;
 	}
 
-	public void setUserId(UserID userId) {
+	public CreatedBy setUserId(UserID userId) {
 		this.userId = userId;
+		return this;
 	}
 
 	@Override

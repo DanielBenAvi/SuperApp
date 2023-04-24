@@ -21,64 +21,72 @@ public class SuperAppObjectBoundary {
 		return objectId;
 	}
 
-	public void setObjectId(ObjectId objectId) {
+	public SuperAppObjectBoundary setObjectId(ObjectId objectId) {
 		this.objectId = objectId;
+		return this;
 	}
 
 	public String getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public SuperAppObjectBoundary setType(String type) {
 		this.type = type;
+		return this;
 	}
 
 	public String getAlias() {
 		return alias;
 	}
 
-	public void setAlias(String alias) {
+	public SuperAppObjectBoundary setAlias(String alias) {
 		this.alias = alias;
+		return this;
 	}
 
 	public Boolean getActive() {
 		return active;
 	}
 
-	public void setActive(Boolean active) {
+	public SuperAppObjectBoundary setActive(Boolean active) {
 		this.active = active;
+		return this;
 	}
 
 	public Date getCreateTimestamp() {
 		return createTimestamp;
 	}
 
-	public void setCreateTimestamp(Date createTimestamp) {
+	public SuperAppObjectBoundary setCreateTimestamp(Date createTimestamp) {
 		this.createTimestamp = createTimestamp;
+		return this;
 	}
 
 	public Location getLocation() {
 		return location;
 	}
 
-	public void setLocation(Location location) {
+	public SuperAppObjectBoundary setLocation(Location location) {
 		this.location = location;
+		return this;
 	}
 
 	public CreatedBy getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(CreatedBy createdBy) {
+	public SuperAppObjectBoundary setCreatedBy(CreatedBy createdBy) {
 		this.createdBy = createdBy;
+		return this;
 	}
 
 	public Map<String, Object> getObjectDetails() {
 		return objectDetails;
 	}
 
-	public void setObjectDetails(Map<String, Object> objectDetails) {
+	public SuperAppObjectBoundary setObjectDetails(Map<String, Object> objectDetails) {
 		this.objectDetails = objectDetails;
+		return this;
 	}
 
 	@Override

@@ -6,16 +6,13 @@ public class TargetObject {
 	public TargetObject() {
 	}
 
-	public TargetObject(ObjectId objectid) {
-		this.objectId = objectid;
-	}
-
 	public ObjectId getObjectId() {
 		return objectId;
 	}
 
-	public void setObjectId(ObjectId objectId) {
+	public TargetObject setObjectId(ObjectId objectId) {
 		this.objectId = objectId;
+		return this;
 	}
 
 	@Override

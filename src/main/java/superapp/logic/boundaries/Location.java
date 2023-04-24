@@ -5,8 +5,6 @@ public class Location {
 	private double lat;
 	private double lng;
 
-
-
 	public Location() {
 	}
 
@@ -19,16 +17,18 @@ public class Location {
 		return lat;
 	}
 
-	public void setLat(double lat) {
+	public Location setLat(double lat) {
 		this.lat = lat;
+		return this;
 	}
 
 	public double getLng() {
 		return lng;
 	}
 
-	public void setLng(double lng) {
+	public Location setLng(double lng) {
 		this.lng = lng;
+		return this;
 	}
 
 	@Override

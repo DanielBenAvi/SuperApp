@@ -10,17 +10,13 @@ public class InvokedBy {
 	public InvokedBy() {
 	}
 
-	public InvokedBy(UserID userId) {
-		this.userId = userId;
-	}
-
-
 	public UserID getUserId() {
 		return userId;
 	}
 
-	public void setUserId(UserID userId) {
+	public InvokedBy setUserId(UserID userId) {
 		this.userId = userId;
+		return this;
 	}
 
 	@Override

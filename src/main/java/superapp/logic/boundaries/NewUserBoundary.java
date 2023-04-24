@@ -13,44 +13,50 @@ public class NewUserBoundary {
 	private String avatar;
 	
 	public NewUserBoundary() {}
-	
-	public NewUserBoundary(String email, String role, String userName, String avatar) {
-		this.email = email;
-		this.role = role;
-		this.username = userName;
-		this.avatar = avatar;
-	}
 
 	public String getEmail() {
 		return email;
 	}
 
-	public void setEmail(String email) {
+	public NewUserBoundary setEmail(String email) {
 		this.email = email;
+		return this;
 	}
-	
+
 	public String getRole() {
 		return role;
 	}
-	
-	public void setRole(String role) {
+
+	public NewUserBoundary setRole(String role) {
 		this.role = role;
+		return this;
 	}
-	
+
 	public String getUsername() {
 		return username;
 	}
-	
-	public void setUsername(String username) {
+
+	public NewUserBoundary setUsername(String username) {
 		this.username = username;
+		return this;
 	}
-	
+
 	public String getAvatar() {
 		return avatar;
 	}
-	
-	public void setAvatar(String avatar) {
+
+	public NewUserBoundary setAvatar(String avatar) {
 		this.avatar = avatar;
+		return this;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "NewUserBoundary{" +
+				"email='" + email + '\'' +
+				", role='" + role + '\'' +
+				", username='" + username + '\'' +
+				", avatar='" + avatar + '\'' +
+				'}';
+	}
 }

@@ -8,8 +8,8 @@ public class ObjectId {
 	public ObjectId() {
 	}
 
-	public ObjectId(String superApp, String internalObjectId) {
-		this.superapp = superApp;
+	public ObjectId(String superapp, String internalObjectId) {
+		this.superapp = superapp;
 		this.internalObjectId = internalObjectId;
 	}
 
@@ -17,16 +17,18 @@ public class ObjectId {
 		return superapp;
 	}
 
-	public void setSuperapp(String superapp) {
+	public ObjectId setSuperapp(String superapp) {
 		this.superapp = superapp;
+		return this;
 	}
 
 	public String getInternalObjectId() {
 		return internalObjectId;
 	}
 
-	public void setInternalObjectId(String internalObjectId) {
+	public ObjectId setInternalObjectId(String internalObjectId) {
 		this.internalObjectId = internalObjectId;
+		return this;
 	}
 
 	@Override

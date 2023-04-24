@@ -10,32 +10,31 @@ public class UserID {
 	private String superapp;
 	private String email;
 	
-	public UserID() {
-		
-	}
-	
+	public UserID() {}
+
 	public UserID(String superapp, String email) {
-		setSuperapp(superapp);
-		setEmail(email);
+		this.superapp = superapp;
+		this.email = email;
 	}
-	
-	
+
 	public String getSuperapp() {
 		return superapp;
 	}
-	
-	public void setSuperapp(String superapp) {
+
+	public UserID setSuperapp(String superapp) {
 		this.superapp = superapp;
+		return this;
 	}
-	
+
 	public String getEmail() {
 		return email;
 	}
-	
-	public void setEmail(String email) {
+
+	public UserID setEmail(String email) {
 		this.email = email;
+		return this;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "[superapp=" + superapp + ", email=" + email + "]";

@@ -19,50 +19,55 @@ public class MiniAppCommandBoundary {
 		return commandId;
 	}
 
-	public void setCommandId(CommandId commandId) {
+	public MiniAppCommandBoundary setCommandId(CommandId commandId) {
 		this.commandId = commandId;
+		return this;
 	}
 
 	public String getCommand() {
 		return command;
 	}
 
-	public void setCommand(String command) {
+	public MiniAppCommandBoundary setCommand(String command) {
 		this.command = command;
+		return this;
 	}
 
 	public TargetObject getTargetObject() {
 		return targetObject;
 	}
 
-	public void setTargetObject(TargetObject targetObject) {
+	public MiniAppCommandBoundary setTargetObject(TargetObject targetObject) {
 		this.targetObject = targetObject;
+		return this;
 	}
 
 	public Date getInvocationTimestamp() {
 		return invocationTimestamp;
 	}
 
-	public void setInvocationTimestamp(Date invocationTimestamp) {
+	public MiniAppCommandBoundary setInvocationTimestamp(Date invocationTimestamp) {
 		this.invocationTimestamp = invocationTimestamp;
+		return this;
 	}
 
 	public InvokedBy getInvokedBy() {
 		return invokedBy;
 	}
 
-	public void setInvokedBy(InvokedBy invokedBy) {
+	public MiniAppCommandBoundary setInvokedBy(InvokedBy invokedBy) {
 		this.invokedBy = invokedBy;
+		return this;
 	}
 
-	public Map<String,Object> getCommandAttributes() {
+	public Map<String, Object> getCommandAttributes() {
 		return commandAttributes;
 	}
 
-	public void setCommandAttributes(Map<String,Object> commandAttributes) {
+	public MiniAppCommandBoundary setCommandAttributes(Map<String, Object> commandAttributes) {
 		this.commandAttributes = commandAttributes;
+		return this;
 	}
-
 
 	@Override
 	public String toString() {
