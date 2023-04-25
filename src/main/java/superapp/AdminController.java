@@ -42,7 +42,7 @@ public class AdminController {
 				produces = {MediaType.APPLICATION_JSON_VALUE})
 	public UserBoundary[] allUsers(){
 
-		return usersService.getAllUsers().toArray(new UserBoundary[0]);
+		return this.usersService.getAllUsers().toArray(new UserBoundary[0]);
 	}
 	
 
@@ -50,39 +50,35 @@ public class AdminController {
 	 * This method exports all history commands of specific miniapps
 	 *
 	 * @param miniAppName String
-	 * @return
+	 * @return MiniAppCommandBoundary[]
 	 */
 	@GetMapping(path = {"/superapp/admin/miniapp/{miniAppName}"},
 				produces = {MediaType.APPLICATION_JSON_VALUE})
 	public MiniAppCommandBoundary[] specificMiniAppCommands(@PathVariable("miniAppName") String miniAppName){
 
-		MiniAppCommandBoundary[] cmds = new MiniAppCommandBoundary[]{};
-		return miniAppCommandService.getAllMiniAppCommands(miniAppName).toArray(cmds);
+		return this.miniAppCommandService.getAllMiniAppCommands(miniAppName).toArray(new MiniAppCommandBoundary[0]);
 	}
 	
 	/**
 	 * Export all history commands
-	 * @return
+	 * @return MiniAppCommandBoundary[]
 	 */ 
 	@GetMapping(path = {"/superapp/admin/miniapp"},
 				produces = {MediaType.APPLICATION_JSON_VALUE})
 	public MiniAppCommandBoundary[] miniAppCommands(){
 
-		MiniAppCommandBoundary[] cmds = new MiniAppCommandBoundary[]{};
-		return miniAppCommandService.getAllCommands().toArray(cmds);
+		return this.miniAppCommandService.getAllCommands().toArray(new MiniAppCommandBoundary[0]);
 	}
-	
-	
 
 	/**
-	 * Delete all users
+	 * This method delete all users.
 	 */
 	@DeleteMapping(path = {"/superapp/admin/users"})
 	public void deleteAllUsers() {
-		usersService.deleteAllUsers();
-		System.err.println("delete all users");
-	}
 
+		this.usersService.deleteAllUsers();
+		System.err.println("All users deleted");
+	}
 
 	/**
 	 * This method delete all objects of superapp.
@@ -91,13 +87,17 @@ public class AdminController {
 	public void deleteAllObjects() {
 
 		this.objectsService.deleteAllObjects();
-		System.err.println("delete all superapp objects");
+		System.err.println("All superapp objects deleted");
 	}
-	
-	//delete all command history.
+
+	/**
+	 * This method delete all commands history.
+	 */
 	@DeleteMapping(path = {"/superapp/admin/miniapp"})
 	public void deleteAllCommands() {
+
 		this.miniAppCommandService.deleteAllCommands();
-		System.err.println("delete all commands");
+		System.err.println("All commands history deleted");
 	}
+
 }
