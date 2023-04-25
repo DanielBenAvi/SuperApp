@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import superapp.logic.exeptions.UserNotFoundException;
+import superapp.logic.excptions.UserNotFoundException;
 import superapp.logic.UsersService;
 import superapp.logic.boundaries.UserID;
 import superapp.logic.boundaries.NewUserBoundary;
