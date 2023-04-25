@@ -1,9 +1,5 @@
 package superapp.logic.boundaries;
 
-/**
- * Class UserBoundary Represent the User Boundary
- * @author Ido & Yosef
- */
 public class UserBoundary {
 
 	private UserID userId;
@@ -17,32 +13,36 @@ public class UserBoundary {
 		return userId;
 	}
 
-	public void setUserId(UserID userId) {
+	public UserBoundary setUserId(UserID userId) {
 		this.userId = userId;
+		return this;
 	}
 
 	public String getRole() {
 		return role;
 	}
 
-	public void setRole(String role) {
+	public UserBoundary setRole(String role) {
 		this.role = role;
+		return this;
 	}
 
 	public String getUsername() {
 		return username;
 	}
 
-	public void setUsername(String username) {
+	public UserBoundary setUsername(String username) {
 		this.username = username;
+		return this;
 	}
 
 	public String getAvatar() {
 		return avatar;
 	}
 
-	public void setAvatar(String avatar) {
+	public UserBoundary setAvatar(String avatar) {
 		this.avatar = avatar;
+		return this;
 	}
 
 	@Override

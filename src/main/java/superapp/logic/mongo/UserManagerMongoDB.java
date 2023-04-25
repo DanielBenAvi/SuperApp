@@ -5,13 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import superapp.dal.UserCrud;
+import superapp.dal.UserRole;
 import superapp.dal.entities.UserEntity;
 import superapp.logic.ConvertHelp;
+import superapp.logic.exeptions.UserBadRequestException;
+import superapp.logic.exeptions.UserNotFoundException;
 import superapp.logic.UsersService;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Service
 public class UserManagerMongoDB implements UsersService {
@@ -41,7 +45,7 @@ public class UserManagerMongoDB implements UsersService {
      */
     @PostConstruct
     public void init(){
-        System.err.println("****** " + this.getClass().getName() + " initiated");
+        System.err.println("****** " + this.getClass().getName() + " service initiated");
     }
 
     /**
@@ -92,38 +96,40 @@ public class UserManagerMongoDB implements UsersService {
     }
 
     /**
-     * Creates new user entity from user boundary
-     * @param userBoundary boundary
-     * @return userBoundary
+     * This method creates-register new user entity from user boundary
+     *
+     * @param userBoundary UserBoundary
+     * @return UserBoundary
      */
     @Override
     public UserBoundary createUser(UserBoundary userBoundary) {
 
-        if (userBoundary == null){
-            throw new RuntimeException("null UserBoundary can't be created");
-        }
+        // this verifying never reached
+//        if (userBoundary == null){
+//            throw new RuntimeException("null UserBoundary can't be created");
+//        }
 
-        if (userBoundary.getUserId().getEmail() == null){
-            throw new RuntimeException("null Email can't be created");
-        }
+        // validate UserBoundary attr
+        if (!isValidEmail(userBoundary.getUserId().getEmail()))
+            throw new UserBadRequestException("Email invalid");
 
-        if (userBoundary.getRole() == null){
-            throw new RuntimeException("null Roll can't be created");
-        }
+        if (!isValidRole(userBoundary.getRole()))
+            throw new UserBadRequestException("Role invalid");
 
-        if (userBoundary.getUsername() == null){
-            throw new RuntimeException("null UserName can't be created");
-        }
+        if (!isValidUserName(userBoundary.getUsername()))
+            throw new UserBadRequestException("User name invalid");
 
-        if (userBoundary.getAvatar() == null){
-            throw new RuntimeException("null Avatar can't be created");
-        }
+        if (!isValidAvatar(userBoundary.getAvatar()))
+            throw new UserBadRequestException("Avatar invalid");
+
+
+        userBoundary.getUserId().setSuperapp(superappName);
 
         UserEntity userEntity = this.boundaryToEntity(userBoundary);
 
         // check if user already exist
         if (this.usersCrudDB.existsById(userEntity.getUserID()))
-            throw new RuntimeException("User already exists: " + userEntity.getUserID());
+            throw new UserBadRequestException("User with id " + userEntity.getUserID() + " already exists");
 
         this.usersCrudDB.save(userEntity);
 
@@ -132,7 +138,7 @@ public class UserManagerMongoDB implements UsersService {
 
 
     /**
-     * login with specific user
+     * This method login with specific user
      * @param userSuperApp app name
      * @param userEmail user email
      * @return Optional of UserBoundary
@@ -141,23 +147,26 @@ public class UserManagerMongoDB implements UsersService {
     public Optional<UserBoundary> login(String userSuperApp, String userEmail) {
 
 
-        String userID = ConvertHelp.concatenateIds(new String[]{ userSuperApp,userEmail});
+        String userID = ConvertHelp.concatenateIds(new String[]{ userSuperApp, userEmail});
 
         UserEntity userEntity = this.usersCrudDB
                 .findById(userID)
-                .orElseThrow(() -> new RuntimeException("Couldn't find user by id  " + userID));
+                .orElseThrow(() -> new UserNotFoundException("Couldn't find user by id  " + userID));
 
-        if (userEntity == null){
+        if (userEntity == null) {
             return Optional.empty();
-        } else {
+        }
+        else {
             UserBoundary userBoundary = this.entityToBoundary(userEntity);
             return Optional.of(userBoundary);
         }
+
     }
 
     /**
-     * update the user
+     * This method update user entity in DB
      * checks if attributes changed and update if needed
+     *
      * @param userSuperApp user app name
      * @param userEmail user mail
      * @param update user boundary with change attributes
@@ -168,47 +177,56 @@ public class UserManagerMongoDB implements UsersService {
 
         String userID = ConvertHelp.concatenateIds(new String[]{userEmail, userSuperApp});
 
+        // get user from DB and check if is null
         UserEntity existing = this.usersCrudDB
                 .findById(userID)
-                .orElseThrow(() -> new RuntimeException("Couldn't find user by id  " + userID));
+                .orElseThrow(() -> new UserNotFoundException("Couldn't find user by id  " + userID));
 
-        //todo is necessary?
-//        if (existing == null){
-//            throw new RuntimeException("Couldn't find user by id: "+userID);
-//        }
 
         boolean dirtyFlag = false;
 
-        if (update.getUsername() != null){
+        if (update.getUsername() != null) {
+
+            if (!isValidUserName(update.getUsername()))
+                throw new UserBadRequestException("User name invalid");
+
             existing.setUserName(update.getUsername());
             dirtyFlag = true;
         }
 
-        if (update.getRole()!= null){
+        if (update.getRole()!= null) {
+
+            if (!isValidRole(update.getRole()))
+                throw new UserBadRequestException("Role invalid");
+
             existing.setRole(ConvertHelp.strToUserRole(update.getRole()));
             dirtyFlag = true;
         }
 
-        if (update.getAvatar() != null){
+        if (update.getAvatar() != null) {
+
+            if (!isValidAvatar(update.getAvatar()))
+                throw new UserBadRequestException("Avatar invalid");
+
             existing.setAvatar(update.getAvatar());
             dirtyFlag = true;
         }
 
-        if (dirtyFlag){
+
+        if (dirtyFlag)
             existing = this.usersCrudDB.save(existing);
-            //this.databaseMockup.put(userID, existing);
-        }
 
         return this.entityToBoundary(existing);
     }
 
     /**
-     * Get all users from database
+     * This method return all users from database
      *
-     * @return list of all user boundaries
+     * @return List<UserBoundary>
      */
     @Override
     public List<UserBoundary> getAllUsers() {
+
         return this.usersCrudDB
                 .findAll()
                 .stream()
@@ -217,11 +235,88 @@ public class UserManagerMongoDB implements UsersService {
     }
 
     /**
-     * delete all users from database
+     * This method delete all users from database
      */
     @Override
     public void deleteAllUsers() {
         this.usersCrudDB.deleteAll();
+    }
+
+
+
+    /**
+     * This method validate the username isn`t null or empty.
+     *
+     * @param username String
+     * @return boolean
+     */
+    private boolean isValidUserName(String username) {
+
+        if (username == null || username.isEmpty())
+            return false;
+
+        return true;
+    }
+
+    /**
+     * This method validate the avatar isn`t null or empty.
+     *
+     * @param avatar String
+     * @return boolean
+     */
+    private boolean isValidAvatar(String avatar) {
+
+        if (avatar == null || avatar.isEmpty())
+            return false;
+
+        return true;
+    }
+
+    /**
+     * This method validate the user role isn`t null, empty, or invalid role.
+     *
+     * @param role String
+     * @return boolean
+     */
+    private boolean isValidRole(String role) {
+
+        if (role == null || role.isEmpty())
+            return false;
+
+        try {
+            UserRole.valueOf(role);
+        }
+        catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * This method validate the email isn`t null, empty, or invalid email.
+     *
+     * @param email String
+     * @return boolean
+     */
+    private boolean isValidEmail(String email) {
+
+
+        if (email == null || email.isEmpty())
+            return false;
+
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."
+                + "[a-zA-Z0-9_+&*-]+)*@"
+                + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
+                + "A-Z]{2,7}$";
+
+        Pattern emailPattern = Pattern.compile(emailRegex);
+
+        // check email format
+        if (!emailPattern.matcher(email).matches())
+            return false;
+
+        return true;
     }
 
 }

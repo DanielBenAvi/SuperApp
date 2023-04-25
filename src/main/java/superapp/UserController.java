@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import superapp.logic.exeptions.UserNotFoundException;
 import superapp.logic.UsersService;
 import superapp.logic.boundaries.UserID;
 import superapp.logic.boundaries.NewUserBoundary;
@@ -25,55 +26,53 @@ public class UserController {
 
 
 	/**
-	 * login
+	 * This method is for user login.
 	 *
-	 * @return userBoundary
+	 * @return UserBoundary
 	 */
 	@GetMapping(path = {"/superapp/users/login/{superapp}/{email}"},
-			produces = {MediaType.APPLICATION_JSON_VALUE})
+				produces = {MediaType.APPLICATION_JSON_VALUE})
 	public UserBoundary login(@PathVariable("email") String email, @PathVariable("superapp") String superapp) {
 
-		return this.usersService.login(superapp,email).orElseThrow(() -> new RuntimeException("Could not login: "+superapp+" "+email));
+		return this.usersService.login(superapp,email)
+				.orElseThrow(() -> new UserNotFoundException("User with id " + superapp + "_" + email + " not found"));
 	}
 
 
 	/**
-	 * create new user
-	 * @param newUser the new user boundary that is created
-	 * @return userBoundary
+	 * This method create-register new user.
+	 * @param newUser NewUserBoundary
+	 * @return UserBoundary
 	 */
 	@PostMapping(path = {"/superapp/users"},
-			produces = {MediaType.APPLICATION_JSON_VALUE},
-			consumes = {MediaType.APPLICATION_JSON_VALUE})
+				produces = {MediaType.APPLICATION_JSON_VALUE},
+				consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public UserBoundary createUser(@RequestBody NewUserBoundary newUser) {
-		// TODO: create function that convert NewUserBoundary to UserBoundary in usersService
 
-		// convert NewUserBoundary to UserBoundary
-		UserBoundary userBoundary= new UserBoundary();
-		// crate a userID object
-		userBoundary.setUserId(new UserID("${spring.application.name:defaultAppName}", newUser.getEmail()));
-
-		userBoundary.setUsername(newUser.getUsername());
-		userBoundary.setAvatar(newUser.getAvatar());
-		userBoundary.setRole(newUser.getRole());
+		// create UserBoundary from NewUserBoundary
+		UserBoundary userBoundary = new UserBoundary()
+									.setUserId(new UserID(null, newUser.getEmail())) // superapp name will update in the service.
+									.setUsername(newUser.getUsername())
+									.setAvatar(newUser.getAvatar())
+									.setRole(newUser.getRole());
 
 		return this.usersService.createUser(userBoundary);
 	}
 
 	/**
-	 * update user
+	 * This method update user details.
+	 *
 	 * @param userEmail the user mail
 	 * @param superapp the suparapp name
 	 * @param updatedUser the user boundary with changes
 	 */
 	@PutMapping(path = {"/superapp/users/{superapp}/{userEmail}"},
 			consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public void updateUser(@PathVariable("userEmail") String userEmail, @PathVariable("superapp") String superapp,@RequestBody UserBoundary updatedUser) {
+	public void updateUser(@PathVariable("userEmail") String userEmail,
+						   @PathVariable("superapp") String superapp,
+						   @RequestBody UserBoundary updatedUser) {
 
-		this.usersService.updateUser(userEmail,superapp,updatedUser);
-
+		this.usersService.updateUser(userEmail, superapp, updatedUser);
 	}
-
-
 
 }
