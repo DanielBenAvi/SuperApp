@@ -4,96 +4,96 @@ import java.util.Date;
 import java.util.Map;
 
 public class SuperAppObjectBoundary {
-	
-	private ObjectId objectId;
-	private String type;
-	private String alias;
-	private Boolean active;
-	private Date createTimestamp;
-	private Location location;
-	private CreatedBy createdBy;
-	private Map<String, Object> objectDetails;
-	
-	public SuperAppObjectBoundary() {
-	}
 
-	public ObjectId getObjectId() {
-		return objectId;
-	}
+    private ObjectId objectId;
+    private String type;
+    private String alias;
+    private Boolean active;
+    private Date creationTimestamp;
+    private Location location;
+    private CreatedBy createdBy;
+    private Map<String, Object> objectDetails;
 
-	public SuperAppObjectBoundary setObjectId(ObjectId objectId) {
-		this.objectId = objectId;
-		return this;
-	}
+    public SuperAppObjectBoundary() {
+    }
 
-	public String getType() {
-		return type;
-	}
+    public ObjectId getObjectId() {
+        return objectId;
+    }
 
-	public SuperAppObjectBoundary setType(String type) {
-		this.type = type;
-		return this;
-	}
+    public SuperAppObjectBoundary setObjectId(ObjectId objectId) {
+        this.objectId = objectId;
+        return this;
+    }
 
-	public String getAlias() {
-		return alias;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public SuperAppObjectBoundary setAlias(String alias) {
-		this.alias = alias;
-		return this;
-	}
+    public SuperAppObjectBoundary setType(String type) {
+        this.type = type;
+        return this;
+    }
 
-	public Boolean getActive() {
-		return active;
-	}
+    public String getAlias() {
+        return alias;
+    }
 
-	public SuperAppObjectBoundary setActive(Boolean active) {
-		this.active = active;
-		return this;
-	}
+    public SuperAppObjectBoundary setAlias(String alias) {
+        this.alias = alias;
+        return this;
+    }
 
-	public Date getCreateTimestamp() {
-		return createTimestamp;
-	}
+    public Boolean getActive() {
+        return active;
+    }
 
-	public SuperAppObjectBoundary setCreateTimestamp(Date createTimestamp) {
-		this.createTimestamp = createTimestamp;
-		return this;
-	}
+    public SuperAppObjectBoundary setActive(Boolean active) {
+        this.active = active;
+        return this;
+    }
 
-	public Location getLocation() {
-		return location;
-	}
+    public Date getCreationTimestamp() {
+        return creationTimestamp;
+    }
 
-	public SuperAppObjectBoundary setLocation(Location location) {
-		this.location = location;
-		return this;
-	}
+    public SuperAppObjectBoundary setCreationTimestamp(Date creationTimestamp) {
+        this.creationTimestamp = creationTimestamp;
+        return this;
+    }
 
-	public CreatedBy getCreatedBy() {
-		return createdBy;
-	}
+    public Location getLocation() {
+        return location;
+    }
 
-	public SuperAppObjectBoundary setCreatedBy(CreatedBy createdBy) {
-		this.createdBy = createdBy;
-		return this;
-	}
+    public SuperAppObjectBoundary setLocation(Location location) {
+        this.location = location;
+        return this;
+    }
 
-	public Map<String, Object> getObjectDetails() {
-		return objectDetails;
-	}
+    public CreatedBy getCreatedBy() {
+        return createdBy;
+    }
 
-	public SuperAppObjectBoundary setObjectDetails(Map<String, Object> objectDetails) {
-		this.objectDetails = objectDetails;
-		return this;
-	}
+    public SuperAppObjectBoundary setCreatedBy(CreatedBy createdBy) {
+        this.createdBy = createdBy;
+        return this;
+    }
 
-	@Override
-	public String toString() {
-		return "SuperAppObjectBoundary [objectId=" + objectId + ", type=" + type + ", alias=" + alias + ", active=" + active
-				+ ", createTimeStamp=" + createTimestamp + ", location=" + location + ", createdBy=" + createdBy
-				+ ", objectDetails=" + objectDetails + "]";
-	}
+    public Map<String, Object> getObjectDetails() {
+        return objectDetails;
+    }
+
+    public SuperAppObjectBoundary setObjectDetails(Map<String, Object> objectDetails) {
+        this.objectDetails = objectDetails;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "SuperAppObjectBoundary [objectId=" + objectId + ", type=" + type + ", alias=" + alias + ", active=" + active
+                + ", createTimeStamp=" + creationTimestamp + ", location=" + location + ", createdBy=" + createdBy
+                + ", objectDetails=" + objectDetails + "]";
+    }
 
 }

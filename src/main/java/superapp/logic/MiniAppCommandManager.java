@@ -112,7 +112,7 @@ public class MiniAppCommandManager implements MiniAppCommandService {
 
         // init values of commandId, timestamp
         commandBoundary.getCommandId().setSuperapp(superAppName);
-        commandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
+            commandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
         commandBoundary.setInvocationTimestamp(new Date());
 
         MiniAppCommandEntity commandEntity = convertToEntity(commandBoundary);

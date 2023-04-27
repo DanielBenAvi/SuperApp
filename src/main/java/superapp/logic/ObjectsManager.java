@@ -64,7 +64,7 @@ public class ObjectsManager implements ObjectsService {
 
         String objectId = ConvertHelp.concatenateIds(new String [] {superappName, UUID.randomUUID().toString()});
         entity.setObjectId(objectId);
-        entity.setCreateTimeStamp(new Date());
+        entity.setCreationTimestamp(new Date());
 
         this.objectsDatabaseMockup.put(objectId, entity);
 
@@ -175,7 +175,7 @@ public class ObjectsManager implements ObjectsService {
         boundary.setType(entity.getType());
         boundary.setAlias(entity.getAlias());
         boundary.setActive(entity.getActive());
-        boundary.setCreateTimestamp(entity.getCreateTimeStamp());
+        boundary.setCreationTimestamp(entity.getCreationTimestamp());
         boundary.setLocation(ConvertHelp.strLocationEntityToBoundary(entity.getLocation()));
         boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
 

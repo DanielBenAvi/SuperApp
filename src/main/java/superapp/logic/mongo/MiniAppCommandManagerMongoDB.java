@@ -91,7 +91,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
     @Override
     public Object invokeCommand(MiniAppCommandBoundary command) {
-        MiniAppCommandBoundary commandBoundary = command;
+        MiniAppCommandBoundary commandBoundary = command; // change to commandBoundary more readable
 
         if (commandBoundary == null) throw new RuntimeException("MiniAppCommandBoundary object cant be null");
 
@@ -128,13 +128,11 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         this.miniAppCommandCrud.save(commandEntity);
 
         // check if command is not valid
-
-
         try {
             Commands.valueOf(cmdToExecute);
-            commandResult.put(miniappName, Commands.UNKNOWN + " - " + cmdToExecute + " " + commandEntity.getCommandId() + " successfully executed");
+            commandResult.put(miniappName, cmdToExecute + " " + commandEntity.getCommandId() + " successfully executed");
         } catch (Exception e) {
-            commandResult.put(miniappName, "command " + cmdToExecute + " " + commandEntity.getCommandId() + " not recognized");
+            commandResult.put(miniappName, Commands.UNKNOWN + " - " + cmdToExecute + " " + commandEntity.getCommandId() + " not recognized");
             return commandResult;
         }
 

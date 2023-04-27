@@ -9,7 +9,7 @@ public class SuperAppObjectEntity {
 	private String type;
 	private String alias;
 	private boolean active;
-	private Date createTimeStamp;
+	private Date creationTimestamp;
 	private String location;
 	private String createdBy; // createdBy is a userId boundary concatenate
 	private Map<String, Object> objectDetails;
@@ -53,12 +53,12 @@ public class SuperAppObjectEntity {
 		return this;
 	}
 
-	public Date getCreateTimeStamp() {
-		return createTimeStamp;
+	public Date getCreationTimestamp() {
+		return creationTimestamp;
 	}
 
-	public SuperAppObjectEntity setCreateTimeStamp(Date createTimeStamp) {
-		this.createTimeStamp = createTimeStamp;
+	public SuperAppObjectEntity setCreationTimestamp(Date creationTimestamp) {
+		this.creationTimestamp = creationTimestamp;
 		return this;
 	}
 
@@ -96,7 +96,7 @@ public class SuperAppObjectEntity {
 				", type='" + type + '\'' +
 				", alias='" + alias + '\'' +
 				", active=" + active +
-				", createTimeStamp=" + createTimeStamp +
+				", createTimeStamp=" + creationTimestamp +
 				", location=" + location +
 				", createdBy='" + createdBy + '\'' +
 				", objectDetails=" + objectDetails +

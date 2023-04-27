@@ -8,5 +8,5 @@ public interface MiniAppCommandService {
 	public Object invokeCommand(MiniAppCommandBoundary command);
 	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName);
 	public List<MiniAppCommandBoundary> getAllCommands();
-	void deleteAllCommands();
+	public void deleteAllCommands();
 }
