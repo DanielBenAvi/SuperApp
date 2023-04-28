@@ -9,10 +9,8 @@ import superapp.logic.boundaries.SuperAppObjectBoundary;
 
 import java.util.*;
 
-/**
- * @author Ido & Yosef
- */
-@Service
+
+//@Service
 public class ObjectsManager implements ObjectsService {
 
     private Map<String, SuperAppObjectEntity> objectsDatabaseMockup;

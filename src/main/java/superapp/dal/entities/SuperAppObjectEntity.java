@@ -1,11 +1,15 @@
 package superapp.dal.entities;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Date;
 import java.util.Map;
 
+@Document(collection = "OBJECTS")
 public class SuperAppObjectEntity {
 
-	private String objectId; // objectId is a objectId boundary concatenate
+	@Id private String objectId; // objectId is a objectId boundary concatenate
 	private String type;
 	private String alias;
 	private boolean active;
