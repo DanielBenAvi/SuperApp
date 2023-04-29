@@ -1,6 +1,6 @@
 package superapp.logic;
 
-import superapp.dal.UserRole;
+import superapp.data.UserRole;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.InvokedBy;

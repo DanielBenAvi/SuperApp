@@ -1,7 +1,6 @@
-package superapp.dal;
+package superapp.data;
 
 import org.springframework.data.repository.ListCrudRepository;
-import superapp.dal.entities.MiniAppCommandEntity;
 
 public interface MiniAppCommandCrud extends ListCrudRepository<MiniAppCommandEntity, String> {
 }

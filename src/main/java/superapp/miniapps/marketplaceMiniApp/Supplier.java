@@ -1,4 +1,4 @@
-package superapp.dal.marketplaceMiniApp;
+package superapp.miniapps.marketplaceMiniApp;
 
 import java.util.Arrays;
 

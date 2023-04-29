@@ -4,19 +4,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
-public class UserNotFoundException extends RuntimeException {
+public class NotFoundException extends RuntimeException {
     // if id is not found in the database
-    public UserNotFoundException() {}
+    public NotFoundException() {}
 
-    public UserNotFoundException(String message) {
+    public NotFoundException(String message) {
         super(message);
     }
 
-    public UserNotFoundException(String message, Throwable cause) {
+    public NotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public UserNotFoundException(Throwable cause) {
+    public NotFoundException(Throwable cause) {
         super(cause);
     }
 

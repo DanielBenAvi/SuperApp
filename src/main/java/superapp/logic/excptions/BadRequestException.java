@@ -4,19 +4,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-public class UserBadRequestException extends RuntimeException {
+public class BadRequestException extends RuntimeException {
     // user error
-    public UserBadRequestException() {}
+    public BadRequestException() {}
 
-    public UserBadRequestException(String message) {
+    public BadRequestException(String message) {
         super(message);
     }
 
-    public UserBadRequestException(String message, Throwable cause) {
+    public BadRequestException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public UserBadRequestException(Throwable cause) {
+    public BadRequestException(Throwable cause) {
         super(cause);
     }
 

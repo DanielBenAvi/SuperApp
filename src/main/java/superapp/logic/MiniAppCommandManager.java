@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
-import superapp.dal.MiniAppNames;
-import superapp.dal.entities.MiniAppCommandEntity;
+import superapp.miniapps.MiniAppNames;
+import superapp.data.MiniAppCommandEntity;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 

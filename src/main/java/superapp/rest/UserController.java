@@ -1,4 +1,4 @@
-package superapp;
+package superapp.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import superapp.logic.excptions.UserNotFoundException;
+import superapp.logic.excptions.NotFoundException;
 import superapp.logic.UsersService;
 import superapp.logic.boundaries.UserID;
 import superapp.logic.boundaries.NewUserBoundary;
@@ -35,7 +35,7 @@ public class UserController {
 	public UserBoundary login(@PathVariable("email") String email, @PathVariable("superapp") String superapp) {
 
 		return this.usersService.login(superapp,email)
-				.orElseThrow(() -> new UserNotFoundException("User with id " + superapp + "_" + email + " not found"));
+				.orElseThrow(() -> new NotFoundException("User with id " + superapp + "_" + email + " not found"));
 	}
 
 

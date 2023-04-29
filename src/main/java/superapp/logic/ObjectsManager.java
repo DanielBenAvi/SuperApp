@@ -2,8 +2,7 @@ package superapp.logic;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import superapp.dal.entities.SuperAppObjectEntity;
+import superapp.data.SuperAppObjectEntity;
 import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 

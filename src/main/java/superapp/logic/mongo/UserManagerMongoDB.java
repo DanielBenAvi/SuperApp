@@ -4,12 +4,12 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import superapp.dal.UserCrud;
-import superapp.dal.UserRole;
-import superapp.dal.entities.UserEntity;
+import superapp.data.UserCrud;
+import superapp.data.UserRole;
+import superapp.data.UserEntity;
 import superapp.logic.ConvertHelp;
-import superapp.logic.excptions.UserBadRequestException;
-import superapp.logic.excptions.UserNotFoundException;
+import superapp.logic.excptions.BadRequestException;
+import superapp.logic.excptions.NotFoundException;
 import superapp.logic.UsersService;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
@@ -111,16 +111,16 @@ public class UserManagerMongoDB implements UsersService {
 
         // validate UserBoundary attr
         if (!isValidEmail(userBoundary.getUserId().getEmail()))
-            throw new UserBadRequestException("Email invalid");
+            throw new BadRequestException("Email invalid");
 
         if (!isValidRole(userBoundary.getRole()))
-            throw new UserBadRequestException("Role invalid");
+            throw new BadRequestException("Role invalid");
 
         if (!isValidUserName(userBoundary.getUsername()))
-            throw new UserBadRequestException("User name invalid");
+            throw new BadRequestException("User name invalid");
 
         if (!isValidAvatar(userBoundary.getAvatar()))
-            throw new UserBadRequestException("Avatar invalid");
+            throw new BadRequestException("Avatar invalid");
 
 
         userBoundary.getUserId().setSuperapp(superappName);
@@ -129,7 +129,7 @@ public class UserManagerMongoDB implements UsersService {
 
         // check if user already exist
         if (this.usersCrudDB.existsById(userEntity.getUserID()))
-            throw new UserBadRequestException("User with id " + userEntity.getUserID() + " already exists");
+            throw new BadRequestException("User with id " + userEntity.getUserID() + " already exists");
 
         this.usersCrudDB.save(userEntity);
 
@@ -151,7 +151,7 @@ public class UserManagerMongoDB implements UsersService {
 
         UserEntity userEntity = this.usersCrudDB
                 .findById(userID)
-                .orElseThrow(() -> new UserNotFoundException("Couldn't find user by id  " + userID));
+                .orElseThrow(() -> new NotFoundException("Couldn't find user by id  " + userID));
 
         if (userEntity == null) {
             return Optional.empty();
@@ -180,7 +180,7 @@ public class UserManagerMongoDB implements UsersService {
         // get user from DB and check if is null
         UserEntity existing = this.usersCrudDB
                 .findById(userID)
-                .orElseThrow(() -> new UserNotFoundException("Couldn't find user by id  " + userID));
+                .orElseThrow(() -> new NotFoundException("Couldn't find user by id  " + userID));
 
 
         boolean dirtyFlag = false;
@@ -188,7 +188,7 @@ public class UserManagerMongoDB implements UsersService {
         if (update.getUsername() != null) {
 
             if (!isValidUserName(update.getUsername()))
-                throw new UserBadRequestException("User name invalid");
+                throw new BadRequestException("User name invalid");
 
             existing.setUserName(update.getUsername());
             dirtyFlag = true;
@@ -197,7 +197,7 @@ public class UserManagerMongoDB implements UsersService {
         if (update.getRole()!= null) {
 
             if (!isValidRole(update.getRole()))
-                throw new UserBadRequestException("Role invalid");
+                throw new BadRequestException("Role invalid");
 
             existing.setRole(ConvertHelp.strToUserRole(update.getRole()));
             dirtyFlag = true;
@@ -206,7 +206,7 @@ public class UserManagerMongoDB implements UsersService {
         if (update.getAvatar() != null) {
 
             if (!isValidAvatar(update.getAvatar()))
-                throw new UserBadRequestException("Avatar invalid");
+                throw new BadRequestException("Avatar invalid");
 
             existing.setAvatar(update.getAvatar());
             dirtyFlag = true;

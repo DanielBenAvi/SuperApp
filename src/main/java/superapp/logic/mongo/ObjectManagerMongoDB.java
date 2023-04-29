@@ -4,13 +4,13 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import superapp.dal.ObjectCrud;
-import superapp.dal.entities.SuperAppObjectEntity;
+import superapp.data.ObjectCrud;
+import superapp.data.SuperAppObjectEntity;
 import superapp.logic.ConvertHelp;
 import superapp.logic.ObjectsService;
 import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
-import superapp.logic.excptions.UserNotFoundException;
+import superapp.logic.excptions.NotFoundException;
 
 import java.util.*;
 
@@ -95,7 +95,7 @@ public class ObjectManagerMongoDB implements ObjectsService {
     public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId, SuperAppObjectBoundary update) {
         String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId});
 
-        SuperAppObjectEntity exists = this.objectCrudDB.findById(objectId).orElseThrow(()->new UserNotFoundException("could not update object by id: " + objectId + " because it does not exist"));
+        SuperAppObjectEntity exists = this.objectCrudDB.findById(objectId).orElseThrow(()->new NotFoundException("could not update object by id: " + objectId + " because it does not exist"));
         // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
 
         if(exists == null)

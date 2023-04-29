@@ -1,4 +1,4 @@
-package superapp.dal;
+package superapp.miniapps;
 
 public enum MiniAppNames {
     DATING,

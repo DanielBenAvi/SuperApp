@@ -1,4 +1,4 @@
-package superapp.dal;
+package superapp.data;
 
 public enum UserRole {
     MINIAPP_USER,

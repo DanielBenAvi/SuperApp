@@ -1,4 +1,4 @@
-package superapp.dal;
+package superapp.data;
 
 import java.util.ArrayList;
 

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.stereotype.Service;
 
 
-import superapp.dal.entities.UserEntity;
+import superapp.data.UserEntity;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
 

@@ -1,4 +1,4 @@
-package superapp.dal.marketplaceMiniApp;
+package superapp.miniapps.marketplaceMiniApp;
 
 
 public class Product {
