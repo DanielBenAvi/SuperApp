@@ -13,7 +13,7 @@ just register and start using the app.
 ### we used the following technologies:
 - Rest API (Spring Boot)
 - Flutter (IOS, Android, and Web) client
-- SQL Database
+- Mongo Database
 ## The Team
 - Lior Ariely - Team leader
 - Yosef Shalom Seada - System architect, technical writer
