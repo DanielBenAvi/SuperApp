@@ -184,7 +184,6 @@ public class UserManagerMongoDB implements UsersService {
 
 
         boolean dirtyFlag = false;
-
         if (update.getUsername() != null) {
 
             if (!isValidUserName(update.getUsername()))
