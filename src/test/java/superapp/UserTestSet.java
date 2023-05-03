@@ -444,27 +444,30 @@ public class UserTestSet {
 
     @Test
     public void successfulGetAllUsers() {
-
         // given
         // 1. the server is up and running
         // 2. the database is up and running
         // 3. the user is registered
+        String postUserUrl = this.baseUrl + "/superapp/users";
         NewUserBoundary user1 = new NewUserBoundary();
         user1.setEmail("demo1@gmail.com").setRole(UserRole.SUPERAPP_USER.toString()).setUsername("demo_user").setAvatar("demo_avatar");
-        this.restTemplate.postForObject(this.baseUrl + "/superapp/users", user1, UserBoundary.class);
+        this.restTemplate.postForObject(postUserUrl, user1, UserBoundary.class);
 
         NewUserBoundary user2 = new NewUserBoundary();
         user2.setEmail("demo2@gmail.com").setRole(UserRole.SUPERAPP_USER.toString()).setUsername("demo_user").setAvatar("demo_avatar");
-        this.restTemplate.postForObject(this.baseUrl + "/superapp/users", user2, UserBoundary.class);
+        this.restTemplate.postForObject(postUserUrl, user2, UserBoundary.class);
 
         // when
         // A GET request is made to the path "/superapp/admin/users"
-        UserBoundary[] users = this.restTemplate.getForObject(this.baseUrl + "/superapp/admin/users", UserBoundary[].class);
+        String getAllUrl = this.baseUrl + "/superapp/admin/users";
+        UserBoundary[] users = this.restTemplate.getForObject(getAllUrl, UserBoundary[].class);
 
         // then
         // the server returns status code 2xx
         // users are returned -> 2 users
         assertThat(users).hasSize(2);
+        assertThat(this.restTemplate.getForEntity(getAllUrl, UserBoundary[].class).getStatusCode()).isEqualTo(HttpStatus.OK);
+
     }
 
     @Test
