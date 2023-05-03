@@ -8,12 +8,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import superapp.data.UserRole;
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
+
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserTestSet {
@@ -438,6 +444,7 @@ public class UserTestSet {
 
     @Test
     public void successfulGetAllUsers() {
+
         // given
         // 1. the server is up and running
         // 2. the database is up and running
@@ -462,6 +469,7 @@ public class UserTestSet {
 
     @Test
     public void successfulGetAllUsers_empty() {
+        String url = this.baseUrl + "/superapp/admin/users";
         // given
         // 1. the server is up and running
         // 2. the database is up and running
@@ -469,10 +477,12 @@ public class UserTestSet {
 
         // when
         // A GET request is made to the path "/superapp/admin/users"
-        UserBoundary[] users = this.restTemplate.getForObject(this.baseUrl + "/superapp/admin/users", UserBoundary[].class);
+        UserBoundary[] users = this.restTemplate.getForObject(url, UserBoundary[].class);
 
         // then
         // the server returns status code 2xx
         assertThat(users).isEmpty();
+        assertThat(this.restTemplate.getForEntity(url, UserBoundary[].class).getStatusCode()).isEqualTo(HttpStatus.OK);
+
     }
 }
