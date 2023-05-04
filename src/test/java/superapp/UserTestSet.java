@@ -4,21 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import superapp.data.UserRole;
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
-
-import java.net.http.HttpClient;
-import java.net.http.HttpResponse;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -50,27 +47,94 @@ public class UserTestSet {
         this.restTemplate.delete(this.baseUrl + "/superapp/admin/users");
     }
 
+    /**
+     * POST:
+     * Helper method to create a user
+     * the path is "/superapp/users"
+     *
+     * @param email - the email of the user
+     * @param role - the role of the user
+     * @param username - the username of the user
+     * @param avatar - the avatar of the user
+     *
+     * @return the user that was created
+     */
+    public UserBoundary help_PostUserBoundary(String email, String role, String username, String avatar) {
+        NewUserBoundary user = new NewUserBoundary();
+        user.setEmail(email).setRole(role).setUsername(username).setAvatar(avatar);
+        return this.restTemplate
+                .postForObject(
+                        this.baseUrl + "/superapp/users"
+                        , user
+                        , UserBoundary.class);
+    }
+
+
+    /**
+     * GET:
+     * Helper method to get a user
+     * the path is "/superapp/users/login/{superapp}/{email}"
+     *
+     * @param email - the email of the user
+     *
+     * @return the user that was created
+     */
+    public UserBoundary help_GetUserBoundary(String email) {
+        return this.restTemplate
+                .getForObject(
+                        this.baseUrl + "/superapp/users/login/{superapp}/{email}"
+                        , UserBoundary.class
+                        , springApplicationName
+                        , email);
+    }
+
+    /**
+     * PUT
+     * Helper method to update a user
+     * the path is "/superapp/users/{superapp}/{email}"
+     *
+     * @param userBoundary - the user to update
+     * @param email        - the email of the user we want to update
+     */
+    public void help_PutUserBoundary(UserBoundary userBoundary, String email) {
+        this.restTemplate.put(
+                this.baseUrl + "/superapp/users/{superapp}/{email}"
+                , userBoundary, springApplicationName
+                , email);
+    }
+
     @Test
+    @DisplayName("Successful login user")
     public void successfulLoginUser() {
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+
         // given
         // 1. the server is up and running
         // 2. the database is up and running
         // 3. the user is registered
-        NewUserBoundary user = new NewUserBoundary();
-        user.setEmail("demo@gmail.com").setRole("MINIAPP_USER").setUsername("demo_user").setAvatar("demo_avatar");
-        this.restTemplate.postForObject(this.baseUrl + "/superapp/users", user, UserBoundary.class);
-
+        help_PostUserBoundary(email, role, username, avatar);
 
         // when
         // A GET request is made to the path "/superapp/users/login/{superapp}/{email}"
-        UserBoundary userBoundary = this.restTemplate.getForObject(this.baseUrl + "/superapp/users/login/{superapp}/{email}", UserBoundary.class, springApplicationName, user.getEmail());
+        UserBoundary userBoundary = help_GetUserBoundary(email);
 
         // then
         // the server returns status code 2xx
-        UserBoundary expectedUser = new UserBoundary().setUserId(new UserID().setEmail("demo@gmail.com").setSuperapp(springApplicationName)).setRole("MINIAPP_USER").setUsername("demo_user").setAvatar("demo_avatar");
+        UserBoundary expectedUser = new UserBoundary()
+                .setUserId(new UserID()
+                        .setEmail(email)
+                        .setSuperapp(springApplicationName))
+                .setRole(role).setUsername(username)
+                .setAvatar(avatar);
 
         // userBoundary is equal to expectedUser
-        assertThat(userBoundary).isNotNull().usingRecursiveComparison().isEqualTo(expectedUser);
+        assertThat(userBoundary)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedUser);
     }
 
     @Test
