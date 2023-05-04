@@ -2,6 +2,7 @@ package superapp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 
 import jakarta.annotation.PostConstruct;
 import org.assertj.core.api.ThrowableAssert;
@@ -19,6 +20,9 @@ import superapp.data.UserRole;
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -924,6 +928,7 @@ public class UserTestSet {
     }
 
     @Test
+    @DisplayName("successfully get all users - 0 users in the database")
     public void successfulGetAllUsers_empty() {
         String url = this.baseUrl + "/superapp/admin/users";
         // given
@@ -939,6 +944,73 @@ public class UserTestSet {
         // the server returns status code 2xx
         // users are returned -> 2 users
         assertThat(users).isEmpty();
+    }
+
+
+    @Test
+    @DisplayName("successfully crate a user - json is valid")
+    public void successfulCreateUser_jsonValid() {
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+
+        // given
+        // 1. the server is up and running
+        // 2. the database is up and running
+        Map<String, Object> invalidUser = new HashMap<>();
+        invalidUser.put("email", email);
+        invalidUser.put("role", role);
+        invalidUser.put("username", username);
+        invalidUser.put("avatar", avatar);
+
+        // when
+        // A POST request is made to the path "/superapp/users"
+        // with a valid user JSON
+        this.restTemplate.postForObject(this.baseUrl + "/superapp/users", invalidUser, UserBoundary.class);
+
+        // then
+        // the server returns status code 2xx
+        // the user is stored in the database
+        UserBoundary expectedUser = new UserBoundary()
+                .setUserId(new UserID()
+                        .setSuperapp(springApplicationName)
+                        .setEmail(email))
+                .setRole(role)
+                .setUsername(username)
+                .setAvatar(avatar);
+
+        assertThat(help_GetUserBoundary(email)).isNotNull().usingRecursiveComparison().isEqualTo(expectedUser);
+
+    }
+
+    @Test
+    @DisplayName("unsuccessfully crate a user - json is not valid")
+    public void unsuccessfulCreateUser_jsonNotValid() {
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+
+        // given
+        // 1. the server is up and running
+        // 2. the database is up and running
+        Map<String, Object> invalidUser = new HashMap<>();
+        invalidUser.put("email", email);
+        invalidUser.put("invalid-role", role);
+        invalidUser.put("username", username);
+        invalidUser.put("avatar", avatar);
+
+
+        // when
+        // A POST request is made to the path "/superapp/users"
+        // with invalid user
+        // then
+        // the server returns status code 4xx
+        assertThatThrownBy(() -> this.restTemplate.postForObject(this.baseUrl + "/superapp/users", invalidUser, UserBoundary.class))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting("statusCode.4xxClientError")
+                .isEqualTo(true);
     }
 
 
