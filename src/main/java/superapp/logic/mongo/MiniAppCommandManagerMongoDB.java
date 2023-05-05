@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import superapp.data.MiniAppCommandCrud;
+import superapp.logic.boundaries.InvokedBy;
+import superapp.logic.boundaries.TargetObject;
+import superapp.logic.excptions.BadRequestException;
 import superapp.miniapps.MiniAppNames;
 import superapp.data.MiniAppCommandEntity;
 import superapp.logic.ConvertHelp;
@@ -19,7 +22,7 @@ import java.util.*;
 @Service
 public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
-    private MiniAppCommandCrud miniAppCommandCrud;
+    private final MiniAppCommandCrud miniAppCommandCrud;
     private String springApplicationName;
 
     @Autowired
@@ -91,36 +94,43 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
     @Override
     public Object invokeCommand(MiniAppCommandBoundary command) {
-        MiniAppCommandBoundary commandBoundary = command; // change to commandBoundary more readable
 
-        if (commandBoundary == null) throw new RuntimeException("MiniAppCommandBoundary object cant be null");
-
-        String miniappName = commandBoundary.getCommandId().getMiniapp();
-        try {
-            MiniAppNames.valueOf(miniappName);
-        } catch (Exception e) {
-            throw new RuntimeException("cant invoke command of miniapp " + miniappName);
-        }
+        if (command == null) throw new BadRequestException("MiniAppCommandBoundary object cant be null");
 
         // set command id
-        commandBoundary.getCommandId().setSuperapp(springApplicationName);
+        command.getCommandId().setSuperapp(springApplicationName);
 
         // set internal command id
-        commandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
+        command.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
+
+        // is valid command id
+        if (!isValidCommandId(command.getCommandId()))
+            throw new BadRequestException("command id is not valid");
+
+        // is valid invoked by
+        if (!isValidInvokedBy(command.getInvokedBy()))
+            throw new BadRequestException("invoked by is not valid");
+
+        // is valid target object
+        if (!isValidTargetObject(command.getTargetObject()))
+            throw new BadRequestException("target object is not valid");
+
+        if (command.getCommand() == null)
+            throw new BadRequestException("command is not valid");
 
         // set invocation timestamp
-        commandBoundary.setInvocationTimestamp(new Date());
+        command.setInvocationTimestamp(new Date());
 
         // convert to entity
-        MiniAppCommandEntity commandEntity = convertToEntity(commandBoundary);
+        MiniAppCommandEntity commandEntity = convertToEntity(command);
 
-        // execute command
+        /////////////////////// execute command ///////////////////////
         Map<String, Object> commandResult = new HashMap<>();
         String cmdToExecute = commandEntity.getCommand();
 
         // check if command is null
         if (cmdToExecute == null) {
-            commandResult.put(miniappName, "command cannot be null");
+            commandResult.put(commandEntity.getCommandId(), "command cannot be null");
             return commandResult;
         }
 
@@ -130,9 +140,9 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         // check if command is not valid
         try {
             Commands.valueOf(cmdToExecute);
-            commandResult.put(miniappName, cmdToExecute + " " + commandEntity.getCommandId() + " successfully executed");
+            commandResult.put(commandEntity.getCommandId(), cmdToExecute + " successfully executed");
         } catch (Exception e) {
-            commandResult.put(miniappName, Commands.UNKNOWN + " - " + cmdToExecute + " " + commandEntity.getCommandId() + " not recognized");
+            commandResult.put(commandEntity.getCommandId(), Commands.UNKNOWN + " - " + cmdToExecute + " not recognized");
             return commandResult;
         }
 
@@ -170,5 +180,55 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
     @Override
     public void deleteAllCommands() {
         this.miniAppCommandCrud.deleteAll();
+    }
+
+
+    private boolean isValidCommandId(CommandId commandId) {
+        // check if commandId is null
+        if (commandId == null) return false;
+
+        // check if commandId fields are null and not empty
+        if (commandId.getSuperapp() == null || commandId.getSuperapp().isEmpty()) return false;
+
+        // check if commandId fields are null and miniapp is valid
+        if (commandId.getMiniapp() == null) return false;
+        try {
+            MiniAppNames.valueOf(commandId.getMiniapp());
+        } catch (BadRequestException e) {
+            return false;
+        }
+        // check if commandId fields are null
+        return commandId.getInternalCommandId() != null;
+    }
+
+    private boolean isValidInvokedBy(InvokedBy invokedBy) {
+        // check if invokedBy is null
+        if (invokedBy == null) return false;
+
+        // check if invokedBy fields are null
+        if (invokedBy.getUserId() == null) return false;
+
+        // todo: check if userId is valid (need to check with user service)
+
+
+        return true;
+    }
+
+    private boolean isValidTargetObject(TargetObject targetObject) {
+        // check if targetObject is null
+        if (targetObject == null) return false;
+
+        // check if targetObject fields are null
+
+        // check if targetObject fields are null
+        if (targetObject.getObjectId() == null) return false;
+
+        if (targetObject.getObjectId().getInternalObjectId() == null) return false;
+
+        if (targetObject.getObjectId().getSuperapp() == null) return false;
+
+        // todo: check if objectId is valid (need to check with user service)
+
+        return true;
     }
 }

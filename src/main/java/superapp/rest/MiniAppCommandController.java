@@ -34,9 +34,8 @@ public class MiniAppCommandController {
 								@RequestBody MiniAppCommandBoundary miniAppCommandBoundary) {
 
 		miniAppCommandBoundary.getCommandId().setMiniapp(miniAppName);
-		Object commandResult = miniAppCommandService.invokeCommand(miniAppCommandBoundary);
 
-		return commandResult;
+		return miniAppCommandService.invokeCommand(miniAppCommandBoundary);
 	}
 
 }
