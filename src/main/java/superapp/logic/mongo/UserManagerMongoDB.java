@@ -8,8 +8,6 @@ import superapp.data.UserCrud;
 import superapp.data.UserRole;
 import superapp.data.UserEntity;
 import superapp.logic.ConvertHelp;
-import superapp.logic.excptions.BadRequestException;
-import superapp.logic.excptions.NotFoundException;
 import superapp.logic.UsersService;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
@@ -48,52 +46,6 @@ public class UserManagerMongoDB implements UsersService {
         System.err.println("****** " + this.getClass().getName() + " service initiated");
     }
 
-    /**
-     * converts user boundary to user entity
-     * @param userBoundary boundary
-     * @return userEntity
-     *
-     */
-    private UserEntity boundaryToEntity(UserBoundary userBoundary) {
-        UserEntity userEntity = new UserEntity();
-
-        String email = userBoundary.getUserId().getEmail();
-        String userID = ConvertHelp.userIdBoundaryToStr(new UserID(superappName,email));
-
-        userEntity.setUserID(userID);
-
-        userEntity.setUserName(userBoundary.getUsername());
-
-        userEntity.setAvatar(userBoundary.getAvatar());
-
-        userEntity.setRole(ConvertHelp.strToUserRole(userBoundary.getRole()));
-
-
-        return userEntity;
-    }
-
-    /**
-     * converts user entity to user boundary
-     * @param userEntity entity
-     * @return userBoundary
-     */
-    private UserBoundary entityToBoundary(UserEntity userEntity) {
-
-        UserBoundary userBoundary = new UserBoundary();
-
-        // crate a userID object
-        UserID userID = ConvertHelp.strUserIdToBoundary(userEntity.getUserID());
-
-        // set the userID object
-        userBoundary.setUserId(userID);
-
-        // set the rest of the fields
-        userBoundary.setUsername(userEntity.getUserName());
-        userBoundary.setRole(ConvertHelp.userRoleToStr(userEntity.getRole()));
-        userBoundary.setAvatar(userEntity.getAvatar());
-
-        return userBoundary;
-    }
 
     /**
      * This method creates-register new user entity from user boundary
@@ -129,7 +81,7 @@ public class UserManagerMongoDB implements UsersService {
 
         // check if user already exist
         if (this.usersCrudDB.existsById(userEntity.getUserID()))
-            throw new BadRequestException("User with id " + userEntity.getUserID() + " already exists");
+            throw new ConflictRequestException("User with id " + userEntity.getUserID() + " already exists");
 
         this.usersCrudDB.save(userEntity);
 
@@ -241,7 +193,52 @@ public class UserManagerMongoDB implements UsersService {
         this.usersCrudDB.deleteAll();
     }
 
+    /**
+     * converts user boundary to user entity
+     * @param userBoundary boundary
+     * @return userEntity
+     *
+     */
+    private UserEntity boundaryToEntity(UserBoundary userBoundary) {
+        UserEntity userEntity = new UserEntity();
 
+        String email = userBoundary.getUserId().getEmail();
+        String userID = ConvertHelp.userIdBoundaryToStr(new UserID(superappName,email));
+
+        userEntity.setUserID(userID);
+
+        userEntity.setUserName(userBoundary.getUsername());
+
+        userEntity.setAvatar(userBoundary.getAvatar());
+
+        userEntity.setRole(ConvertHelp.strToUserRole(userBoundary.getRole()));
+
+
+        return userEntity;
+    }
+
+    /**
+     * converts user entity to user boundary
+     * @param userEntity entity
+     * @return userBoundary
+     */
+    private UserBoundary entityToBoundary(UserEntity userEntity) {
+
+        UserBoundary userBoundary = new UserBoundary();
+
+        // crate a userID object
+        UserID userID = ConvertHelp.strUserIdToBoundary(userEntity.getUserID());
+
+        // set the userID object
+        userBoundary.setUserId(userID);
+
+        // set the rest of the fields
+        userBoundary.setUsername(userEntity.getUserName());
+        userBoundary.setRole(ConvertHelp.userRoleToStr(userEntity.getRole()));
+        userBoundary.setAvatar(userEntity.getAvatar());
+
+        return userBoundary;
+    }
 
     /**
      * This method validate the username isn`t null or empty.
@@ -301,11 +298,11 @@ public class UserManagerMongoDB implements UsersService {
     private boolean isValidEmail(String email) {
 
 
-        if (email == null || email.isEmpty())
+        if (email == null)
             return false;
 
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."
-                + "[a-zA-Z0-9_+&*-]+)*@"
+        String emailRegex = "^[a-zA-Z0-9+&*-]+(?:\\."
+                + "[a-zA-Z0-9+&*-]+)*@"
                 + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
                 + "A-Z]{2,7}$";
 

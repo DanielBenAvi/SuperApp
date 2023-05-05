@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import superapp.logic.MiniAppCommandService;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.logic.excptions.BadRequestException;
-import superapp.miniapps.MiniAppNames;
 
 
 @RestController
