@@ -104,8 +104,9 @@ public class ConvertHelp {
      * @return UserID Object
      */
     public static UserID strUserIdToBoundary(String userId) {
-
+        System.err.println("LOG: strUserIdToBoundary: " + userId);
         String[] attr = userId.split(DELIMITER_ID);
+
         return new UserID(attr[0], attr[1]);
     }
 
@@ -147,6 +148,7 @@ public class ConvertHelp {
     }
     
     public static InvokedBy strInvokedByToBoundary(String strInvoke) {
+        System.err.println("LOG: strInvokedByToBoundary: " + strInvoke);
     	InvokedBy invokedBy = new InvokedBy();
         invokedBy.setUserId(strUserIdToBoundary(strInvoke));
     	return invokedBy;

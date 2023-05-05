@@ -9,33 +9,34 @@ import org.springframework.web.bind.annotation.RestController;
 
 import superapp.logic.MiniAppCommandService;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
+import superapp.logic.excptions.BadRequestException;
+import superapp.miniapps.MiniAppNames;
 
 
 @RestController
 public class MiniAppCommandController {
 
-	private MiniAppCommandService miniAppCommandService;
+    private MiniAppCommandService miniAppCommandService;
 
-	@Autowired
-	public void setMiniAppCmdService(MiniAppCommandService miniAppCmdService) {
-		this.miniAppCommandService = miniAppCmdService;
-	}
+    @Autowired
+    public void setMiniAppCmdService(MiniAppCommandService miniAppCmdService) {
+        this.miniAppCommandService = miniAppCmdService;
+    }
 
-	/**
-	 *
-	 * @param miniAppName String
-	 * @param miniAppCommandBoundary MiniAppCommandBoundary
-	 * @return commandResult Object
-	 */
-	@PostMapping(path = {"/superapp/miniapp/{miniAppName}"},
-			produces = {MediaType.APPLICATION_JSON_VALUE},
-			consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public Object invokeCommand(@PathVariable("miniAppName") String miniAppName,
-								@RequestBody MiniAppCommandBoundary miniAppCommandBoundary) {
+    /**
+     * @param miniAppName            String
+     * @param miniAppCommandBoundary MiniAppCommandBoundary
+     * @return commandResult Object
+     */
+    @PostMapping(path = {"/superapp/miniapp/{miniAppName}"},
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public Object invokeCommand(@PathVariable("miniAppName") String miniAppName,
+                                @RequestBody MiniAppCommandBoundary miniAppCommandBoundary) {
 
-		miniAppCommandBoundary.getCommandId().setMiniapp(miniAppName);
+        miniAppCommandBoundary.getCommandId().setMiniapp(miniAppName);
 
-		return miniAppCommandService.invokeCommand(miniAppCommandBoundary);
-	}
+        return miniAppCommandService.invokeCommand(miniAppCommandBoundary);
+    }
 
 }

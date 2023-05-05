@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import superapp.data.MiniAppCommandCrud;
+import superapp.data.ObjectCrud;
+import superapp.data.UserCrud;
 import superapp.logic.boundaries.InvokedBy;
 import superapp.logic.boundaries.TargetObject;
 import superapp.logic.excptions.BadRequestException;
+import superapp.logic.excptions.NotFoundException;
 import superapp.miniapps.MiniAppNames;
 import superapp.data.MiniAppCommandEntity;
 import superapp.logic.ConvertHelp;
@@ -18,16 +21,22 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.command.Commands;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
     private final MiniAppCommandCrud miniAppCommandCrud;
+    private final UserCrud userCrud;
+
+    private final ObjectCrud objectCrud;
     private String springApplicationName;
 
     @Autowired
-    public MiniAppCommandManagerMongoDB(MiniAppCommandCrud miniAppCommandCrud) {
+    public MiniAppCommandManagerMongoDB(MiniAppCommandCrud miniAppCommandCrud, UserCrud userCrud, ObjectCrud objectCrud) {
         this.miniAppCommandCrud = miniAppCommandCrud;
+        this.userCrud = userCrud;
+        this.objectCrud = objectCrud;
     }
 
 
@@ -104,19 +113,16 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         command.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
 
         // is valid command id
-        if (!isValidCommandId(command.getCommandId()))
-            throw new BadRequestException("command id is not valid");
+        if (!isValidCommandId(command.getCommandId())) throw new BadRequestException("command id is not valid");
 
         // is valid invoked by
-        if (!isValidInvokedBy(command.getInvokedBy()))
-            throw new BadRequestException("invoked by is not valid");
+        if (!isValidInvokedBy(command.getInvokedBy())) throw new BadRequestException("invoked by is not valid");
 
         // is valid target object
         if (!isValidTargetObject(command.getTargetObject()))
             throw new BadRequestException("target object is not valid");
 
-        if (command.getCommand() == null)
-            throw new BadRequestException("command is not valid");
+        if (command.getCommand() == null) throw new BadRequestException("command is not valid");
 
         // set invocation timestamp
         command.setInvocationTimestamp(new Date());
@@ -153,11 +159,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
     public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
 
         // Check if the miniApp name is valid
-        try {
-            MiniAppNames.valueOf(miniAppName);
-        } catch (Exception e) {
-            throw new RuntimeException("MiniApp name is not valid");
-        }
+        if (!validMiniAppName(miniAppName)) throw new BadRequestException("MiniApp name is not valid");
 
         // Create a list of commands
         List<MiniAppCommandBoundary> commandBoundaryList = new ArrayList<>();
@@ -192,11 +194,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
         // check if commandId fields are null and miniapp is valid
         if (commandId.getMiniapp() == null) return false;
-        try {
-            MiniAppNames.valueOf(commandId.getMiniapp());
-        } catch (BadRequestException e) {
-            return false;
-        }
+        if (!validMiniAppName(commandId.getMiniapp())) return false;
         // check if commandId fields are null
         return commandId.getInternalCommandId() != null;
     }
@@ -208,10 +206,26 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         // check if invokedBy fields are null
         if (invokedBy.getUserId() == null) return false;
 
-        // todo: check if userId is valid (need to check with user service)
+        if (invokedBy.getUserId().getEmail() == null) return false;
 
+        if (invokedBy.getUserId().getSuperapp() == null) return false;
+
+        // check if user exist in database
+        AtomicBoolean userExist = checkIfUserExists(invokedBy);
+
+        if (!userExist.get()) throw new NotFoundException("user id is not valid");
 
         return true;
+    }
+
+    private AtomicBoolean checkIfUserExists(InvokedBy invokedBy) {
+        AtomicBoolean userExist = new AtomicBoolean(false);
+        this.userCrud.findAll().forEach(userEntity -> {
+            if (userEntity.getUserID().equals(ConvertHelp.userIdBoundaryToStr(invokedBy.getUserId()))) {
+                userExist.set(true);
+            }
+        });
+        return userExist;
     }
 
     private boolean isValidTargetObject(TargetObject targetObject) {
@@ -227,8 +241,29 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
         if (targetObject.getObjectId().getSuperapp() == null) return false;
 
-        // todo: check if objectId is valid (need to check with user service)
+        AtomicBoolean objectExist = checkIfObjectExists(targetObject);
+        if (!objectExist.get())
+            throw new NotFoundException("object id is not valid");
 
+        return true;
+    }
+
+    private AtomicBoolean checkIfObjectExists(TargetObject targetObject) {
+        AtomicBoolean objectExist = new AtomicBoolean(false);
+        this.objectCrud.findAll().forEach(objectEntity -> {
+            if (objectEntity.getObjectId().equals(ConvertHelp.objectIdBoundaryToStr(targetObject.getObjectId()))) {
+                objectExist.set(true);
+            }
+        });
+        return objectExist;
+    }
+
+    private boolean validMiniAppName(String miniAppName) {
+        try {
+            MiniAppNames.valueOf(miniAppName);
+        } catch (Exception e) {
+            return false;
+        }
         return true;
     }
 }
