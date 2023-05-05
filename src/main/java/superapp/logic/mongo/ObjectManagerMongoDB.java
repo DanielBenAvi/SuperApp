@@ -164,7 +164,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
         SuperAppObjectEntity origin = this.objectCrudDB.findById(originId).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + originId + " because it does not exist"));
         SuperAppObjectEntity child = this.objectCrudDB.findById(childId).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + childId + " because it does not exist"));
 
-        if (!origin.equals(child)) throw new BadRequestException("origin and child are not the same object");
+        if (origin.equals(child)) throw new BadRequestException("origin and child are the same object");
 
         if (child.getParent() != null) throw new BadRequestException("child already has a parent");
 
