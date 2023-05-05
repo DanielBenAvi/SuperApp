@@ -98,6 +98,7 @@ public class AdminController {
 
 		this.miniAppCommandService.deleteAllCommands();
 		System.err.println("All commands history deleted");
+
 	}
 
 }
