@@ -10,7 +10,6 @@ import superapp.logic.ConvertHelp;
 import superapp.logic.ObjectsService;
 import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
-import superapp.logic.excptions.NotFoundException;
 
 import java.util.*;
 

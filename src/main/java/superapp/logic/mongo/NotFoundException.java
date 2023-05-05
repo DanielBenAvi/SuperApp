@@ -1,4 +1,4 @@
-package superapp.logic.excptions;
+package superapp.logic.mongo;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
