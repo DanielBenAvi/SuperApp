@@ -7,7 +7,7 @@ import superapp.logic.ConvertHelp;
 import superapp.logic.ObjectsServiceWithRelationshipSupport;
 import superapp.logic.boundaries.ObjectId;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
-import superapp.logic.excptions.NotFoundException;
+import superapp.logic.mongo.NotFoundException;
 
 @RestController
 public class RelationshipController {

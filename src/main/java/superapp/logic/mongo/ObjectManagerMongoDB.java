@@ -8,14 +8,14 @@ import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
 import superapp.logic.ConvertHelp;
 import superapp.logic.ObjectsService;
+import superapp.logic.ObjectsServiceWithRelationshipSupport;
 import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
-import superapp.logic.excptions.NotFoundException;
 
 import java.util.*;
 
 @Service
-public class ObjectManagerMongoDB implements ObjectsService {
+public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSupport {
     private ObjectCrud objectCrudDB;
     private String springApplicationName;
 
@@ -166,5 +166,20 @@ public class ObjectManagerMongoDB implements ObjectsService {
     @Override
     public void deleteAllObjects() {
          this.objectCrudDB.deleteAll();
+    }
+
+    @Override
+    public void addChild(String originId, String childId) {
+
+    }
+
+    @Override
+    public List<SuperAppObjectBoundary> getChildren(String originId) {
+        return null;
+    }
+
+    @Override
+    public Optional<SuperAppObjectBoundary> getOrigin(String childId) {
+        return Optional.empty();
     }
 }
