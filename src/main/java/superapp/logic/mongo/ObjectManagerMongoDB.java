@@ -19,13 +19,13 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
     private ObjectCrud objectCrudDB;
     private String springApplicationName;
 
-     @Autowired
-     public ObjectManagerMongoDB(ObjectCrud objectCrudDB) {
-         this.objectCrudDB = objectCrudDB;
-     }
+    @Autowired
+    public ObjectManagerMongoDB(ObjectCrud objectCrudDB) {
+        this.objectCrudDB = objectCrudDB;
+    }
 
     // this method injects a configuration value of spring
-   @Value("${spring.application.name:defaultAppName}")
+    @Value("${spring.application.name:defaultAppName}")
     public void setSpringApplicationName(String springApplicationName) {
         this.springApplicationName = springApplicationName;
     }
@@ -38,18 +38,16 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
 
     @Override
     public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objectBoundary) {
-        if (objectBoundary == null)
-            throw new RuntimeException("null object cant be created");
+        if (objectBoundary == null) throw new RuntimeException("null object cant be created");
 
         if (!this.isCreateByExist(objectBoundary.getCreatedBy()))
             throw new RuntimeException("Created By object cant be empty");
 
-        if(objectBoundary.getObjectDetails() == null)
-            objectBoundary.setObjectDetails(new HashMap<String, Object>());
+        if (objectBoundary.getObjectDetails() == null) objectBoundary.setObjectDetails(new HashMap<String, Object>());
 
         SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
 
-        String objectId = ConvertHelp.concatenateIds(new String [] {springApplicationName, UUID.randomUUID().toString()});
+        String objectId = ConvertHelp.concatenateIds(new String[]{springApplicationName, UUID.randomUUID().toString()});
         entity.setObjectId(objectId);
         entity.setCreationTimestamp(new Date());
 
@@ -65,10 +63,8 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
         entity.setType(boundary.getType());
         entity.setAlias(boundary.getAlias());
 
-        if (boundary.getActive() != null)
-            entity.setActive(boundary.getActive());
-        else
-            entity.setActive(false);
+        if (boundary.getActive() != null) entity.setActive(boundary.getActive());
+        else entity.setActive(false);
 
         entity.setLocation(ConvertHelp.locationBoundaryToStr(boundary.getLocation()));
         entity.setCreatedBy(ConvertHelp.createByBoundaryToStr(boundary.getCreatedBy()));
@@ -79,27 +75,24 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
 
     private boolean isCreateByExist(CreatedBy createdBy) {
 
-        if (createdBy == null)
-            return false;
+        if (createdBy == null) return false;
 
-        if (createdBy.getUserId() == null)
-            return false;
+        if (createdBy.getUserId() == null) return false;
 
         // todo: may add check if strings is empty
-        if (createdBy.getUserId().getSuperapp() == null || createdBy.getUserId().getEmail() == null)
-            return false;
+        if (createdBy.getUserId().getSuperapp() == null || createdBy.getUserId().getEmail() == null) return false;
 
         return true;
     }
+
     @Override
     public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId, SuperAppObjectBoundary update) {
-        String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId});
+        String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
 
-        SuperAppObjectEntity exists = this.objectCrudDB.findById(objectId).orElseThrow(()->new NotFoundException("could not update object by id: " + objectId + " because it does not exist"));
+        SuperAppObjectEntity exists = this.objectCrudDB.findById(objectId).orElseThrow(() -> new NotFoundException("could not update object by id: " + objectId + " because it does not exist"));
         // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
 
-        if(exists == null)
-            throw new RuntimeException("Could not find object by id: " + objectId);
+        if (exists == null) throw new RuntimeException("Could not find object by id: " + objectId);
 
         boolean dirty_flag = false;
         if (update.getType() != null) {
@@ -117,33 +110,31 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
             dirty_flag = true;
         }
 
-        if (update.getLocation() != null){
+        if (update.getLocation() != null) {
             exists.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()));
             dirty_flag = true;
         }
 
         // TODO: need to check ObjectDetails attributes
-        if (update.getObjectDetails() != null){
+        if (update.getObjectDetails() != null) {
             exists.setObjectDetails(update.getObjectDetails());
             dirty_flag = true;
         }
 
-        if(dirty_flag)
-            exists = this.objectCrudDB.save(exists);
+        if (dirty_flag) exists = this.objectCrudDB.save(exists);
 
         return this.convertEntityToBoundary(exists);
     }
 
     @Override
     public Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId) {
-        String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId});
+        String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
         return this.objectCrudDB.findById(objectId).map(this::convertEntityToBoundary);
     }
 
     @Override
     public List<SuperAppObjectBoundary> getAllObjects() {
-        return this.objectCrudDB.findAll().stream().map(this::convertEntityToBoundary)
-                .toList();
+        return this.objectCrudDB.findAll().stream().map(this::convertEntityToBoundary).toList();
     }
 
     private SuperAppObjectBoundary convertEntityToBoundary(SuperAppObjectEntity entity) {
@@ -165,21 +156,42 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
 
     @Override
     public void deleteAllObjects() {
-         this.objectCrudDB.deleteAll();
+        this.objectCrudDB.deleteAll();
     }
 
     @Override
     public void addChild(String originId, String childId) {
+        SuperAppObjectEntity origin = this.objectCrudDB.findById(originId).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + originId + " because it does not exist"));
+        SuperAppObjectEntity child = this.objectCrudDB.findById(childId).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + childId + " because it does not exist"));
+
+        if (!origin.equals(child)) throw new BadRequestException("origin and child are not the same object");
+
+        if (child.getParent() != null) throw new BadRequestException("child already has a parent");
+
+        origin.addChildren(child);
+        child.setParent(origin);
+
+        this.objectCrudDB.save(origin);
+        this.objectCrudDB.save(child);
 
     }
 
     @Override
     public List<SuperAppObjectBoundary> getChildren(String originId) {
-        return null;
+        SuperAppObjectEntity origin = this.objectCrudDB.findById(originId).orElseThrow(() -> new NotFoundException("could not get children of object by id: " + originId + " because it does not exist"));
+        Set<SuperAppObjectEntity> children = origin.getChildren();
+        return children.stream().map(this::convertEntityToBoundary).toList();
     }
 
     @Override
     public Optional<SuperAppObjectBoundary> getOrigin(String childId) {
+        SuperAppObjectEntity child = this.objectCrudDB.findById(childId).orElseThrow(() -> new NotFoundException("could not get origin of object by id: " + childId + " because it does not exist"));
+
+        if (child.getParent() != null) {
+            return Optional.of(child.getParent())
+                    .map(this::convertEntityToBoundary);
+        }
+
         return Optional.empty();
     }
 }
