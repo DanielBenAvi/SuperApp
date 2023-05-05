@@ -1,4 +1,4 @@
-package superapp.logic;
+package superapp.logic.mockup;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Value;
 
 
 import superapp.data.UserEntity;
+import superapp.logic.ConvertHelp;
+import superapp.logic.UsersService;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
 
 import java.util.*;
 //@Service
-public class UserManagerMockupDB implements UsersService{
+public class UserManagerMockupDB implements UsersService {
     private String superappName;
     private Map<String, UserEntity> databaseMockup;
 

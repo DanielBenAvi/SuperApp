@@ -1,4 +1,4 @@
-package superapp.logic;
+package superapp.logic.mockup;
 
 
 import java.util.ArrayList;
@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
+import superapp.logic.ConvertHelp;
+import superapp.logic.MiniAppCommandService;
 import superapp.miniapps.MiniAppNames;
 import superapp.data.MiniAppCommandEntity;
 import superapp.logic.boundaries.CommandId;
