@@ -8,7 +8,6 @@ import java.util.ArrayList;
  */
 
 public class UserDetails {
-	
 	private String name;
 	private String phoneNum;
 	private ArrayList<String> interests;
