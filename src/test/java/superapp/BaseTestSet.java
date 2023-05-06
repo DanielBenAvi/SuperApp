@@ -1,6 +1,7 @@
 package superapp;
 
 import jakarta.annotation.PostConstruct;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +38,14 @@ public class BaseTestSet {
         this.baseUrl = "http://localhost:" + this.port;
         this.restTemplate = new RestTemplate();
     }
+
+    @AfterEach
+    public void tearDown() {
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/miniapp");
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/users");
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects");
+    }
+
 
 
     /**
