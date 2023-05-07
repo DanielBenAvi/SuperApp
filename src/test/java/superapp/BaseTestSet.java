@@ -46,8 +46,6 @@ public class BaseTestSet {
         this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects");
     }
 
-
-
     /**
      * POST:
      * Helper method to create a SuperAppObjectBoundary
@@ -76,7 +74,6 @@ public class BaseTestSet {
                         , objectBoundary
                         , SuperAppObjectBoundary.class);
     }
-
 
     /**
      * GET:
@@ -109,7 +106,7 @@ public class BaseTestSet {
                                          String internalObjectId,
                                          String springApplicationName) {
         this.restTemplate.put(
-                this.baseUrl + "/superapp/users/{superapp}/{email}"
+                this.baseUrl + "/superapp/objects/{superapp}/{email}"
                 , objectBoundary
                 , springApplicationName
                 , internalObjectId);
@@ -138,4 +135,35 @@ public class BaseTestSet {
                 .getForObject(this.baseUrl + "/superapp/objects", SuperAppObjectBoundary[].class);
     }
 
+
+
+    public void help_PutRelationBetweenObjects(String superapp, String internalObjectId, ObjectId childObjId) {
+
+        // internalObjectId here is a parent-target
+        this.restTemplate.put(this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/children"
+                            , childObjId
+                            , superapp
+                            , internalObjectId
+        );
+    }
+
+    public SuperAppObjectBoundary[] help_GetRelationParents(String superapp, String internalObjectId) {
+
+        return this.restTemplate
+                .getForObject(this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/parents"
+                            , SuperAppObjectBoundary[].class
+                            , superapp
+                            , internalObjectId
+                );
+    }
+
+    public SuperAppObjectBoundary[] help_GetRelationChildren(String superapp, String internalObjectId) {
+
+        return this.restTemplate
+                .getForObject(this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/children"
+                            , SuperAppObjectBoundary[].class
+                            , superapp
+                            , internalObjectId
+                );
+    }
 }
