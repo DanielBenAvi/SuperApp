@@ -10,6 +10,7 @@ import superapp.logic.ConvertHelp;
 import superapp.logic.ObjectsService;
 import superapp.logic.ObjectsServiceWithRelationshipSupport;
 import superapp.logic.boundaries.CreatedBy;
+import superapp.logic.boundaries.ObjectId;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 
 import java.util.*;
@@ -160,18 +161,18 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
     }
 
     @Override
-    public void addChild(String originId, String childId) {
-        SuperAppObjectEntity origin = this.objectCrudDB.findById(originId).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + originId + " because it does not exist"));
-        SuperAppObjectEntity child = this.objectCrudDB.findById(childId).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + childId + " because it does not exist"));
+    public void addChild(String superApp, String parentId, ObjectId childId) {
+        SuperAppObjectEntity parent = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superApp, parentId})).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + parentId + " because it does not exist"));
+        SuperAppObjectEntity child = this.objectCrudDB.findById(ConvertHelp.objectIdBoundaryToStr(childId)).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + childId.toString() + " because it does not exist"));
 
-        if (origin.equals(child)) throw new BadRequestException("origin and child are the same object");
+        if (parent.equals(child)) throw new BadRequestException("origin and child are the same object");
 
         if (child.getParent() != null) throw new BadRequestException("child already has a parent");
 
-        origin.addChildren(child);
-        child.setParent(origin);
+        parent.addChildren(child);
+        child.setParent(parent);
 
-        this.objectCrudDB.save(origin);
+        this.objectCrudDB.save(parent);
         this.objectCrudDB.save(child);
 
     }

@@ -24,13 +24,14 @@ public class RelationshipController {
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public void updateChildren(
             @PathVariable("superapp") String superapp,
-            @PathVariable("internalObjectId") String OriginInternalObjectId,
+            @PathVariable("internalObjectId") String parentInternalObjectId,
             @RequestBody ObjectId childObjectId) {
         this.objectsService
                 .addChild(
-                        superapp + ConvertHelp.DELIMITER_ID + OriginInternalObjectId,
-                        superapp + ConvertHelp.DELIMITER_ID + childObjectId.getInternalObjectId()
-                );
+                        superapp,
+                        parentInternalObjectId,
+                        childObjectId
+                        );
     }
 
 
