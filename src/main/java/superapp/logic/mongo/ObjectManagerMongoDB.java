@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
 import superapp.logic.ConvertHelp;
-import superapp.logic.ObjectsService;
 import superapp.logic.ObjectsServiceWithRelationshipSupport;
 import superapp.logic.boundaries.CreatedBy;
+import superapp.logic.boundaries.ObjectId;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 
 import java.util.*;
@@ -160,32 +160,58 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
     }
 
     @Override
-    public void addChild(String originId, String childId) {
-        SuperAppObjectEntity origin = this.objectCrudDB.findById(originId).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + originId + " because it does not exist"));
-        SuperAppObjectEntity child = this.objectCrudDB.findById(childId).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + childId + " because it does not exist"));
+    public void addChild(String superApp, String parentId, ObjectId childId) {
+        if (!checkValidSuperApp(superApp))
+            throw new BadRequestException("superApp must be in format: " + springApplicationName);
 
-        if (origin.equals(child)) throw new BadRequestException("origin and child are the same object");
+        if (!checkValidSuperApp(childId.getSuperapp()))
+            throw new BadRequestException("childId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
+
+        if (!checkValidInternalObjectId(parentId))
+            throw new BadRequestException("parentId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
+
+        if (!checkValidInternalObjectId(childId.getInternalObjectId()))
+            throw new BadRequestException("childId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
+
+        if (parentId.equals(childId.getInternalObjectId()))
+            throw new BadRequestException("origin and child are the same object");
+
+        SuperAppObjectEntity parent = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superApp, parentId})).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + parentId + " because it does not exist"));
+        SuperAppObjectEntity child = this.objectCrudDB.findById(ConvertHelp.objectIdBoundaryToStr(childId)).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + childId.toString() + " because it does not exist"));
 
         if (child.getParent() != null) throw new BadRequestException("child already has a parent");
 
-        origin.addChildren(child);
-        child.setParent(origin);
+        parent.addChildren(child);
+        child.setParent(parent);
 
-        this.objectCrudDB.save(origin);
+        this.objectCrudDB.save(parent);
         this.objectCrudDB.save(child);
 
     }
 
     @Override
-    public List<SuperAppObjectBoundary> getChildren(String originId) {
-        SuperAppObjectEntity origin = this.objectCrudDB.findById(originId).orElseThrow(() -> new NotFoundException("could not get children of object by id: " + originId + " because it does not exist"));
+    public List<SuperAppObjectBoundary> getChildren(String superapp, String parentInternalObjectId) {
+
+        if (!checkValidSuperApp(superapp))
+            throw new BadRequestException("superApp must be in format: " + springApplicationName);
+
+        if (!checkValidInternalObjectId(parentInternalObjectId))
+            throw new BadRequestException("parentId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
+
+        SuperAppObjectEntity origin = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superapp, parentInternalObjectId})).orElseThrow(() -> new NotFoundException("could not get children of object by id: " + parentInternalObjectId.toString() + " because it does not exist"));
         Set<SuperAppObjectEntity> children = origin.getChildren();
         return children.stream().map(this::convertEntityToBoundary).toList();
     }
 
     @Override
-    public Optional<SuperAppObjectBoundary> getOrigin(String childId) {
-        SuperAppObjectEntity child = this.objectCrudDB.findById(childId).orElseThrow(() -> new NotFoundException("could not get origin of object by id: " + childId + " because it does not exist"));
+    public Optional<SuperAppObjectBoundary> getParent(String superapp, String childInternalObjectId) {
+        if (!checkValidSuperApp(superapp))
+            throw new BadRequestException("superApp must be in format: " + springApplicationName);
+
+        if (!checkValidInternalObjectId(childInternalObjectId))
+            throw new BadRequestException("parentId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
+
+        SuperAppObjectEntity child = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superapp, childInternalObjectId})).orElseThrow(() -> new NotFoundException("could not get origin of object by id: " + childInternalObjectId.toString() + " because it does not exist"));
 
         if (child.getParent() != null) {
             return Optional.of(child.getParent())
@@ -194,4 +220,34 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
 
         return Optional.empty();
     }
+
+
+    private boolean checkValidInternalObjectId(String internalObjectId) {
+        if (internalObjectId == null)
+            return false;
+
+        if (internalObjectId.isEmpty())
+            return false;
+
+        try {
+            UUID.fromString(internalObjectId);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkValidSuperApp(String superApp) {
+        if (superApp == null)
+            return false;
+
+        if (superApp.isEmpty())
+            return false;
+
+        if (!superApp.equals(springApplicationName))
+            return false;
+
+        return true;
+    }
+
 }

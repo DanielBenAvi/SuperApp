@@ -24,12 +24,13 @@ public class RelationshipController {
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public void updateChildren(
             @PathVariable("superapp") String superapp,
-            @PathVariable("internalObjectId") String OriginInternalObjectId,
+            @PathVariable("internalObjectId") String parentInternalObjectId,
             @RequestBody ObjectId childObjectId) {
         this.objectsService
                 .addChild(
-                        superapp + ConvertHelp.DELIMITER_ID + OriginInternalObjectId,
-                        superapp + ConvertHelp.DELIMITER_ID + childObjectId.getInternalObjectId()
+                        superapp,
+                        parentInternalObjectId,
+                        childObjectId
                 );
     }
 
@@ -39,11 +40,11 @@ public class RelationshipController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public SuperAppObjectBoundary[] getChildren(
             @PathVariable("superapp") String superapp,
-            @PathVariable("internalObjectId") String originInternalObjectId
+            @PathVariable("internalObjectId") String parentInternalObjectId
     ) {
         return this.objectsService
                 .getChildren(
-                        superapp + ConvertHelp.DELIMITER_ID + originInternalObjectId)
+                        superapp, parentInternalObjectId)
                 .toArray(new SuperAppObjectBoundary[0]
                 );
     }
@@ -56,8 +57,8 @@ public class RelationshipController {
             @PathVariable("internalObjectId") String childInternalObjectId
     ) {
         return this.objectsService
-                .getOrigin(
-                        superapp + ConvertHelp.DELIMITER_ID + childInternalObjectId)
+                .getParent(
+                        superapp, childInternalObjectId)
                 .orElseThrow(() -> new NotFoundException("could not find origin for object with id: " + childInternalObjectId));
     }
 
