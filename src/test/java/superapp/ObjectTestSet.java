@@ -46,14 +46,14 @@ public class ObjectTestSet {
         this.baseUrl = "http://localhost:" + this.port;
         this.restTemplate = new RestTemplate();
 
-
-//        NewUserBoundary user = new NewUserBoundary();
-//        user.setEmail("demo@gmail.com").setRole(UserRole.ADMIN.toString()).setUsername("demo_user").setAvatar("demo_avatar");
-//
-//        this.restTemplate.postForObject(this.baseUrl + "/superapp/users"
-//                                , user
-//                                , UserBoundary.class);
     }
+
+    @AfterEach
+    public void tearDown() {
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/users");
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects");
+    }
+
 
     @Test
     @DisplayName("Successful create object")
@@ -62,8 +62,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
 
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
         // WHEN
         // A POST request is made to the path "superapp/objects" with SuperAppObjectBoundary
@@ -97,8 +101,13 @@ public class ObjectTestSet {
 
         // GIVEN
         // 1. the server is up and running
-        // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+        // 2. the database is up and runnin
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -137,7 +146,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -183,7 +197,11 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -215,7 +233,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -247,7 +270,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -279,8 +307,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
-        // 4. db does not contain user - "userId":{"superapp":"2023b.LiorAriely, "email":"demoTest@s.afeka.ac.il"}
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -312,7 +344,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // when
@@ -374,7 +411,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -405,7 +447,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -435,7 +482,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -462,7 +514,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -492,7 +549,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -521,7 +583,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -550,7 +617,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -578,7 +650,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -608,6 +685,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
         String type = "EVENT";
         String alias = "demo";
@@ -666,6 +749,13 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         String type = "EVENT";
         String alias = "demo";
         Boolean active = true;
@@ -698,6 +788,13 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         String type = "EVENT";
         String alias = "demo";
         Boolean active = true;
@@ -746,6 +843,13 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         String type = "EVENT";
         String alias = "demo";
         Boolean active = true;
@@ -794,6 +898,13 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         String type = "EVENT";
         String alias = "demo";
         Boolean active = true;
@@ -829,6 +940,13 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         String type = "EVENT";
         String alias = "demo";
         Boolean active = true;
@@ -841,6 +959,7 @@ public class ObjectTestSet {
                 help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
         SuperAppObjectBoundary postObject2 =
                 help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
+
         postObject2.setObjectId(null).setType(null).setAlias("another demo").setActive(null).
                 setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(null);
         // WHEN
@@ -859,6 +978,13 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         String type = "EVENT";
         String alias = "demo";
         Boolean active = true;
@@ -893,6 +1019,13 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         String type = "EVENT";
         String alias = "demo";
         Boolean active = true;
@@ -918,6 +1051,7 @@ public class ObjectTestSet {
         // the server response with status 2xx code
         assertThat(postObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(objectDetails);
     }
+
     /*Wrong Paths*/
     @Test
     @DisplayName("UNSuccessful create object, wrong path")
@@ -926,7 +1060,12 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
-        // 3. db contain user - initialize in setup
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
 
         // WHEN
@@ -959,6 +1098,13 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         String type = "EVENT";
         String alias = "demo";
         Boolean active = true;
@@ -995,6 +1141,13 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         String type = "EVENT";
         String alias = "demo";
         Boolean active = true;
@@ -1026,6 +1179,13 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         String type = "EVENT";
         String alias = "demo";
         Boolean active = true;
@@ -1061,6 +1221,13 @@ public class ObjectTestSet {
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         String type = "EVENT";
         String alias = "demo";
         Boolean active = true;
@@ -1154,9 +1321,8 @@ public class ObjectTestSet {
                                          String internalObjectId,
                                          String springApplicationName) {
         this.restTemplate.put(
-                this.baseUrl + "/superapp/users/{superapp}/{internalObjectId}"
-                , objectBoundary
-                , springApplicationName
+                this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}"
+                , objectBoundary, springApplicationName
                 , internalObjectId);
     }
 
@@ -1181,6 +1347,16 @@ public class ObjectTestSet {
 
         return this.restTemplate
                 .getForObject(this.baseUrl + "/superapp/objects", SuperAppObjectBoundary[].class);
+    }
+
+    public UserBoundary help_PostUserBoundary(String email, String role, String username, String avatar) {
+        NewUserBoundary user = new NewUserBoundary();
+        user.setEmail(email).setRole(role).setUsername(username).setAvatar(avatar);
+        return this.restTemplate
+                .postForObject(
+                        this.baseUrl + "/superapp/users"
+                        , user
+                        , UserBoundary.class);
     }
 
 
