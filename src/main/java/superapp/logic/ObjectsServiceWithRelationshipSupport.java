@@ -11,5 +11,5 @@ public interface ObjectsServiceWithRelationshipSupport extends ObjectsService {
 
     public List<SuperAppObjectBoundary> getChildren(String superapp, String parentInternalObjectId);
 
-    public Optional<SuperAppObjectBoundary> getParent(String superapp, String childInternalObjectId);
+    public List<SuperAppObjectBoundary> getParent(String superapp, String childInternalObjectId);
 }

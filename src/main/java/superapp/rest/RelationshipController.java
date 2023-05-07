@@ -52,14 +52,14 @@ public class RelationshipController {
     @RequestMapping(method = {RequestMethod.GET},
             path = {"/superapp/objects/{superapp}/{internalObjectId}/parents"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public SuperAppObjectBoundary getParent(
+    public SuperAppObjectBoundary[] getParent(
             @PathVariable("superapp") String superapp,
             @PathVariable("internalObjectId") String childInternalObjectId
     ) {
         return this.objectsService
                 .getParent(
                         superapp, childInternalObjectId)
-                .orElseThrow(() -> new NotFoundException("could not find origin for object with id: " + childInternalObjectId));
+                .toArray(new SuperAppObjectBoundary[0]);
     }
 
 

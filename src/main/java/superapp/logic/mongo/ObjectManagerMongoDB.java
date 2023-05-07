@@ -204,7 +204,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
     }
 
     @Override
-    public Optional<SuperAppObjectBoundary> getParent(String superapp, String childInternalObjectId) {
+    public List<SuperAppObjectBoundary> getParent(String superapp, String childInternalObjectId) {
         if (!checkValidSuperApp(superapp))
             throw new BadRequestException("superApp must be in format: " + springApplicationName);
 
@@ -215,10 +215,10 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
 
         if (child.getParent() != null) {
             return Optional.of(child.getParent())
-                    .map(this::convertEntityToBoundary);
+                    .map(this::convertEntityToBoundary).stream().toList();
         }
 
-        return Optional.empty();
+        return List.of();
     }
 
 
