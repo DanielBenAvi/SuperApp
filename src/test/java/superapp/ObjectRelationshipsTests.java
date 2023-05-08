@@ -1,6 +1,5 @@
 package superapp;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,7 +52,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
      *
      * @param internalObjectId String
      */
-    private void assertAfterRelationNotShallBeUpdated(String internalObjectId) {
+    private void assertThatNoRelationAtAllHelper(String internalObjectId) {
 
         SuperAppObjectBoundary[] parentResult = this.getRelationParents(internalObjectId);
         assertThat(parentResult)
@@ -98,8 +97,8 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                                 , postedObjectParent.getObjectId().getInternalObjectId()
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.NOT_FOUND.value());
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
 
     }
 
@@ -136,8 +135,8 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                         , postedObjectChild.getObjectId().getInternalObjectId()
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.NOT_FOUND.value());
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -171,11 +170,11 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                                 , postedObjectParent.getObjectId().getInternalObjectId())
                 )
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.NOT_FOUND.value());
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
 
-        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId());
-        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObjectParent.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObjectChild.getObjectId().getInternalObjectId());
 
     }
 
@@ -229,7 +228,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 .usingRecursiveFieldByFieldElementComparator()
                 .containsExactly(postedObjectChild);
 
-        assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObject.getObjectId().getInternalObjectId());
 
     }
 
@@ -332,9 +331,9 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                                                 , postedObjectChild.getObjectId()
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertAfterRelationNotShallBeUpdated(postedObjectOtherParent.getObjectId().getInternalObjectId());
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThatNoRelationAtAllHelper(postedObjectOtherParent.getObjectId().getInternalObjectId());
 
 
     }
@@ -361,10 +360,10 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                                             , postedObject.getObjectId()
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.NOT_FOUND.value());
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
 
-        assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObject.getObjectId().getInternalObjectId());
 
     }
 
@@ -398,10 +397,10 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 this.putRelationBetweenObjects(postedObject.getObjectId().getInternalObjectId()
                                                 , objectId))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.NOT_FOUND.value());
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
 
-        assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObject.getObjectId().getInternalObjectId());
 
     }
 
@@ -428,10 +427,10 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                                     , postedObject.getObjectId()
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.CONFLICT.value());
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .isEqualTo(HttpStatus.CONFLICT);
 
-        assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObject.getObjectId().getInternalObjectId());
 
     }
 
@@ -459,14 +458,13 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // The server response with status 415 unsupported media type AND relation between objects not updated/saved.
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                                , null)
-                )
+                                                , null))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 
-        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId());
-        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObjectParent.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObjectChild.getObjectId().getInternalObjectId());
     }
 
     @Test
@@ -498,11 +496,11 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                                     , new ObjectId().setInternalObjectId(childInternalObjectId)
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .isEqualTo(HttpStatus.BAD_REQUEST);
 
-        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId());
-        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObjectParent.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObjectChild.getObjectId().getInternalObjectId());
     }
 
     @Test
@@ -533,11 +531,11 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                                     , new ObjectId().setSuperapp("2023b-LiorAriely").setInternalObjectId(childInternalObjectId)
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .isEqualTo(HttpStatus.BAD_REQUEST);
 
-        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId());
-        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObjectParent.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObjectChild.getObjectId().getInternalObjectId());
     }
 
     @Test
@@ -567,11 +565,11 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                                         , new ObjectId().setSuperapp(this.springApplicationName).setInternalObjectId("0")
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .isEqualTo(HttpStatus.BAD_REQUEST);
 
-        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId());
-        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObjectParent.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObjectChild.getObjectId().getInternalObjectId());
     }
 
     @Test
@@ -602,11 +600,11 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                                         , new ObjectId().setSuperapp(this.springApplicationName)
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .isEqualTo(HttpStatus.BAD_REQUEST);
 
-        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId());
-        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObjectParent.getObjectId().getInternalObjectId());
+        assertThatNoRelationAtAllHelper(postedObjectChild.getObjectId().getInternalObjectId());
     }
 
     @Test
@@ -740,7 +738,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 .usingRecursiveFieldByFieldElementComparator()
                 .containsExactly(parentOfChild2);
 
-        this.assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId());
+        this.assertThatNoRelationAtAllHelper(postedObject.getObjectId().getInternalObjectId());
 
     }
 
