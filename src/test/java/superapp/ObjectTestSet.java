@@ -947,17 +947,22 @@ public class ObjectTestSet {
         objectDetails.put("details", "String object demo");
 
         SuperAppObjectBoundary postObject =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
+                help_PostObjectBoundary(null, type, alias,null, active, location, createdBy, objectDetails);
 
-        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias("another demo").setActive(null).
-                setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(null);
+        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setAlias("another demo");
         // WHEN
         // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
-        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
+        this.help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
+
 
         // THEN
         // the server response with status 2xx code
-        assertThat(postObject.getAlias()).isNotNull().isEqualTo(updateObject.getAlias());
+        SuperAppObjectBoundary updatedObject =
+                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
+
+        assertThat(updatedObject.getAlias())
+                .isNotNull()
+                .isEqualTo(updateObject.getAlias());
     }
 
     @Test
