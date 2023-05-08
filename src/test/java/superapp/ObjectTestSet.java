@@ -76,13 +76,13 @@ public class ObjectTestSet {
         objectDetails.put("details", "String object demo");
 
         SuperAppObjectBoundary postObject = help_PostObjectBoundary(null, type, alias, null,
-                                    active,  location, createdBy,  objectDetails);
+                active,  location, createdBy,  objectDetails);
         // THEN
         // the server response with status 2xx code and return  SuperAppObjectBoundary as json
 
         SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
-                                        postObject.getObjectId().getInternalObjectId(),
-                                        postObject.getObjectId().getSuperapp());
+                postObject.getObjectId().getInternalObjectId(),
+                postObject.getObjectId().getSuperapp());
 
         assertThat(objectFromGet)
                 .isNotNull()
@@ -1631,8 +1631,8 @@ public class ObjectTestSet {
      * @param springApplicationName
      */
     public void help_PutObjectBoundary(SuperAppObjectBoundary objectBoundary,
-                                         String internalObjectId,
-                                         String springApplicationName) {
+                                       String internalObjectId,
+                                       String springApplicationName) {
         this.restTemplate.put(
                 this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}"
                 , objectBoundary, springApplicationName
