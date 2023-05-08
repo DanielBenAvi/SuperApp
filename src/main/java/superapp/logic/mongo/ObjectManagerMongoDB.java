@@ -161,6 +161,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
 
     @Override
     public void addChild(String superApp, String parentId, ObjectId childId) {
+
         if (!checkValidSuperApp(superApp))
             throw new BadRequestException("superApp must be in format: " + springApplicationName);
 
@@ -174,7 +175,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
             throw new BadRequestException("childId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
 
         if (parentId.equals(childId.getInternalObjectId()))
-            throw new BadRequestException("origin and child are the same object");
+            throw new ConflictRequestException("origin and child are the same object");
 
         SuperAppObjectEntity parent = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superApp, parentId})).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + parentId + " because it does not exist"));
         SuperAppObjectEntity child = this.objectCrudDB.findById(ConvertHelp.objectIdBoundaryToStr(childId)).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + childId.toString() + " because it does not exist"));
