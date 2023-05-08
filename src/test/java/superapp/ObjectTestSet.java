@@ -23,12 +23,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ObjectTestSet {
     private String springApplicationName;
-    // private RestTemplateBuilder restTemplateBuilder;
     private RestTemplate restTemplate;
     private String baseUrl;
     private int port;
-    private String testObjectId;
-    private String superApp;
 
     @Value("${spring.application.name:defaultAppName}")
     public void setApplicationName(String springApplicationName) {
@@ -42,10 +39,8 @@ public class ObjectTestSet {
 
     @PostConstruct
     public void setup() {
-
         this.baseUrl = "http://localhost:" + this.port;
         this.restTemplate = new RestTemplate();
-
     }
 
     @AfterEach
@@ -366,7 +361,6 @@ public class ObjectTestSet {
 
         // THEN
         // the server response with bad request status 404 code
-
         assertThatThrownBy(() ->
                 help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, objectDetails))
                 .isInstanceOf(HttpClientErrorException.class)
@@ -429,8 +423,6 @@ public class ObjectTestSet {
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
-        SuperAppObjectBoundary postObject = help_PostObjectBoundary(null, type, alias, null,
-                active,  null, createdBy,  objectDetails);
         // THEN
         // the server response with bad request status 400 code
 
@@ -537,7 +529,7 @@ public class ObjectTestSet {
         // the server response with bad request status 400 code
 
         assertThatThrownBy(() ->
-                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, null))
+                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, objectDetails))
                 .isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
@@ -571,7 +563,7 @@ public class ObjectTestSet {
         // the server response with bad request status 400 code
 
         assertThatThrownBy(() ->
-                help_PostObjectBoundary(null, null, alias, null, active, location, createdBy, null))
+                help_PostObjectBoundary(null, null, alias, null, active, location, createdBy, objectDetails))
                 .isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
@@ -605,7 +597,7 @@ public class ObjectTestSet {
         // the server response with bad request status 400 code
 
         assertThatThrownBy(() ->
-                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, null))
+                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, objectDetails))
                 .isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
@@ -638,7 +630,7 @@ public class ObjectTestSet {
         // the server response with bad request status 400 code
 
         assertThatThrownBy(() ->
-                help_PostObjectBoundary(null, type, null, null, active, location, createdBy, null))
+                help_PostObjectBoundary(null, type, null, null, active, location, createdBy, objectDetails))
                 .isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
@@ -672,7 +664,7 @@ public class ObjectTestSet {
         // the server response with bad request status 400 code
 
         assertThatThrownBy(() ->
-                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, null))
+                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, objectDetails))
                 .isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
@@ -915,18 +907,17 @@ public class ObjectTestSet {
 
         SuperAppObjectBoundary postObject =
                 help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-        SuperAppObjectBoundary postObject2 =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-        postObject2.setObjectId(null).setType(null).setAlias("test demo").setActive(null).
+
+        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias("test demo").setActive(null).
                 setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(null);
+
         // WHEN
         // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/diffrent_ID_that_not in_db"
-
 
         // THEN
         // the server response with not found status code 404
         assertThatThrownBy(() ->
-                help_PutObjectBoundary(postObject2,"diffrent_ID_that_not in_db",
+                help_PutObjectBoundary(updateObject,"diffrent_ID_that_not in_db",
                         postObject.getObjectId().getSuperapp())).isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
     }
@@ -957,18 +948,16 @@ public class ObjectTestSet {
 
         SuperAppObjectBoundary postObject =
                 help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-        SuperAppObjectBoundary postObject2 =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
 
-        postObject2.setObjectId(null).setType(null).setAlias("another demo").setActive(null).
+        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias("another demo").setActive(null).
                 setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(null);
         // WHEN
         // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
+        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
 
-        help_PutObjectBoundary(postObject2,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
         // THEN
         // the server response with status 2xx code
-        assertThat(postObject.getAlias()).isNotNull().isEqualTo(postObject2.getAlias());
+        assertThat(postObject.getAlias()).isNotNull().isEqualTo(updateObject.getAlias());
     }
 
     @Test
@@ -995,21 +984,20 @@ public class ObjectTestSet {
 
         SuperAppObjectBoundary postObject =
                 help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-        SuperAppObjectBoundary postObject2 =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
 
-        postObject2.setObjectId(null).setType(null).setAlias(null).setActive(null).
-                setCreationTimestamp(null).setLocation(null).setCreatedBy(null);
+        Map<String, Object> objectDetails2 = new HashMap<>();
+        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias(null).setActive(null).
+                setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(objectDetails2);
 
-        postObject2.getObjectDetails().put("details2", "something");
+        updateObject.getObjectDetails().put("details2", "something");
 
         // WHEN
         // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
 
-        help_PutObjectBoundary(postObject2,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
+        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
         // THEN
         // the server response with status 2xx code
-        assertThat(postObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(postObject2.getObjectDetails());
+        assertThat(postObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(updateObject.getObjectDetails());
     }
 
     @Test
@@ -1036,17 +1024,17 @@ public class ObjectTestSet {
 
         SuperAppObjectBoundary postObject =
                 help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-        SuperAppObjectBoundary postObject2 =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
 
-        postObject2.setObjectId(null).setType(null).setAlias(null).setActive(null).
+
+        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias(null).setActive(null).
                 setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(null);
+
 
 
         // WHEN
         // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
 
-        help_PutObjectBoundary(postObject2,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
+        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
         // THEN
         // the server response with status 2xx code
         assertThat(postObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(objectDetails);
@@ -1194,10 +1182,9 @@ public class ObjectTestSet {
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
-        SuperAppObjectBoundary postObject =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-        SuperAppObjectBoundary postObject2 =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
+
+        help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
+        help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
 
         // WHEN
         // A GET request is made to the path "/superapp/object"
@@ -1236,10 +1223,9 @@ public class ObjectTestSet {
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
-        SuperAppObjectBoundary postObject =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-        SuperAppObjectBoundary postObject2 =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
+
+        help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
+        help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
 
         // WHEN
         // A DELETE request is made to the path "/superapp/amin/objects"
