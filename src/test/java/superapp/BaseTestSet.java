@@ -143,17 +143,16 @@ public class BaseTestSet {
      * Helper method to update relation between objects
      * the path is "/superapp/objects/{superapp}/{internalObjectId}/children"
      *
-     * @param superapp
-     * @param internalObjectId
+     * @param internalObjectId- is a parent-target
      * @param childObjId
      */
-    public void putRelationBetweenObjects(String superapp, String internalObjectId, ObjectId childObjId) {
+    public void putRelationBetweenObjects(String internalObjectId, ObjectId childObjId) {
 
-        // internalObjectId is a parent-target
+        String putRelationUrl = "/superapp/objects/{superapp}/{internalObjectId}/children";
         this.restTemplate.put(
-                this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/children"
+                this.baseUrl + putRelationUrl
                 , childObjId
-                , superapp
+                , this.springApplicationName
                 , internalObjectId );
     }
 
@@ -162,17 +161,18 @@ public class BaseTestSet {
      * Helper method to get all parent objects of some object
      * the path is "/superapp/objects/{superapp}/{internalObjectId}/parents"
      *
-     * @param superapp
      * @param internalObjectId
      * @return SuperAppObjectBoundary[] - parent of internalObjectId
      */
-    public SuperAppObjectBoundary[] getRelationParents(String superapp, String internalObjectId) {
+    public SuperAppObjectBoundary[] getRelationParents(String internalObjectId) {
+
+        String getParentUrl = "/superapp/objects/{superapp}/{internalObjectId}/parents";
 
         return this.restTemplate
                 .getForObject(
-                        this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/parents"
+                        this.baseUrl + getParentUrl
                             , SuperAppObjectBoundary[].class
-                            , superapp
+                            , this.springApplicationName
                             , internalObjectId );
     }
 
@@ -181,17 +181,18 @@ public class BaseTestSet {
      * Helper method to get all children objects of some object
      * the path is "/superapp/objects/{superapp}/{internalObjectId}/children"
      *
-     * @param superapp
      * @param internalObjectId
      * @return SuperAppObjectBoundary[] - children of internalObjectId
      */
-    public SuperAppObjectBoundary[] getRelationChildren(String superapp, String internalObjectId) {
+    public SuperAppObjectBoundary[] getRelationChildren(String internalObjectId) {
+
+        String getChildrenUrl = "/superapp/objects/{superapp}/{internalObjectId}/children";
 
         return this.restTemplate
                 .getForObject(
-                        this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/children"
+                        this.baseUrl + getChildrenUrl
                             , SuperAppObjectBoundary[].class
-                            , superapp
+                            , this.springApplicationName
                             , internalObjectId );
     }
 }
