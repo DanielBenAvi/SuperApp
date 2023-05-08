@@ -2,8 +2,6 @@ package superapp;
 
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -11,7 +9,6 @@ import org.springframework.web.client.RestTemplate;
 import superapp.logic.boundaries.*;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,14 +56,19 @@ public class BaseTestSet {
      * @param objectDetails
      * @return SuperAppObjectBoundary
      */
-    public SuperAppObjectBoundary help_PostObjectBoundary(
-            ObjectId objectId, String type, String alias, Date creationTimestamp,
-            Boolean active, Location location, CreatedBy createdBy, Map<String, Object> objectDetails) {
+    public SuperAppObjectBoundary help_PostObjectBoundary(ObjectId objectId, String type, String alias,
+                                                          Date creationTimestamp, Boolean active, Location location,
+                                                          CreatedBy createdBy, Map<String, Object> objectDetails) {
 
-        SuperAppObjectBoundary objectBoundary = new SuperAppObjectBoundary();
-
-        objectBoundary.setObjectId(objectId).setType(type).setAlias(alias).setActive(active).
-                setLocation(location).setCreationTimestamp(creationTimestamp).setCreatedBy(createdBy).setObjectDetails(objectDetails);
+        SuperAppObjectBoundary objectBoundary = new SuperAppObjectBoundary()
+                .setObjectId(objectId)
+                .setType(type)
+                .setAlias(alias)
+                .setActive(active)
+                .setLocation(location)
+                .setCreationTimestamp(creationTimestamp)
+                .setCreatedBy(createdBy)
+                .setObjectDetails(objectDetails);
 
         return this.restTemplate
                 .postForObject(
@@ -85,6 +87,7 @@ public class BaseTestSet {
      * @return SuperAppObjectBoundary
      */
     public SuperAppObjectBoundary help_GetObjectBoundary(String internalObjectId, String springApplicationName) {
+
         return this.restTemplate
                 .getForObject(
                         this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}"
@@ -102,11 +105,11 @@ public class BaseTestSet {
      * @param internalObjectId
      * @param springApplicationName
      */
-    public void help_PutObjectBoundary(SuperAppObjectBoundary objectBoundary,
-                                         String internalObjectId,
-                                         String springApplicationName) {
+    public void help_PutObjectBoundary(SuperAppObjectBoundary objectBoundary, String internalObjectId,
+                                                                        String springApplicationName) {
+
         this.restTemplate.put(
-                this.baseUrl + "/superapp/objects/{superapp}/{email}"
+                this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}"
                 , objectBoundary
                 , springApplicationName
                 , internalObjectId);
@@ -135,35 +138,60 @@ public class BaseTestSet {
                 .getForObject(this.baseUrl + "/superapp/objects", SuperAppObjectBoundary[].class);
     }
 
+    /**
+     * PUT
+     * Helper method to update relation between objects
+     * the path is "/superapp/objects/{superapp}/{internalObjectId}/children"
+     *
+     * @param superapp
+     * @param internalObjectId
+     * @param childObjId
+     */
+    public void putRelationBetweenObjects(String superapp, String internalObjectId, ObjectId childObjId) {
 
-
-    public void help_PutRelationBetweenObjects(String superapp, String internalObjectId, ObjectId childObjId) {
-
-        // internalObjectId here is a parent-target
-        this.restTemplate.put(this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/children"
-                            , childObjId
-                            , superapp
-                            , internalObjectId
-        );
+        // internalObjectId is a parent-target
+        this.restTemplate.put(
+                this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/children"
+                , childObjId
+                , superapp
+                , internalObjectId );
     }
 
-    public SuperAppObjectBoundary[] help_GetRelationParents(String superapp, String internalObjectId) {
+    /**
+     * GET
+     * Helper method to get all parent objects of some object
+     * the path is "/superapp/objects/{superapp}/{internalObjectId}/parents"
+     *
+     * @param superapp
+     * @param internalObjectId
+     * @return SuperAppObjectBoundary[] - parent of internalObjectId
+     */
+    public SuperAppObjectBoundary[] getRelationParents(String superapp, String internalObjectId) {
 
         return this.restTemplate
-                .getForObject(this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/parents"
+                .getForObject(
+                        this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/parents"
                             , SuperAppObjectBoundary[].class
                             , superapp
-                            , internalObjectId
-                );
+                            , internalObjectId );
     }
 
-    public SuperAppObjectBoundary[] help_GetRelationChildren(String superapp, String internalObjectId) {
+    /**
+     * GET
+     * Helper method to get all children objects of some object
+     * the path is "/superapp/objects/{superapp}/{internalObjectId}/children"
+     *
+     * @param superapp
+     * @param internalObjectId
+     * @return SuperAppObjectBoundary[] - children of internalObjectId
+     */
+    public SuperAppObjectBoundary[] getRelationChildren(String superapp, String internalObjectId) {
 
         return this.restTemplate
-                .getForObject(this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/children"
+                .getForObject(
+                        this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/children"
                             , SuperAppObjectBoundary[].class
                             , superapp
-                            , internalObjectId
-                );
+                            , internalObjectId );
     }
 }
