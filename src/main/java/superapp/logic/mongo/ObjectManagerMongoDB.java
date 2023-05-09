@@ -251,10 +251,10 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
     }
 
     private boolean help_object_validate(SuperAppObjectBoundary objectBoundary) {
-        if (objectBoundary.getType() == null && objectBoundary.getType().equals(""))
+        if (objectBoundary.getType() == null || objectBoundary.getType().equals(""))
             return false;
 
-        if (objectBoundary.getAlias() == null && objectBoundary.getAlias().equals(""))
+        if (objectBoundary.getAlias() == null || objectBoundary.getAlias().equals(""))
             return false;
 
         if (objectBoundary.getActive() == null)
