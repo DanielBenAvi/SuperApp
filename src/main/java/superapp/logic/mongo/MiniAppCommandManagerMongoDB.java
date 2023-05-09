@@ -190,9 +190,9 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         // check if commandId fields are null and not empty
         if (commandId.getSuperapp() == null || commandId.getSuperapp().isEmpty()) return false;
 
-        // check if commandId fields are null and miniapp is valid
+        // check if commandId fields are null
         if (commandId.getMiniapp() == null) return false;
-        if (!validMiniAppName(commandId.getMiniapp())) return false;
+
         // check if commandId fields are null
         return commandId.getInternalCommandId() != null;
     }

@@ -125,7 +125,6 @@ public class UserTestSet {
      * @return all users - UserBoundary[]
      */
     public UserBoundary[] help_GetAllUsersBoundary() {
-//        todo: fix
         return this.restTemplate.getForObject(this.baseUrl + "/superapp/admin/users", UserBoundary[].class);
     }
 
