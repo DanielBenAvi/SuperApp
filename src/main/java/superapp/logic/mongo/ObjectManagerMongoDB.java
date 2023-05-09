@@ -3,25 +3,31 @@ package superapp.logic.mongo;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.server.DelegatingServerHttpResponse;
 import org.springframework.stereotype.Service;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
+import superapp.data.UserCrud;
 import superapp.logic.ConvertHelp;
 import superapp.logic.ObjectsServiceWithRelationshipSupport;
 import superapp.logic.boundaries.CreatedBy;
+import superapp.logic.boundaries.Location;
 import superapp.logic.boundaries.ObjectId;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Service
 public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSupport {
     private ObjectCrud objectCrudDB;
     private String springApplicationName;
+    private final UserCrud userCrud;
 
     @Autowired
-    public ObjectManagerMongoDB(ObjectCrud objectCrudDB) {
+    public ObjectManagerMongoDB(ObjectCrud objectCrudDB,UserCrud userCrud) {
         this.objectCrudDB = objectCrudDB;
+        this.userCrud = userCrud;
     }
 
     // this method injects a configuration value of spring
@@ -39,7 +45,15 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
     @Override
     public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objectBoundary) {
 
-        if (help_object_validate(objectBoundary)) {
+        int validateValue;
+        validateValue = help_object_validate(objectBoundary);
+
+        if (validateValue == 0)
+            throw new BadRequestException("object must contain all fields");
+
+        else if (validateValue == 1)
+            throw new NotFoundException("object must contain all fields");
+        else  {
 
             // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
 
@@ -52,8 +66,12 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
             this.objectCrudDB.save(entity);
 
             return this.convertEntityToBoundary(entity);
-        } else throw new BadRequestException("object must contain all fields");
+        }
+
     }
+
+
+
 
     private SuperAppObjectEntity convertBoundaryToEntity(SuperAppObjectBoundary boundary) {
 
@@ -88,18 +106,22 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
     public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId, SuperAppObjectBoundary update) {
         String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
 
-        SuperAppObjectEntity exists = this.objectCrudDB.findById(objectId).orElseThrow(() -> new NotFoundException("could not update object by id: " + objectId + " because it does not exist"));
+        SuperAppObjectEntity exists = this.objectCrudDB.findById(objectId).
+                orElseThrow(() -> new NotFoundException("could not update object by id: " + objectId + " because it does not exist"));
+        SuperAppObjectBoundary existsBoundary = convertEntityToBoundary(exists);
         // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
 
         if (exists == null) throw new BadRequestException("Could not find object by id: " + objectId);
 
         boolean dirty_flag = false;
-        if (update.getType() != null && !update.getType().equals("")) {
-            exists.setType(update.getType());
-            dirty_flag = true;
+        if (update.getType() != null) {
+            throw new BadRequestException();
         }
 
-        if (update.getAlias() != null && !update.getAlias().equals("")) {
+        if (update.getAlias() != null ) {
+            if (update.getAlias().isEmpty())
+                throw new BadRequestException();
+
             exists.setAlias(update.getAlias());
             dirty_flag = true;
         }
@@ -110,14 +132,32 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
         }
 
         if (update.getLocation() != null) {
-            exists.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()));
-            dirty_flag = true;
+            if (update.getLocation().getLng() == 0.0 && update.getLocation().getLat() != 0.0) {
+                exists.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()
+                        .setLng(existsBoundary.getLocation().getLng())));
+                dirty_flag = true;
+            }
+            else if (update.getLocation().getLng() != 0.0 && update.getLocation().getLat() == 0.0) {
+                exists.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()
+                        .setLat(existsBoundary.getLocation().getLat())));
+                dirty_flag = true;
+            }
+            else if (update.getLocation().getLng() != 0.0 && update.getLocation().getLat() != 0.0){
+                exists.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()));
+                dirty_flag = true;
+            }
+
         }
 
         // TODO: need to check ObjectDetails attributes
         if (update.getObjectDetails() != null) {
-            exists.setObjectDetails(update.getObjectDetails());
-            dirty_flag = true;
+            for (Map.Entry<String, Object> entry :update.getObjectDetails().entrySet()) {
+                if (entry.getKey() != null && entry.getValue() != null &&
+                        exists.getObjectDetails().containsKey(entry.getKey())) {
+                    exists.getObjectDetails().put(entry.getKey(), entry.getValue());
+                    dirty_flag = true;
+                }
+            }
         }
 
         if (dirty_flag) exists = this.objectCrudDB.save(exists);
@@ -128,6 +168,9 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
     @Override
     public Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId) {
         String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
+        if (!this.objectCrudDB.existsById(objectId))
+            throw new NotFoundException();
+
         return this.objectCrudDB.findById(objectId).map(this::convertEntityToBoundary);
     }
 
@@ -250,24 +293,72 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
         return true;
     }
 
-    private boolean help_object_validate(SuperAppObjectBoundary objectBoundary) {
-        if (objectBoundary.getType() == null || objectBoundary.getType().equals(""))
+    private boolean checkValidLocation(Location location) {
+        if (location == null)
+            return false;
+        if(location.getLat() == 0.0)
+            return false;
+        if(location.getLng() == 0.0)
             return false;
 
-        if (objectBoundary.getAlias() == null || objectBoundary.getAlias().equals(""))
-            return false;
-
-        if (objectBoundary.getActive() == null)
-            return false;
-
-        if (objectBoundary.getLocation() == null)
-            return false;
-
-        if (objectBoundary.getObjectDetails() == null)
-            return false;
-        if (!this.isCreateByExist(objectBoundary.getCreatedBy()))
-            return false;
         return true;
     }
+
+    private int help_object_validate(SuperAppObjectBoundary objectBoundary) {
+        if (objectBoundary.getType() == null || objectBoundary.getType().equals(""))
+            return 0;
+
+        if (objectBoundary.getAlias() == null || objectBoundary.getAlias().equals(""))
+            return 0;
+
+        if (!checkValidLocation(objectBoundary.getLocation()))
+            return 0;
+
+        if (objectBoundary.getObjectDetails() == null)
+            return 0;
+
+        if (objectBoundary.getCreatedBy()== null)
+            return 0;
+
+        if (objectBoundary.getCreatedBy().getUserId()== null)
+            return 0;
+
+        if (!isCreateByExist(objectBoundary.getCreatedBy()))
+            return 0;
+
+        if (!isValidEmail(objectBoundary.getCreatedBy().getUserId().getEmail()))
+            return 0;
+
+        if (!checkValidSuperApp(objectBoundary.getCreatedBy().getUserId().getSuperapp()))
+            return 0;
+
+        if (!userCrud.existsById(convertBoundaryToEntity(objectBoundary).getCreatedBy()))
+            return 1;
+
+
+
+        return 2;
+    }
+
+    private boolean isValidEmail(String email) {
+
+        if (email == null)
+            return false;
+
+        String emailRegex = "^[a-zA-Z0-9+&*-]+(?:\\."
+                + "[a-zA-Z0-9+&*-]+)*@"
+                + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
+                + "A-Z]{2,7}$";
+
+        Pattern emailPattern = Pattern.compile(emailRegex);
+
+        // check email format
+        if (!emailPattern.matcher(email).matches())
+            return false;
+
+        return true;
+    }
+
+
 
 }
