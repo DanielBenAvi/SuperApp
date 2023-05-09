@@ -998,7 +998,9 @@ public class ObjectTestSet {
 
         // THEN
         // the server response with status 2xx code
-        assertThat(postObject.getActive()).isNotNull().isEqualTo(updateObject.getActive());
+        SuperAppObjectBoundary updatedObject =
+                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
+        assertThat(updatedObject.getActive()).isNotNull().isEqualTo(updateObject.getActive());
     }
 
     @Test
@@ -1034,13 +1036,15 @@ public class ObjectTestSet {
 
         // THEN
         // the server response with Bad Request status code 400
+        SuperAppObjectBoundary updatedObject =
+                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
 
         assertThatThrownBy(() ->
-                help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(),
-                        postObject.getObjectId().getSuperapp())).isInstanceOf(HttpClientErrorException.class)
+                help_PutObjectBoundary(updateObject,updatedObject.getObjectId().getInternalObjectId(),
+                        updatedObject.getObjectId().getSuperapp())).isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
 
-        assertThat(postObject.getAlias()).isNotNull().isEqualTo(updateObject.getAlias());
+        assertThat(updatedObject.getAlias()).isNotNull().isEqualTo(updateObject.getAlias());
     }
 
 
@@ -1073,13 +1077,16 @@ public class ObjectTestSet {
                 setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(null);
         // WHEN
         // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
+        SuperAppObjectBoundary updatedObject =
+                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
+
         assertThatThrownBy(() ->
-                help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(),
-                        postObject.getObjectId().getSuperapp())).isInstanceOf(HttpClientErrorException.class)
+                help_PutObjectBoundary(updateObject,updatedObject.getObjectId().getInternalObjectId(),
+                        updatedObject.getObjectId().getSuperapp())).isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
         // THEN
         // the server response with Bad Request status 400 code
-        assertThat(postObject.getType()).isNotNull().isEqualTo(type);
+        assertThat(updatedObject.getType()).isNotNull().isEqualTo(type);
 
     }
 
@@ -1122,7 +1129,10 @@ public class ObjectTestSet {
         help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
         // THEN
         // the server response with status 2xx code
-        assertThat(postObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(updateObject.getObjectDetails());
+        SuperAppObjectBoundary updatedObject =
+                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
+
+        assertThat(updatedObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(updateObject.getObjectDetails());
     }
 
     @Test
@@ -1166,11 +1176,14 @@ public class ObjectTestSet {
         // THEN
         // the server response with status 2xx code
 
+        SuperAppObjectBoundary updatedObject =
+                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
+
         Map<String, Object> objectDetailsChecker = new HashMap<>();
         objectDetails.put("details", "String object demo");
         objectDetails2.put("details2", "somethingsomething");
 
-        assertThat(postObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(objectDetailsChecker);
+        assertThat(updatedObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(objectDetailsChecker);
     }
 
 
@@ -1211,7 +1224,10 @@ public class ObjectTestSet {
         help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
         // THEN
         // the server response with status 2xx code
-        assertThat(postObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(objectDetails);
+        SuperAppObjectBoundary updatedObject =
+                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
+
+        assertThat(updatedObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(objectDetails);
     }
 
     @Test
@@ -1251,8 +1267,10 @@ public class ObjectTestSet {
         help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
         // THEN
         // the server response with status 2xx code
+        SuperAppObjectBoundary updatedObject =
+                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
 
-        assertThat(postObject.getLocation()).isNotNull().usingRecursiveComparison().isEqualTo(expectedLocation);
+        assertThat(updatedObject.getLocation()).isNotNull().usingRecursiveComparison().isEqualTo(expectedLocation);
     }
 
     @Test
@@ -1293,7 +1311,10 @@ public class ObjectTestSet {
         // THEN
         // the server response with status 2xx code
 
-        assertThat(postObject.getLocation()).isNotNull().usingRecursiveComparison().isEqualTo(location);
+        SuperAppObjectBoundary updatedObject =
+                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
+
+        assertThat(updatedObject.getLocation()).isNotNull().usingRecursiveComparison().isEqualTo(location);
     }
 
     @Test
@@ -1334,9 +1355,12 @@ public class ObjectTestSet {
         help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
         // THEN
         // the server response with status 2xx code
+        SuperAppObjectBoundary updatedObject =
+                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
+
         Location locationChecker = new Location().setLat(expectedLocation.getLat()).setLng(location.getLng());
 
-        assertThat(postObject.getLocation()).isNotNull().usingRecursiveComparison().isEqualTo(locationChecker);
+        assertThat(updatedObject.getLocation()).isNotNull().usingRecursiveComparison().isEqualTo(locationChecker);
     }
 
 
@@ -1381,13 +1405,15 @@ public class ObjectTestSet {
 
         // THEN
         // the server response with Bad Request status 400 code
+        SuperAppObjectBoundary updatedObject =
+                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
 
         assertThatThrownBy(() ->
-                help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(),
-                        postObject.getObjectId().getSuperapp())).isInstanceOf(HttpClientErrorException.class)
+                help_PutObjectBoundary(updateObject,updatedObject.getObjectId().getInternalObjectId(),
+                        updatedObject.getObjectId().getSuperapp())).isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
 
-        assertThat(postObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isNotEqualTo(updateObject.getObjectDetails());
+        assertThat(updatedObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isNotEqualTo(updateObject.getObjectDetails());
     }
 
     /*Wrong Paths*/
@@ -1462,13 +1488,18 @@ public class ObjectTestSet {
 
         // THEN
         // the server response with status 404 not found
+
+
         assertThatThrownBy(() ->
                 this.restTemplate.put(this.baseUrl + "/superpp/obects{superapp}/{internalObjectId}",
                         object, postObject.getObjectId().getSuperapp(),
                         postObject.getObjectId().getInternalObjectId())).isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
 
-        assertThat(postObject.getAlias()).isNotNull().isNotEqualTo(object.getAlias());
+        SuperAppObjectBoundary updatedObject =
+                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
+
+        assertThat(updatedObject.getAlias()).isNotNull().isNotEqualTo(object.getAlias());
 
     }
 
