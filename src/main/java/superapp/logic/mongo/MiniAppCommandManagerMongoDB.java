@@ -6,22 +6,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import superapp.data.MiniAppCommandCrud;
+import superapp.data.MiniAppCommandEntity;
 import superapp.data.ObjectCrud;
 import superapp.data.UserCrud;
-import superapp.logic.boundaries.InvokedBy;
-import superapp.logic.boundaries.TargetObject;
-import superapp.miniapps.MiniAppNames;
-import superapp.data.MiniAppCommandEntity;
 import superapp.logic.ConvertHelp;
 import superapp.logic.MiniAppCommandService;
 import superapp.logic.boundaries.CommandId;
+import superapp.logic.boundaries.InvokedBy;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
+import superapp.logic.boundaries.TargetObject;
+import superapp.miniapps.MiniAppNames;
 import superapp.miniapps.commands.CommandFactory;
-import superapp.miniapps.commands.Commands;
 import superapp.miniapps.commands.DatingCommand;
+import superapp.miniapps.commands.InvalidCommand;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static superapp.miniapps.MiniAppNames.DATING;
 
 @Service
 public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
@@ -34,6 +36,10 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
     private CommandFactory commandFactory;
 
+    @Autowired
+    public void setCommandFactory (CommandFactory commandFactory) {
+        this.commandFactory = commandFactory;
+    }
     @Autowired
     public MiniAppCommandManagerMongoDB(MiniAppCommandCrud miniAppCommandCrud, UserCrud userCrud, ObjectCrud objectCrud) {
         this.miniAppCommandCrud = miniAppCommandCrud;
@@ -102,65 +108,118 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
     }
 
     @Override
-    public Object invokeCommand(MiniAppCommandBoundary command) {
+    public Object invokeCommand(MiniAppCommandBoundary commandBoundary) {
 
-        if (command == null) throw new BadRequestException("MiniAppCommandBoundary object cant be null");
+        // not necessary validate
+//        if (commandBoundary == null)
+//            throw new BadRequestException("MiniAppCommandBoundary object cant be null");
 
         // set command id
-        command.getCommandId().setSuperapp(springApplicationName);
-
-        // set internal command id
-        command.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
-
-        // is valid command id
-        if (!isValidCommandId(command.getCommandId())) throw new BadRequestException("command id is not valid");
-
-        // is valid invoked by
-        if (!isValidInvokedBy(command.getInvokedBy())) throw new BadRequestException("invoked by is not valid");
-
-        // is valid target object
-        if (!isValidTargetObject(command.getTargetObject()))
-            throw new BadRequestException("target object is not valid");
-
-        if (command.getCommand() == null) throw new BadRequestException("command is not valid");
+        commandBoundary.getCommandId().setSuperapp(springApplicationName);
+        commandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
 
         // set invocation timestamp
-        command.setInvocationTimestamp(new Date());
+        commandBoundary.setInvocationTimestamp(new Date());
+
+        try {
+            validateCommand(commandBoundary);
+        } catch (Exception exception){
+            throw exception;
+        }
 
         // convert to entity
-        MiniAppCommandEntity commandEntity = convertToEntity(command);
+        MiniAppCommandEntity commandEntity = convertToEntity(commandBoundary);
+
 
         /////////////////////// execute command ///////////////////////
-        Map<String, Object> commandResult = new HashMap<>();
-        String cmdToExecute = commandEntity.getCommand();
+        Object resultObjectOfCommand;
+        String miniappName = commandBoundary.getCommandId().getMiniapp();
+        switch (MiniAppNames.getStr(miniappName)) {
 
-        // check if command is null
-        if (cmdToExecute == null) {
-            commandResult.put(commandEntity.getCommandId(), "command cannot be null");
-            return commandResult;
+            case DATING:
+                resultObjectOfCommand = executeDatingCommands(commandBoundary);
+                break;
+            case EVENT:
+                resultObjectOfCommand = executeEventCommands(commandBoundary);
+            case GROUP:
+                resultObjectOfCommand = executeGroupCommands(commandBoundary);
+                break;
+            case MARKETPLACE:
+                resultObjectOfCommand = executeMarketplaceCommands(commandBoundary);
+                break;
+            default:
+                resultObjectOfCommand =
+                        new InvalidCommand(MiniAppNames.UNKNOWN + " - " + miniappName + " not supported");
         }
 
-        // Here: add  if to check the miniapp name before
-        // change if to switch case
-        if (cmdToExecute.equals("LIKE")) {
-            //(Owner)
-            commandFactory.create(DatingCommand.LIKE, command.getTargetObject()).execute();
-        }
 
         // save command to database
         this.miniAppCommandCrud.save(commandEntity);
 
-        // check if command is not valid
-        try {
-            Commands.valueOf(cmdToExecute);
-            commandResult.put(commandEntity.getCommandId(), cmdToExecute + " successfully executed");
-        } catch (Exception e) {
-            commandResult.put(commandEntity.getCommandId(), Commands.UNKNOWN + " - " + cmdToExecute + " not recognized");
-            return commandResult;
-        }
+
+        Map<String, Object> commandResult = new HashMap<>();
+        commandResult.put(commandEntity.getCommandId(), resultObjectOfCommand);
 
         return commandResult;
     }
+
+    private Object executeDatingCommands(MiniAppCommandBoundary commandBoundary) {
+
+        Object resultObjectOfCommand;
+
+
+        switch (commandBoundary.getCommand()) {
+
+            case "LIKE":
+                resultObjectOfCommand = commandFactory
+                                            .create(DatingCommand.LIKE, commandBoundary.getTargetObject())
+                                            .execute(commandBoundary);
+                break;
+            default:
+                resultObjectOfCommand = new InvalidCommand("An message");
+        }
+
+        return resultObjectOfCommand;
+    }
+
+    private Object executeEventCommands(MiniAppCommandBoundary commandBoundary) {
+        return null;
+    }
+
+    private Object executeGroupCommands(MiniAppCommandBoundary commandBoundary) {
+        return null;
+    }
+
+    private Object executeMarketplaceCommands(MiniAppCommandBoundary commandBoundary) {
+        return null;
+    }
+
+    private void validateCommand(MiniAppCommandBoundary command) {
+
+        // validate invoked by
+        if (!isValidInvokedBy(command.getInvokedBy()))
+            throw new BadRequestException("invoked by is not valid");
+
+        // validate target object
+        if (!isValidTargetObject(command.getTargetObject()))
+            throw new BadRequestException("target object is not valid");
+
+        if (command.getCommand() == null)
+            throw new BadRequestException("command cant be null");
+
+
+        // TODO-validate miniapp-name not null
+    }
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
@@ -190,7 +249,6 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
     public void deleteAllCommands() {
         this.miniAppCommandCrud.deleteAll();
     }
-
 
     private boolean isValidCommandId(CommandId commandId) {
         // check if commandId is null
@@ -239,7 +297,6 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         // check if targetObject is null
         if (targetObject == null) return false;
 
-        // check if targetObject fields are null
 
         // check if targetObject fields are null
         if (targetObject.getObjectId() == null) return false;
@@ -273,4 +330,5 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         }
         return true;
     }
+
 }
