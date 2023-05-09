@@ -52,8 +52,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
             this.objectCrudDB.save(entity);
 
             return this.convertEntityToBoundary(entity);
-        }
-        else throw new RuntimeException("object must contain all fields");
+        } else throw new BadRequestException("object must contain all fields");
     }
 
     private SuperAppObjectEntity convertBoundaryToEntity(SuperAppObjectBoundary boundary) {
@@ -92,7 +91,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
         SuperAppObjectEntity exists = this.objectCrudDB.findById(objectId).orElseThrow(() -> new NotFoundException("could not update object by id: " + objectId + " because it does not exist"));
         // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
 
-        if (exists == null) throw new RuntimeException("Could not find object by id: " + objectId);
+        if (exists == null) throw new BadRequestException("Could not find object by id: " + objectId);
 
         boolean dirty_flag = false;
         if (update.getType() != null && !update.getType().equals("")) {
@@ -251,7 +250,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
         return true;
     }
 
-    private  boolean help_object_validate(SuperAppObjectBoundary objectBoundary){
+    private boolean help_object_validate(SuperAppObjectBoundary objectBoundary) {
         if (objectBoundary.getType() == null && objectBoundary.getType().equals(""))
             return false;
 
