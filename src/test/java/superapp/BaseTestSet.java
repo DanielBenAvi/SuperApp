@@ -146,7 +146,7 @@ public class BaseTestSet {
      * @param internalObjectId- is a parent-target
      * @param childObjId
      */
-    public void putRelationBetweenObjects(String internalObjectId, ObjectId childObjId) {
+    public void putRelationBetweenObjects(String internalObjectId, Object childObjId) {
 
         String putRelationUrl = "/superapp/objects/{superapp}/{internalObjectId}/children";
         this.restTemplate.put(
