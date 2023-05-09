@@ -38,22 +38,22 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
 
     @Override
     public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objectBoundary) {
-        if (objectBoundary == null) throw new RuntimeException("null object cant be created");
 
-        if (!this.isCreateByExist(objectBoundary.getCreatedBy()))
-            throw new RuntimeException("Created By object cant be empty");
+        if (help_object_validate(objectBoundary)) {
 
-        if (objectBoundary.getObjectDetails() == null) objectBoundary.setObjectDetails(new HashMap<String, Object>());
+            // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
 
-        SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
+            SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
 
-        String objectId = ConvertHelp.concatenateIds(new String[]{springApplicationName, UUID.randomUUID().toString()});
-        entity.setObjectId(objectId);
-        entity.setCreationTimestamp(new Date());
+            String objectId = ConvertHelp.concatenateIds(new String[]{springApplicationName, UUID.randomUUID().toString()});
+            entity.setObjectId(objectId);
+            entity.setCreationTimestamp(new Date());
 
-        this.objectCrudDB.save(entity);
+            this.objectCrudDB.save(entity);
 
-        return this.convertEntityToBoundary(entity);
+            return this.convertEntityToBoundary(entity);
+        }
+        else throw new RuntimeException("object must contain all fields");
     }
 
     private SuperAppObjectEntity convertBoundaryToEntity(SuperAppObjectBoundary boundary) {
@@ -95,12 +95,12 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
         if (exists == null) throw new RuntimeException("Could not find object by id: " + objectId);
 
         boolean dirty_flag = false;
-        if (update.getType() != null) {
+        if (update.getType() != null && !update.getType().equals("")) {
             exists.setType(update.getType());
             dirty_flag = true;
         }
 
-        if (update.getAlias() != null) {
+        if (update.getAlias() != null && !update.getAlias().equals("")) {
             exists.setAlias(update.getAlias());
             dirty_flag = true;
         }
@@ -247,6 +247,26 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
         if (!superApp.equals(springApplicationName))
             return false;
 
+        return true;
+    }
+
+    private  boolean help_object_validate(SuperAppObjectBoundary objectBoundary){
+        if (objectBoundary.getType() == null && objectBoundary.getType().equals(""))
+            return false;
+
+        if (objectBoundary.getAlias() == null && objectBoundary.getAlias().equals(""))
+            return false;
+
+        if (objectBoundary.getActive() == null)
+            return false;
+
+        if (objectBoundary.getLocation() == null)
+            return false;
+
+        if (objectBoundary.getObjectDetails() == null)
+            return false;
+        if (!this.isCreateByExist(objectBoundary.getCreatedBy()))
+            return false;
         return true;
     }
 

@@ -50,24 +50,21 @@ public class ObjectsManager implements ObjectsService {
     @Override
     public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objectBoundary) {
 
+        if (help_object_validate(objectBoundary)) {
 
-        if (objectBoundary == null)
-            throw new RuntimeException("null object cant be created");
+            // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
 
-        if (!this.isCreateByExist(objectBoundary.getCreatedBy()))
-            throw new RuntimeException("Created By object cant be empty");
+            SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
 
-        // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
+            String objectId = ConvertHelp.concatenateIds(new String[]{superappName, UUID.randomUUID().toString()});
+            entity.setObjectId(objectId);
+            entity.setCreationTimestamp(new Date());
 
-        SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
+            this.objectsDatabaseMockup.put(objectId, entity);
 
-        String objectId = ConvertHelp.concatenateIds(new String [] {superappName, UUID.randomUUID().toString()});
-        entity.setObjectId(objectId);
-        entity.setCreationTimestamp(new Date());
-
-        this.objectsDatabaseMockup.put(objectId, entity);
-
-        return this.convertEntityToBoundary(entity);
+            return this.convertEntityToBoundary(entity);
+        }
+        else throw new RuntimeException("object must contain all fields");
     }
 
 
@@ -94,21 +91,25 @@ public class ObjectsManager implements ObjectsService {
 
         SuperAppObjectEntity existingEntity = this.objectsDatabaseMockup.get(objectId);
 
-        if (update.getType() != null)
+        if (update.getType() != null && !update.getType().equals(""))
             existingEntity.setType(update.getType());
+        else throw new RuntimeException("invalid type");
 
-        if (update.getAlias() != null)
+        if (update.getAlias() != null && !update.getAlias().equals(""))
             existingEntity.setAlias(update.getAlias());
+        else throw new RuntimeException("invalid alias");
 
         if (update.getActive() != null)
             existingEntity.setActive(update.getActive());
+        else throw new RuntimeException("invalid activity");
 
         if (update.getLocation() != null)
             existingEntity.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()));
+        else throw new RuntimeException("invalid location");
 
-        // TODO: need to check ObjectDetails attributes
         if (update.getObjectDetails() != null)
             existingEntity.setObjectDetails(update.getObjectDetails());
+        else throw new RuntimeException("invalid object details");
 
         return this.convertEntityToBoundary(existingEntity);
     }
@@ -229,6 +230,25 @@ public class ObjectsManager implements ObjectsService {
         if (createdBy.getUserId().getSuperapp() == null || createdBy.getUserId().getEmail() == null)
             return false;
 
+        return true;
+    }
+    private  boolean help_object_validate(SuperAppObjectBoundary objectBoundary){
+        if (objectBoundary.getType() == null && objectBoundary.getType().equals(""))
+          return false;
+
+        if (objectBoundary.getAlias() == null && objectBoundary.getAlias().equals(""))
+            return false;
+
+        if (objectBoundary.getActive() == null)
+            return false;
+
+        if (objectBoundary.getLocation() == null)
+            return false;
+
+        if (objectBoundary.getObjectDetails() == null)
+            return false;
+        if (!this.isCreateByExist(objectBoundary.getCreatedBy()))
+            return false;
         return true;
     }
 
