@@ -2,11 +2,6 @@ package superapp.data;
 
 import java.util.ArrayList;
 
-
-/**
- * @author Ido & Yosef
- */
-
 public class UserDetails {
 	private String name;
 	private String phoneNum;

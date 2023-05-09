@@ -16,7 +16,7 @@ import superapp.logic.ConvertHelp;
 import superapp.logic.MiniAppCommandService;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.logic.command.Commands;
+import superapp.miniapps.commands.Commands;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;

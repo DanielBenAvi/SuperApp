@@ -1,4 +1,4 @@
-package superapp.logic.command;
+package superapp.miniapps.commands;
 
 public enum Commands {
     DO_SOMETHING,
