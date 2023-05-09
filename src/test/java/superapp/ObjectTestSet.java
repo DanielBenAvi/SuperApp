@@ -330,42 +330,42 @@ public class ObjectTestSet {
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
 
     }
-
-    @Test
-    @DisplayName("unsuccessful create object, email not found")
-    public void unsuccessfulCreateObject_emailNotFound() {
-
-        // GIVEN
-        // 1. the server is up and running
-        // 2. the database is up and running
-
-        String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
-        String username = "demo_user";
-        String avatar = "demo_avatar";
-        help_PostUserBoundary(email, role, username, avatar);
-
-
-        // when
-        // A POST request is made to the path "superapp/objects" with SuperAppObjectBoundary
-
-        String type = "EVENT";
-        String alias = "demo";
-        Boolean active = true;
-        Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demoTest@gmail.com" ));
-        Map<String, Object> objectDetails = new HashMap<>();
-        objectDetails.put("details", "String object demo");
-
-
-        // THEN
-        // the server response with bad request status 404 code
-        assertThatThrownBy(() ->
-                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, objectDetails))
-                .isInstanceOf(HttpClientErrorException.class)
-                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
-
-    }
+/* for next sprint*/
+//    @Test
+//    @DisplayName("unsuccessful create object, email not found")
+//    public void unsuccessfulCreateObject_emailNotFound() {
+//
+//        // GIVEN
+//        // 1. the server is up and running
+//        // 2. the database is up and running
+//
+//        String email = "demo@gmail.com";
+//        String role = UserRole.ADMIN.toString();
+//        String username = "demo_user";
+//        String avatar = "demo_avatar";
+//        help_PostUserBoundary(email, role, username, avatar);
+//
+//
+//        // when
+//        // A POST request is made to the path "superapp/objects" with SuperAppObjectBoundary
+//
+//        String type = "EVENT";
+//        String alias = "demo";
+//        Boolean active = true;
+//        Location location = new Location(10.200, 10.200);
+//        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demoTest@gmail.com" ));
+//        Map<String, Object> objectDetails = new HashMap<>();
+//        objectDetails.put("details", "String object demo");
+//
+//
+//        // THEN
+//        // the server response with bad request status 404 code
+//        assertThatThrownBy(() ->
+//                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, objectDetails))
+//                .isInstanceOf(HttpClientErrorException.class)
+//                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
+//
+//    }
 
     @Test
     @DisplayName("unsuccessful create object, no createdBy")

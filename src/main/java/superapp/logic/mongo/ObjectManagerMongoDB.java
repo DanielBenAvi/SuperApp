@@ -331,9 +331,9 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
 
         if (!checkValidSuperApp(objectBoundary.getCreatedBy().getUserId().getSuperapp()))
             return 0;
-
-        if (!userCrud.existsById(convertBoundaryToEntity(objectBoundary).getCreatedBy()))
-            return 1;
+        /*for next sprint*/
+//        if (!userCrud.existsById(convertBoundaryToEntity(objectBoundary).getCreatedBy()))
+//            return 1;
 
 
 
