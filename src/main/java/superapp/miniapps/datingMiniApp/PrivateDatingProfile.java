@@ -3,7 +3,7 @@ package superapp.miniapps.datingMiniApp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrivetDatingProfile {
+public class PrivateDatingProfile {
 
     private PublicDatingProfile publicProfile;
     private Address address;
@@ -16,7 +16,7 @@ public class PrivetDatingProfile {
     private List<String> likesMe; // list of profile dating id that liked me
 
 
-    public PrivetDatingProfile() {
+    public PrivateDatingProfile() {
         this.genderPreferences = new ArrayList<>();
         this.matches = new ArrayList<>();
         this.myLikes = new ArrayList<>();
@@ -28,7 +28,7 @@ public class PrivetDatingProfile {
         return publicProfile;
     }
 
-    public PrivetDatingProfile setPublicProfile(PublicDatingProfile publicProfile) {
+    public PrivateDatingProfile setPublicProfile(PublicDatingProfile publicProfile) {
         this.publicProfile = publicProfile;
         return this;
     }
@@ -37,7 +37,7 @@ public class PrivetDatingProfile {
         return address;
     }
 
-    public PrivetDatingProfile setAddress(Address address) {
+    public PrivateDatingProfile setAddress(Address address) {
         this.address = address;
         return this;
     }
@@ -46,7 +46,7 @@ public class PrivetDatingProfile {
         return distanceRange;
     }
 
-    public PrivetDatingProfile setDistanceRange(int distanceRange) {
+    public PrivateDatingProfile setDistanceRange(int distanceRange) {
         this.distanceRange = distanceRange;
         return this;
     }
@@ -55,7 +55,7 @@ public class PrivetDatingProfile {
         return ageRange;
     }
 
-    public PrivetDatingProfile setAgeRange(int ageRange) {
+    public PrivateDatingProfile setAgeRange(int ageRange) {
         this.ageRange = ageRange;
         return this;
     }
@@ -64,7 +64,7 @@ public class PrivetDatingProfile {
         return genderPreferences;
     }
 
-    public PrivetDatingProfile setGenderPreferences(List<Gender> genderPreferences) {
+    public PrivateDatingProfile setGenderPreferences(List<Gender> genderPreferences) {
         this.genderPreferences = genderPreferences;
         return this;
     }
@@ -73,7 +73,7 @@ public class PrivetDatingProfile {
         return matches;
     }
 
-    public PrivetDatingProfile setMatches(List<Match> matches) {
+    public PrivateDatingProfile setMatches(List<Match> matches) {
         this.matches = matches;
         return this;
     }
@@ -82,7 +82,7 @@ public class PrivetDatingProfile {
         return myLikes;
     }
 
-    public PrivetDatingProfile setMyLikes(List<String> myLikes) {
+    public PrivateDatingProfile setMyLikes(List<String> myLikes) {
         this.myLikes = myLikes;
         return this;
     }
@@ -91,7 +91,7 @@ public class PrivetDatingProfile {
         return likesMe;
     }
 
-    public PrivetDatingProfile setLikesMe(List<String> likesMe) {
+    public PrivateDatingProfile setLikesMe(List<String> likesMe) {
         this.likesMe = likesMe;
         return this;
     }
@@ -100,7 +100,7 @@ public class PrivetDatingProfile {
         return unlikes;
     }
 
-    public PrivetDatingProfile setUnlikes(List<String> unlikes) {
+    public PrivateDatingProfile setUnlikes(List<String> unlikes) {
         this.unlikes = unlikes;
         return this;
     }

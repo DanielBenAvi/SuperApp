@@ -16,7 +16,9 @@ import superapp.logic.ConvertHelp;
 import superapp.logic.MiniAppCommandService;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
+import superapp.miniapps.commands.CommandFactory;
 import superapp.miniapps.commands.Commands;
+import superapp.miniapps.commands.DatingCommand;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,9 +28,11 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
     private final MiniAppCommandCrud miniAppCommandCrud;
     private final UserCrud userCrud;
-
     private final ObjectCrud objectCrud;
     private String springApplicationName;
+
+
+    private CommandFactory commandFactory;
 
     @Autowired
     public MiniAppCommandManagerMongoDB(MiniAppCommandCrud miniAppCommandCrud, UserCrud userCrud, ObjectCrud objectCrud) {
@@ -36,7 +40,6 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         this.userCrud = userCrud;
         this.objectCrud = objectCrud;
     }
-
 
     /**
      * This method injects a configuration value of spring.
@@ -55,7 +58,6 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
     public void init() {
         System.err.println("************ MiniAppCommandManagerMongoDB ************ ");
     }
-
 
     /**
      * This method convert MiniAppCommand Entity to Boundary
@@ -136,6 +138,13 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         if (cmdToExecute == null) {
             commandResult.put(commandEntity.getCommandId(), "command cannot be null");
             return commandResult;
+        }
+
+        // Here: add  if to check the miniapp name before
+        // change if to switch case
+        if (cmdToExecute.equals("LIKE")) {
+            //(Owner)
+            commandFactory.create(DatingCommand.LIKE, command.getTargetObject()).execute();
         }
 
         // save command to database
