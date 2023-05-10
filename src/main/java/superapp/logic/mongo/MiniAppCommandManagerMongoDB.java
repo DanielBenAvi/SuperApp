@@ -208,10 +208,10 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
         if (invokedBy.getUserId().getSuperapp() == null) return false;
 
-        // check if user exist in database
-        AtomicBoolean userExist = checkIfUserExists(invokedBy);
-
-        if (!userExist.get()) throw new NotFoundException("user id is not valid");
+//        // check if user exist in database
+//        AtomicBoolean userExist = checkIfUserExists(invokedBy);
+//
+//        if (!userExist.get()) throw new NotFoundException("user id is not valid");
 
         return true;
     }
@@ -239,9 +239,9 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
         if (targetObject.getObjectId().getSuperapp() == null) return false;
 
-        AtomicBoolean objectExist = checkIfObjectExists(targetObject);
-        if (!objectExist.get())
-            throw new NotFoundException("object id is not valid");
+//        AtomicBoolean objectExist = checkIfObjectExists(targetObject);
+//        if (!objectExist.get())
+//            throw new NotFoundException("object id is not valid");
 
         return true;
     }
