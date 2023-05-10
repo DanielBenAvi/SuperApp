@@ -33,11 +33,11 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details_1", "String object demo");
 
-        return  this.help_PostObjectBoundary(null
-                ,"Event"
+        return this.help_PostObjectBoundary(null
+                , "Event"
                 , alias
-                ,null
-                ,true
+                , null
+                , true
                 , new Location(10.200, 10.200)
                 , new CreatedBy().setUserId(new UserID(this.springApplicationName, email))
                 , objectDetails
@@ -73,7 +73,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com","demo parent");
+                = createObjectAndPostHelper("demoParent@gmail.com", "demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
@@ -81,7 +81,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         // create relation
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild.getObjectId());
+                , postedObjectChild.getObjectId());
 
         // WHEN
         // A GET request is made to the path
@@ -91,12 +91,12 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // The server response with status 404 not found AND not return any array of object boundary
         assertThatThrownBy(() ->
                 this.restTemplate.getForObject(this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/childrens"
-                                , SuperAppObjectBoundary[].class
-                                , this.springApplicationName
-                                , postedObjectParent.getObjectId().getInternalObjectId()
+                        , SuperAppObjectBoundary[].class
+                        , this.springApplicationName
+                        , postedObjectParent.getObjectId().getInternalObjectId()
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
 
     }
@@ -118,7 +118,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         // create relation
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild.getObjectId());
+                , postedObjectChild.getObjectId());
 
         // WHEN
         // A GET request is made to the path
@@ -134,24 +134,24 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                         , postedObjectChild.getObjectId().getInternalObjectId()
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
     @DisplayName("Invalid url for PUT (bind) relation between child and parent")
-    public void invalidPutRelationUrlTest () {
+    public void invalidPutRelationUrlTest() {
 
         // GIVEN
         // 3. db contains 2 objects without relation
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com","demo parent");
+                = createObjectAndPostHelper("demoParent@gmail.com", "demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com","demo child");
+                = createObjectAndPostHelper("demoChild@gmail.com", "demo child");
 
         // WHEN
         // A PUT request is made to the path
@@ -162,14 +162,14 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // The server response with status 404 not found AND relation between objects not updated/saved.
 
         assertThatThrownBy(() ->
-                        this.restTemplate.put(
-                                this.baseUrl + "/superapp/object/{superapp}/{internalObjectId}/children"
-                                , postedObjectChild.getObjectId()
-                                , this.springApplicationName
-                                , postedObjectParent.getObjectId().getInternalObjectId())
-                )
+                this.restTemplate.put(
+                        this.baseUrl + "/superapp/object/{superapp}/{internalObjectId}/children"
+                        , postedObjectChild.getObjectId()
+                        , this.springApplicationName
+                        , postedObjectParent.getObjectId().getInternalObjectId())
+        )
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
 
         assertThatNoRelationAtAllHelper(postedObjectParent.getObjectId().getInternalObjectId());
@@ -202,7 +202,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // AND pass ObjectId of postedObjectChild
 
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild.getObjectId());
+                , postedObjectChild.getObjectId());
 
         // THEN
         // The server response with status 2xx OK AND relation between 2 objects updated and saved in db.
@@ -312,11 +312,11 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         // create relation
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild.getObjectId());
+                , postedObjectChild.getObjectId());
 
         // other parent object
         SuperAppObjectBoundary postedObjectOtherParent
-                = createObjectAndPostHelper("demoOtherParent@gmail.com","demo other parent");
+                = createObjectAndPostHelper("demoOtherParent@gmail.com", "demo other parent");
 
         // WHEN
         // A PUT request is made to the path
@@ -328,10 +328,10 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectOtherParent.getObjectId().getInternalObjectId()
-                                                , postedObjectChild.getObjectId()
+                        , postedObjectChild.getObjectId()
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
         assertThatNoRelationAtAllHelper(postedObjectOtherParent.getObjectId().getInternalObjectId());
 
@@ -357,10 +357,10 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // The server response with status 404 not found AND relation between objects not updated/saved.
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects("c2759119-f06f-4f3c-a8ca-9db9b16301c1"
-                                            , postedObject.getObjectId()
+                        , postedObject.getObjectId()
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
 
         assertThatNoRelationAtAllHelper(postedObject.getObjectId().getInternalObjectId());
@@ -395,9 +395,9 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObject.getObjectId().getInternalObjectId()
-                                                , objectId))
+                        , objectId))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
 
         assertThatNoRelationAtAllHelper(postedObject.getObjectId().getInternalObjectId());
@@ -424,10 +424,10 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObject.getObjectId().getInternalObjectId()
-                                    , postedObject.getObjectId()
+                        , postedObject.getObjectId()
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
                 .isEqualTo(HttpStatus.CONFLICT);
 
         assertThatNoRelationAtAllHelper(postedObject.getObjectId().getInternalObjectId());
@@ -458,9 +458,9 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // The server response with status 415 unsupported media type AND relation between objects not updated/saved.
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                                , null))
+                        , null))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
                 .isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 
         assertThatNoRelationAtAllHelper(postedObjectParent.getObjectId().getInternalObjectId());
@@ -493,10 +493,10 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         String childInternalObjectId = postedObjectChild.getObjectId().getInternalObjectId();
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                    , new ObjectId().setInternalObjectId(childInternalObjectId)
+                        , new ObjectId().setInternalObjectId(childInternalObjectId)
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
 
         assertThatNoRelationAtAllHelper(postedObjectParent.getObjectId().getInternalObjectId());
@@ -528,10 +528,10 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         String childInternalObjectId = postedObjectChild.getObjectId().getInternalObjectId();
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                    , new ObjectId().setSuperapp("2023b-LiorAriely").setInternalObjectId(childInternalObjectId)
+                        , new ObjectId().setSuperapp("2023b-LiorAriely").setInternalObjectId(childInternalObjectId)
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
 
         assertThatNoRelationAtAllHelper(postedObjectParent.getObjectId().getInternalObjectId());
@@ -547,11 +547,11 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com","demo parent");
+                = createObjectAndPostHelper("demoParent@gmail.com", "demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com","demo child");
+                = createObjectAndPostHelper("demoChild@gmail.com", "demo child");
 
         // WHEN
         // A PUT request is made to the path
@@ -562,10 +562,10 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // The server response with status 400 bad request AND relation between objects not updated/saved.
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , new ObjectId().setSuperapp(this.springApplicationName).setInternalObjectId("0")
+                        , new ObjectId().setSuperapp(this.springApplicationName).setInternalObjectId("0")
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
 
         assertThatNoRelationAtAllHelper(postedObjectParent.getObjectId().getInternalObjectId());
@@ -581,11 +581,11 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com","demo parent");
+                = createObjectAndPostHelper("demoParent@gmail.com", "demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com","demo child");
+                = createObjectAndPostHelper("demoChild@gmail.com", "demo child");
 
         // WHEN
         // A PUT request is made to the path
@@ -597,10 +597,10 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , new ObjectId().setSuperapp(this.springApplicationName)
+                        , new ObjectId().setSuperapp(this.springApplicationName)
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
+                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
 
         assertThatNoRelationAtAllHelper(postedObjectParent.getObjectId().getInternalObjectId());
@@ -616,26 +616,26 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com","demo parent");
+                = createObjectAndPostHelper("demoParent@gmail.com", "demo parent");
 
         // child 1 object
         SuperAppObjectBoundary postedObjectChild_1
-                = createObjectAndPostHelper("demoChild1@gmail.com","demo child 1");
+                = createObjectAndPostHelper("demoChild1@gmail.com", "demo child 1");
 
         // child 2 object
         SuperAppObjectBoundary postedObjectChild_2
-                = createObjectAndPostHelper("demoChild2@gmail.com","demo child 2");
+                = createObjectAndPostHelper("demoChild2@gmail.com", "demo child 2");
 
         // create relation 1
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild_1.getObjectId());
+                , postedObjectChild_1.getObjectId());
         // create relation 2
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild_2.getObjectId());
+                , postedObjectChild_2.getObjectId());
 
         //  object without relation
         SuperAppObjectBoundary noRelationObject
-                = createObjectAndPostHelper("demo@gmail.com","demo");
+                = createObjectAndPostHelper("demo@gmail.com", "demo");
 
 
         // WHEN
@@ -664,7 +664,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com","demo parent");
+                = createObjectAndPostHelper("demoParent@gmail.com", "demo parent");
 
         // WHEN
         // A GET request is made to the path
@@ -688,22 +688,22 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com","demo parent");
+                = createObjectAndPostHelper("demoParent@gmail.com", "demo parent");
 
         // child 1 object
         SuperAppObjectBoundary postedObjectChild_1
-                = createObjectAndPostHelper("demoChild1@gmail.com","demo child 1");
+                = createObjectAndPostHelper("demoChild1@gmail.com", "demo child 1");
 
         // child 2 object
         SuperAppObjectBoundary postedObjectChild_2
-                = createObjectAndPostHelper("demoChild2@gmail.com","demo child 2");
+                = createObjectAndPostHelper("demoChild2@gmail.com", "demo child 2");
 
         // create relation
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild_1.getObjectId());
+                , postedObjectChild_1.getObjectId());
 
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild_2.getObjectId());
+                , postedObjectChild_2.getObjectId());
 
         //  object without relation
         SuperAppObjectBoundary postedObject
@@ -767,92 +767,91 @@ public class ObjectRelationshipsTests extends BaseTestSet {
     }
 
 
-    /*
-    @Test // talk about
-    @DisplayName("Bind relationship object to itself by circle")
-    public void bindCircleRelationObjectToItself() {
-        // GIVEN
-        // 3. db contains 9 objects with following relationships :
-        // object 1 --> object 2, object 3, object 4
-        // object 3 --> object 5
-        // object 5 --> object 6, object 7
-        // object 6 --> object 8
-        // object 8 --> object 9
+//    @Test // talk about
+//    @DisplayName("Bind relationship object to itself by circle")
+//    public void bindCircleRelationObjectToItself() {
+//        // GIVEN
+//        // 3. db contains 9 objects with following relationships :
+//        // object 1 --> object 2, object 3, object 4
+//        // object 3 --> object 5
+//        // object 5 --> object 6, object 7
+//        // object 6 --> object 8
+//        // object 8 --> object 9
+//
+//
+//        // parent object / object 1
+//        SuperAppObjectBoundary postedObject_1 = createObjectAndPostHelper("object.1@gmail.com", "object 1");
+//
+//        // object 2
+//        SuperAppObjectBoundary postedObject_2 = createObjectAndPostHelper("object.2@gmail.com", "object 2");
+//
+//        // object 3
+//        SuperAppObjectBoundary postedObject_3 = createObjectAndPostHelper("object.3@gmail.com", "object 3");
+//
+//        // object 4
+//        SuperAppObjectBoundary postedObject_4 = createObjectAndPostHelper("object.4@gmail.com", "object 4");
+//
+//        // object 5
+//        SuperAppObjectBoundary postedObject_5 = createObjectAndPostHelper("object.5@gmail.com", "object 5");
+//
+//        // object 6
+//        SuperAppObjectBoundary postedObject_6 = createObjectAndPostHelper("object.6@gmail.com", "object 6");
+//
+//        // object 7
+//        SuperAppObjectBoundary postedObject_7 = createObjectAndPostHelper("object.7@gmail.com", "object 7");
+//
+//        // object 8
+//        SuperAppObjectBoundary postedObject_8 = createObjectAndPostHelper("object.8@gmail.com", "object 8");
+//
+//        // object 9
+//        SuperAppObjectBoundary postedObject_9 = createObjectAndPostHelper("object.9@gmail.com", "object 9");
+//
+//
+//        // create relationships
+//
+//        // object 1 --> object 2, object 3, object 4
+//        this.putRelationBetweenObjects(postedObject_1.getObjectId().getInternalObjectId(), postedObject_2.getObjectId());
+//        this.putRelationBetweenObjects(postedObject_1.getObjectId().getInternalObjectId(), postedObject_3.getObjectId());
+//        this.putRelationBetweenObjects(postedObject_1.getObjectId().getInternalObjectId(), postedObject_4.getObjectId());
+//
+//        // object 3 --> object 5
+//        this.putRelationBetweenObjects(postedObject_3.getObjectId().getInternalObjectId(), postedObject_5.getObjectId());
+//
+//        // object 5 --> object 6, object 7
+//        this.putRelationBetweenObjects(postedObject_5.getObjectId().getInternalObjectId(), postedObject_6.getObjectId());
+//        this.putRelationBetweenObjects(postedObject_5.getObjectId().getInternalObjectId(), postedObject_7.getObjectId());
+//
+//        // object 6 --> object 8
+//        this.putRelationBetweenObjects(postedObject_6.getObjectId().getInternalObjectId(), postedObject_8.getObjectId());
+//
+//        // object 8 --> object 9
+//        this.putRelationBetweenObjects(postedObject_8.getObjectId().getInternalObjectId(), postedObject_9.getObjectId());
+//
+//        // WHEN
+//        // A PUT request is made to the path
+//        // "superapp/objects/2023b.LiorAriely/object_8-internalObjectId/children"
+//        // AND pass object 1 ObjectId
+//
+//        // THEN
+//        // "The server response with status 409 conflict AND relation between objects not updated/saved."
+//
+//        assertThatThrownBy(() ->
+//                this.putRelationBetweenObjects(postedObject_8.getObjectId().getInternalObjectId()
+//                        , postedObject_1.getObjectId()
+//                ))
+//                .isInstanceOf(HttpClientErrorException.class)
+//                .extracting(e -> ((HttpClientErrorException) e).getStatusCode())
+//                .isEqualTo(HttpStatus.CONFLICT);
+//
+//
+//        SuperAppObjectBoundary[] parentResult =
+//                this.getRelationParents(postedObject_1.getObjectId().getInternalObjectId());
+//
+//        assertThat(parentResult)
+//                .isNotNull()
+//                .isEmpty();
+//    }
 
-
-        // parent object / object 1
-        SuperAppObjectBoundary postedObject_1 = createObjectAndPostHelper("object.1@gmail.com", "object 1");
-
-        // object 2
-        SuperAppObjectBoundary postedObject_2 = createObjectAndPostHelper("object.2@gmail.com", "object 2");
-
-        // object 3
-        SuperAppObjectBoundary postedObject_3 = createObjectAndPostHelper("object.3@gmail.com", "object 3");
-
-        // object 4
-        SuperAppObjectBoundary postedObject_4 = createObjectAndPostHelper("object.4@gmail.com", "object 4");
-
-        // object 5
-        SuperAppObjectBoundary postedObject_5 = createObjectAndPostHelper("object.5@gmail.com", "object 5");
-
-        // object 6
-        SuperAppObjectBoundary postedObject_6 = createObjectAndPostHelper("object.6@gmail.com", "object 6");
-
-        // object 7
-        SuperAppObjectBoundary postedObject_7 = createObjectAndPostHelper("object.7@gmail.com", "object 7");
-
-        // object 8
-        SuperAppObjectBoundary postedObject_8 = createObjectAndPostHelper("object.8@gmail.com", "object 8");
-
-        // object 9
-        SuperAppObjectBoundary postedObject_9 = createObjectAndPostHelper("object.9@gmail.com", "object 9");
-
-
-        // create relationships
-
-        // object 1 --> object 2, object 3, object 4
-        this.putRelationBetweenObjects(postedObject_1.getObjectId().getInternalObjectId(), postedObject_2.getObjectId());
-        this.putRelationBetweenObjects(postedObject_1.getObjectId().getInternalObjectId(), postedObject_3.getObjectId());
-        this.putRelationBetweenObjects(postedObject_1.getObjectId().getInternalObjectId(), postedObject_4.getObjectId());
-
-        // object 3 --> object 5
-        this.putRelationBetweenObjects(postedObject_3.getObjectId().getInternalObjectId(), postedObject_5.getObjectId());
-
-        // object 5 --> object 6, object 7
-        this.putRelationBetweenObjects(postedObject_5.getObjectId().getInternalObjectId(), postedObject_6.getObjectId());
-        this.putRelationBetweenObjects(postedObject_5.getObjectId().getInternalObjectId(), postedObject_7.getObjectId());
-
-        // object 6 --> object 8
-        this.putRelationBetweenObjects(postedObject_6.getObjectId().getInternalObjectId(), postedObject_8.getObjectId());
-
-        // object 8 --> object 9
-        this.putRelationBetweenObjects(postedObject_8.getObjectId().getInternalObjectId(), postedObject_9.getObjectId());
-
-        // WHEN
-        // A PUT request is made to the path
-        // "superapp/objects/2023b.LiorAriely/object_8-internalObjectId/children"
-        // AND pass object 1 ObjectId
-
-        // THEN
-        // "The server response with status 409 conflict AND relation between objects not updated/saved."
-
-        assertThatThrownBy(() ->
-                this.putRelationBetweenObjects(postedObject_8.getObjectId().getInternalObjectId()
-                        , postedObject_1.getObjectId()
-                ))
-                .isInstanceOf(HttpClientErrorException.class)
-                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode())
-                .isEqualTo(HttpStatus.CONFLICT);
-
-
-        SuperAppObjectBoundary[] parentResult =
-                this.getRelationParents(postedObject_1.getObjectId().getInternalObjectId());
-
-        assertThat(parentResult)
-                .isNotNull()
-                .isEmpty();
-    }
-     */
 
     /*
     @Test // talk about
