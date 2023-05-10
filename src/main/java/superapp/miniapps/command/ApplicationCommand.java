@@ -1,10 +1,11 @@
-package superapp.miniapps.commands;
+package superapp.miniapps.command;
 
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 
-public interface DatingCommand {
-    int LIKE = 1;
-    int UNKNOWN = 2;
+public interface ApplicationCommand {
+
+    int UNKNOWN_COMMAND = 0;
 
     public Object execute(MiniAppCommandBoundary commandBoundary);
+
 }

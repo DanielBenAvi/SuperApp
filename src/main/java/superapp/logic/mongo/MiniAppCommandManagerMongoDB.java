@@ -16,14 +16,13 @@ import superapp.logic.boundaries.InvokedBy;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.TargetObject;
 import superapp.miniapps.MiniAppNames;
-import superapp.miniapps.commands.CommandFactory;
-import superapp.miniapps.commands.DatingCommand;
-import superapp.miniapps.commands.InvalidCommand;
+import superapp.miniapps.command.CommandFactory;
+import superapp.miniapps.datingMiniApp.command.DatingCommand;
+import superapp.miniapps.command.InvalidCommand;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static superapp.miniapps.MiniAppNames.DATING;
 
 @Service
 public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
@@ -31,20 +30,18 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
     private final MiniAppCommandCrud miniAppCommandCrud;
     private final UserCrud userCrud;
     private final ObjectCrud objectCrud;
+    private final CommandFactory commandFactory;
     private String springApplicationName;
 
 
-    private CommandFactory commandFactory;
+    @Autowired
+    public MiniAppCommandManagerMongoDB(MiniAppCommandCrud miniAppCommandCrud, UserCrud userCrud,
+                                        ObjectCrud objectCrud,CommandFactory commandFactory) {
 
-    @Autowired
-    public void setCommandFactory (CommandFactory commandFactory) {
-        this.commandFactory = commandFactory;
-    }
-    @Autowired
-    public MiniAppCommandManagerMongoDB(MiniAppCommandCrud miniAppCommandCrud, UserCrud userCrud, ObjectCrud objectCrud) {
         this.miniAppCommandCrud = miniAppCommandCrud;
         this.userCrud = userCrud;
         this.objectCrud = objectCrud;
+        this.commandFactory = commandFactory;
     }
 
     /**
@@ -96,19 +93,23 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         cmdEntity.setCommand(cmdBoundary.getCommand());
 
         CommandId commandId = cmdBoundary.getCommandId();
-        String[] ids = new String[]{commandId.getSuperapp(), commandId.getMiniapp(), commandId.getInternalCommandId()};
-        cmdEntity.setCommandId(ConvertHelp.concatenateIds(ids));
 
-        cmdEntity.setCommandAttributes(cmdBoundary.getCommandAttributes());
-        cmdEntity.setInvocationTimestamp(cmdBoundary.getInvocationTimestamp());
-        cmdEntity.setTargetObject(ConvertHelp.targetObjBoundaryToStr(cmdBoundary.getTargetObject()));
-        cmdEntity.setInvokedBy(ConvertHelp.invokedByBoundaryToStr(cmdBoundary.getInvokedBy()));
+        String[] ids = new String[] {commandId.getSuperapp(), commandId.getMiniapp(), commandId.getInternalCommandId()};
+
+        cmdEntity.setCommandId(ConvertHelp.concatenateIds(ids))
+                .setCommandAttributes(cmdBoundary.getCommandAttributes())
+                .setInvocationTimestamp(cmdBoundary.getInvocationTimestamp())
+                .setTargetObject(ConvertHelp.targetObjBoundaryToStr(cmdBoundary.getTargetObject()))
+                .setInvokedBy(ConvertHelp.invokedByBoundaryToStr(cmdBoundary.getInvokedBy()));
 
         return cmdEntity;
     }
 
     @Override
     public Object invokeCommand(MiniAppCommandBoundary commandBoundary) {
+
+
+        // TODO - add verification of user exist, targetObject etc.
 
         // not necessary validate
 //        if (commandBoundary == null)
@@ -127,9 +128,6 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
             throw exception;
         }
 
-        // convert to entity
-        MiniAppCommandEntity commandEntity = convertToEntity(commandBoundary);
-
 
         /////////////////////// execute command ///////////////////////
         Object resultObjectOfCommand;
@@ -141,6 +139,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
                 break;
             case EVENT:
                 resultObjectOfCommand = executeEventCommands(commandBoundary);
+                break;
             case GROUP:
                 resultObjectOfCommand = executeGroupCommands(commandBoundary);
                 break;
@@ -152,11 +151,13 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
                         new InvalidCommand(MiniAppNames.UNKNOWN + " - " + miniappName + " not supported");
         }
 
+        // convert to entity
+        MiniAppCommandEntity commandEntity = convertToEntity(commandBoundary);
 
         // save command to database
         this.miniAppCommandCrud.save(commandEntity);
 
-
+        // put command result object into map
         Map<String, Object> commandResult = new HashMap<>();
         commandResult.put(commandEntity.getCommandId(), resultObjectOfCommand);
 
@@ -166,13 +167,12 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
     private Object executeDatingCommands(MiniAppCommandBoundary commandBoundary) {
 
         Object resultObjectOfCommand;
-
-
+        
         switch (commandBoundary.getCommand()) {
 
             case "LIKE":
                 resultObjectOfCommand = commandFactory
-                                            .create(DatingCommand.LIKE, commandBoundary.getTargetObject())
+                                            .create(DatingCommand.LIKE_PROFILE, commandBoundary.getTargetObject())
                                             .execute(commandBoundary);
                 break;
             default:

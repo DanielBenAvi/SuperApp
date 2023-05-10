@@ -1,4 +1,4 @@
-package superapp.miniapps.datingMiniApp;
+package superapp.miniapps.datingMiniApp.objects;
 
 public class Address {
 

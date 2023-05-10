@@ -1,4 +1,4 @@
-package superapp.miniapps.commands;
+package superapp.miniapps.command;
 
 public class InvalidCommand {
     private String errorMessage;

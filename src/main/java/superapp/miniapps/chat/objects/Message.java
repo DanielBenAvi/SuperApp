@@ -1,4 +1,4 @@
-package superapp.miniapps.chat;
+package superapp.miniapps.chat.objects;
 
 import java.util.Date;
 

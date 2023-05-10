@@ -1,4 +1,6 @@
-package superapp.miniapps.datingMiniApp;
+package superapp.miniapps.datingMiniApp.objects;
+
+import superapp.miniapps.datingMiniApp.Gender;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package superapp.miniapps.commands;
+package superapp.miniapps.command;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +8,9 @@ import superapp.data.UserCrud;
 import superapp.logic.ObjectsService;
 import superapp.logic.mongo.ObjectManagerMongoDB;
 import superapp.logic.mongo.UserManagerMongoDB;
+import superapp.miniapps.datingMiniApp.command.DatingCommand;
+import superapp.miniapps.datingMiniApp.command.impl.DatingLikeProfileCommand;
 
-import static superapp.miniapps.commands.DatingCommand.LIKE;
 
 @Component
 public class CommandFactory {
@@ -20,12 +21,12 @@ public class CommandFactory {
     private final ObjectManagerMongoDB objectRepository;
 
     // Commands
-    private DatingLikeCommand likeCommand;
+    private DatingLikeProfileCommand likeCommand;
 
 
     @Autowired
     public CommandFactory(ObjectCrud objectCrud, UserCrud userCrud, ObjectsService objectsService,
-                          UserManagerMongoDB userRepository, ObjectManagerMongoDB objectRepository, DatingLikeCommand likeCommand) {
+                          UserManagerMongoDB userRepository, ObjectManagerMongoDB objectRepository, DatingLikeProfileCommand likeCommand) {
 
         this.objectCrud = objectCrud;
         this.userCrud = userCrud;
@@ -36,19 +37,19 @@ public class CommandFactory {
     }
 
     @Autowired
-    public void setDatingCommand(DatingLikeCommand likeCommand) {
+    public void setDatingCommand(DatingLikeProfileCommand likeCommand) {
         this.likeCommand = likeCommand;
     }
 
     @PostConstruct
     public void init() {
-        System.err.println("Commands initiated");
+        System.err.println("All commands initiated");
     }
 
     public DatingCommand create(int commandCode, Object... params) {
         switch (commandCode)
         {
-            case LIKE:
+            case DatingCommand.LIKE_PROFILE:
                 return likeCommand;
             default:
                 return null;

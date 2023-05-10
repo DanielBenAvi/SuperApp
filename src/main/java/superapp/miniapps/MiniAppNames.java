@@ -2,11 +2,11 @@ package superapp.miniapps;
 
 public enum MiniAppNames {
 
+    UNKNOWN,
     DATING,
     EVENT,
     GROUP,
-    MARKETPLACE,
-    UNKNOWN;
+    MARKETPLACE;
 
     public static final MiniAppNames getStr(String miniAppName) {
         if (miniAppName.equals("DATING"))

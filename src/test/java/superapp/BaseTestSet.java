@@ -45,6 +45,28 @@ public class BaseTestSet {
 
     /**
      * POST:
+     * Helper method to create a user
+     * the path is "/superapp/users"
+     *
+     * @param email    - the email of the user
+     * @param role     - the role of the user
+     * @param username - the username of the user
+     * @param avatar   - the avatar of the user
+     * @return the user that was created
+     */
+    public UserBoundary postUserBoundary(String email, String role, String username, String avatar) {
+        NewUserBoundary user = new NewUserBoundary();
+        user.setEmail(email).setRole(role).setUsername(username).setAvatar(avatar);
+        return this.restTemplate
+                .postForObject(
+                        this.baseUrl + "/superapp/users"
+                        , user
+                        , UserBoundary.class);
+    }
+
+
+    /**
+     * POST:
      * Helper method to create a SuperAppObjectBoundary
      * the path is "/superapp/objects"
      *

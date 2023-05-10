@@ -1,6 +1,6 @@
-package superapp.miniapps.datingMiniApp;
+package superapp.miniapps.datingMiniApp.objects;
 
-import superapp.miniapps.chat.Chat;
+import superapp.miniapps.chat.objects.Chat;
 
 public class Match {
 

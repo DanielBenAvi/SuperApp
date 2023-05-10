@@ -5,7 +5,7 @@ import java.util.Map;
 
 import superapp.logic.boundaries.Location;
 
-public class GroupEventEntity {
+public class GroupEvent {
 	
 	private Date date;
 	private Location location;
@@ -16,14 +16,14 @@ public class GroupEventEntity {
 	private String eventDescription;
 
 
-	public GroupEventEntity() {
+	public GroupEvent() {
 	}
 
 	public Date getDate() {
 		return date;
 	}
 
-	public GroupEventEntity setDate(Date date) {
+	public GroupEvent setDate(Date date) {
 		this.date = date;
 		return this;
 	}
@@ -32,7 +32,7 @@ public class GroupEventEntity {
 		return location;
 	}
 
-	public GroupEventEntity setLocation(Location location) {
+	public GroupEvent setLocation(Location location) {
 		this.location = location;
 		return this;
 	}
@@ -41,7 +41,7 @@ public class GroupEventEntity {
 		return groupId;
 	}
 
-	public GroupEventEntity setGroupId(String groupId) {
+	public GroupEvent setGroupId(String groupId) {
 		this.groupId = groupId;
 		return this;
 	}
@@ -50,7 +50,7 @@ public class GroupEventEntity {
 		return status;
 	}
 
-	public GroupEventEntity setStatus(Map<String, String> status) {
+	public GroupEvent setStatus(Map<String, String> status) {
 		this.status = status;
 		return this;
 	}
@@ -59,7 +59,7 @@ public class GroupEventEntity {
 		return eventName;
 	}
 
-	public GroupEventEntity setEventName(String eventName) {
+	public GroupEvent setEventName(String eventName) {
 		this.eventName = eventName;
 		return this;
 	}
@@ -68,7 +68,7 @@ public class GroupEventEntity {
 		return eventDescription;
 	}
 
-	public GroupEventEntity setEventDescription(String eventDescription) {
+	public GroupEvent setEventDescription(String eventDescription) {
 		this.eventDescription = eventDescription;
 		return this;
 	}
