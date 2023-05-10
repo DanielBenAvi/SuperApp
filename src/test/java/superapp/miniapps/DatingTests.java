@@ -58,8 +58,8 @@ public class DatingTests extends BaseTestSet {
 
         /////////////////////////////////
         // Create and post users
-        this.postUserBoundary("A@gmail.com", UserRole.MINIAPP_USER.toString(),"B", "B");
-        this.postUserBoundary("B@gmail.com", UserRole.MINIAPP_USER.toString(),"A", "A");
+        this.help_PostUserBoundary("A@gmail.com", UserRole.MINIAPP_USER.toString(),"B", "B");
+        this.help_PostUserBoundary("B@gmail.com", UserRole.MINIAPP_USER.toString(),"A", "A");
 
         // need to related profile to user?/
         // post 2 dating profile for each user
