@@ -68,12 +68,12 @@ public class CommandTestSet {
         String email2 = "demo2@gmail.com";
 
         InvokedBy invokedBy1 = new InvokedBy();
-        UserID user1 = new UserID();
+        UserId user1 = new UserId();
         user1.setEmail(email1).setSuperapp(springApplicationName);
         invokedBy1.setUserId(user1);
 
         InvokedBy invokedBy2 = new InvokedBy();
-        UserID user2 = new UserID();
+        UserId user2 = new UserId();
         user1.setEmail(email2).setSuperapp(springApplicationName);
         invokedBy2.setUserId(user2);
 

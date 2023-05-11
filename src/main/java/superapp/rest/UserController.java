@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import superapp.logic.mongo.NotFoundException;
 import superapp.logic.UsersService;
-import superapp.logic.boundaries.UserID;
+import superapp.logic.boundaries.UserId;
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.UserBoundary;
 
@@ -51,7 +51,7 @@ public class UserController {
 
 		// create UserBoundary from NewUserBoundary
 		UserBoundary userBoundary = new UserBoundary()
-									.setUserId(new UserID(null, newUser.getEmail())) // superapp name will update in the service.
+									.setUserId(new UserId(null, newUser.getEmail())) // superapp name will update in the service.
 									.setUsername(newUser.getUsername())
 									.setAvatar(newUser.getAvatar())
 									.setRole(newUser.getRole());

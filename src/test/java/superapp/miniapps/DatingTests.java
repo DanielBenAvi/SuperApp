@@ -12,10 +12,7 @@ import superapp.miniapps.datingMiniApp.objects.Address;
 import superapp.miniapps.datingMiniApp.objects.PrivateDatingProfile;
 import superapp.miniapps.datingMiniApp.objects.PublicDatingProfile;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DatingTests extends BaseTestSet {
@@ -36,7 +33,7 @@ public class DatingTests extends BaseTestSet {
                 ,null
                 ,true
                 , new Location(10.200, 10.200)
-                , new CreatedBy().setUserId(new UserID(this.springApplicationName, email))
+                , new CreatedBy().setUserId(new UserId(this.springApplicationName, email))
                 , objectDetails
         );
 
@@ -93,37 +90,61 @@ public class DatingTests extends BaseTestSet {
                 .setDistanceRange(100)
                 .setGenderPreferences(new ArrayList<>(Arrays.asList( Gender.FEMALE, Gender.OTHER)));
 
-        // create object boundary with dating profiles
+        // create and post object boundary with dating profiles
         SuperAppObjectBoundary postedObjA
                 = createObjectAndPostHelper("PrivateDatingProfile", "A@gmail.com", "key", profileA);
+
+        String objectIdA = this.springApplicationName + "_" + postedObjA.getObjectId().getInternalObjectId();
+
         SuperAppObjectBoundary postedObjB
                 = createObjectAndPostHelper("PrivateDatingProfile", "B@gmail.com", "key", profileB);
+        String objectIdB = this.springApplicationName + "_" + postedObjB.getObjectId().getInternalObjectId();
 
 
 
-        // create command A like B
-        MiniAppCommandBoundary likeBbyA = new MiniAppCommandBoundary()
-                .setCommand("1") // 1 is LIKE_PROFILE command
-                .setCommandId(new CommandId().setMiniapp("DATING"))
-                .setInvokedBy(new InvokedBy().setUserId(new UserID(this.springApplicationName, "A@gmail.com")))
-                .setTargetObject(
-                        new TargetObject()
-                                .setObjectId(new ObjectId().setInternalObjectId(postedObjB.getObjectId().getInternalObjectId())
-                                        .setSuperapp(this.springApplicationName)))
-                .setCommandAttributes(new HashMap<>());
+        // create command
+        InvokedBy invokedByA = new InvokedBy()
+                                    .setUserId(new UserId(this.springApplicationName, "A@gmail.com"));
+        TargetObject targetObjectA = new TargetObject()
+                                                    .setObjectId(postedObjB.getObjectId());
+
+        Map<String, Object> commandAttributeA = new HashMap<>();
+        commandAttributeA.put("myDatingProfileId", objectIdA);
+
+        // post  command A like B
+        Object commandALikeBResult = this.help_PostCommandBoundary(
+                MiniAppNames.DATING
+                , new CommandId()
+                , "LIKE" // 1 is LIKE_PROFILE command
+                , targetObjectA
+                ,null
+                , invokedByA
+                , commandAttributeA);
+
+        System.err.println("Result A Like B : " + commandALikeBResult.toString());
 
 
+        // create command B like A
 
-        MiniAppCommandBoundary likeAbyB = new MiniAppCommandBoundary()
-                .setCommand("1") // 1 is LIKE_PROFILE command
-                .setCommandId(new CommandId().setMiniapp("DATING"))
-                .setInvokedBy(new InvokedBy().setUserId(new UserID(this.springApplicationName, "B@gmail.com")))
-                .setTargetObject(
-                        new TargetObject()
-                                .setObjectId(new ObjectId().setInternalObjectId(postedObjA.getObjectId().getInternalObjectId())
-                                        .setSuperapp(this.springApplicationName)))
-                .setCommandAttributes(new HashMap<>());
+        UserId userIdB = new UserId(this.springApplicationName, "B@gmail.com");
+        InvokedBy invokedByB = new InvokedBy()
+                .setUserId(userIdB);
+        TargetObject targetObjectB = new TargetObject()
+                .setObjectId(postedObjA.getObjectId());
 
+        Map<String, Object> commandAttributeB = new HashMap<>();
+        commandAttributeB.put("myDatingProfileId", objectIdB);
+        // post  command B like A
+        Object commandBLikeAResult = this.help_PostCommandBoundary(
+                MiniAppNames.DATING
+                , new CommandId()
+                , "LIKE" // 1 is LIKE_PROFILE command
+                , targetObjectB
+                ,null
+                , invokedByB
+                , commandAttributeB);
+
+        System.err.println("Result B Like A : " + commandBLikeAResult.toString());
 
 
     }

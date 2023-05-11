@@ -1,8 +1,5 @@
 package superapp.logic.boundaries;
 
-/**
- * @author Ido & Yosef
- */
 
 public class CommandId {
 	private String superapp;

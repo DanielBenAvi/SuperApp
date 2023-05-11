@@ -40,7 +40,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 ,null
                 ,true
                 , new Location(10.200, 10.200)
-                , new CreatedBy().setUserId(new UserID(applicationName, email))
+                , new CreatedBy().setUserId(new UserId(applicationName, email))
                 , objectDetails
         );
 

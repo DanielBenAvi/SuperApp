@@ -26,7 +26,8 @@ public class CommandFactory {
 
     @Autowired
     public CommandFactory(ObjectCrud objectCrud, UserCrud userCrud, ObjectsService objectsService,
-                          UserManagerMongoDB userRepository, ObjectManagerMongoDB objectRepository, DatingLikeProfileCommand likeCommand) {
+                          UserManagerMongoDB userRepository, ObjectManagerMongoDB objectRepository,
+                          DatingLikeProfileCommand likeCommand) {
 
         this.objectCrud = objectCrud;
         this.userCrud = userCrud;
@@ -43,7 +44,7 @@ public class CommandFactory {
 
     @PostConstruct
     public void init() {
-        System.err.println("All commands initiated");
+        System.err.println("****** All commands initiated");
     }
 
     public DatingCommand create(int commandCode, Object... params) {

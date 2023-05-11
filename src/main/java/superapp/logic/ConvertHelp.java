@@ -7,7 +7,7 @@ import superapp.logic.boundaries.InvokedBy;
 import superapp.logic.boundaries.Location;
 import superapp.logic.boundaries.ObjectId;
 import superapp.logic.boundaries.TargetObject;
-import superapp.logic.boundaries.UserID;
+import superapp.logic.boundaries.UserId;
 
 public class ConvertHelp {
 
@@ -33,7 +33,7 @@ public class ConvertHelp {
      * @param userIdBoundary
      * @return userId String
      */
-    public static String userIdBoundaryToStr(UserID userIdBoundary) {
+    public static String userIdBoundaryToStr(UserId userIdBoundary) {
         String userId = userIdBoundary.getSuperapp() + DELIMITER_ID + userIdBoundary.getEmail();
         return userId;
     }
@@ -103,11 +103,11 @@ public class ConvertHelp {
      * @param userId
      * @return UserID Object
      */
-    public static UserID strUserIdToBoundary(String userId) {
+    public static UserId strUserIdToBoundary(String userId) {
         System.err.println("LOG: strUserIdToBoundary: " + userId);
         String[] attr = userId.split(DELIMITER_ID);
 
-        return new UserID(attr[0], attr[1]);
+        return new UserId(attr[0], attr[1]);
     }
 
     /**

@@ -2,18 +2,18 @@ package superapp.logic.boundaries;
 
 public class UserBoundary {
 
-	private UserID userId;
+	private UserId userId;
 	private String role;
 	private String username;
 	private String avatar;
 
 	public UserBoundary() {}
 
-	public UserID getUserId() {
+	public UserId getUserId() {
 		return userId;
 	}
 
-	public UserBoundary setUserId(UserID userId) {
+	public UserBoundary setUserId(UserId userId) {
 		this.userId = userId;
 		return this;
 	}

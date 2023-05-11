@@ -2,24 +2,20 @@ package superapp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 
 import jakarta.annotation.PostConstruct;
-import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import superapp.data.UserRole;
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.UserBoundary;
-import superapp.logic.boundaries.UserID;
+import superapp.logic.boundaries.UserId;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -152,7 +148,7 @@ public class UserTestSet {
         // the server returns status code 2xx
         // userBoundary is equal to expectedUser
         UserBoundary expectedUser = new UserBoundary()
-                .setUserId(new UserID()
+                .setUserId(new UserId()
                         .setEmail(email)
                         .setSuperapp(springApplicationName))
                 .setRole(role).setUsername(username)
@@ -208,7 +204,7 @@ public class UserTestSet {
         // the server returns status code 2xx
         // userBoundary is equal to the user that was created
         UserBoundary expectedUser = new UserBoundary()
-                .setUserId(new UserID()
+                .setUserId(new UserId()
                         .setEmail(email)
                         .setSuperapp(springApplicationName))
                 .setRole(role)
@@ -238,7 +234,7 @@ public class UserTestSet {
         // the server returns status code 2xx
         // userBoundary is equal to the user that was created
         UserBoundary expectedUser = new UserBoundary()
-                .setUserId(new UserID()
+                .setUserId(new UserId()
                         .setEmail(email)
                         .setSuperapp(springApplicationName))
                 .setRole(role).setUsername(username)
@@ -265,7 +261,7 @@ public class UserTestSet {
         // then
         // the server returns status code 2xx
         // userBoundary is equal to the user that was created
-        UserBoundary expectedUser = new UserBoundary().setUserId(new UserID().setEmail(email).setSuperapp(springApplicationName)).setRole(role).setUsername(username).setAvatar(avatar);
+        UserBoundary expectedUser = new UserBoundary().setUserId(new UserId().setEmail(email).setSuperapp(springApplicationName)).setRole(role).setUsername(username).setAvatar(avatar);
 
         assertThat(help_GetUserBoundary(email)).isNotNull().usingRecursiveComparison().isEqualTo(expectedUser);
     }
@@ -553,7 +549,7 @@ public class UserTestSet {
         // the server returns status code 2xx
         // the user's role is updated
         UserBoundary expectedUser = new UserBoundary()
-                .setUserId(new UserID()
+                .setUserId(new UserId()
                         .setSuperapp(springApplicationName)
                         .setEmail(email))
                 .setRole(updatedRole)
@@ -644,7 +640,7 @@ public class UserTestSet {
         // the server returns status code 2xx
         // the user's role is updated
         UserBoundary expectedUser = new UserBoundary()
-                .setUserId(new UserID()
+                .setUserId(new UserId()
                         .setSuperapp(springApplicationName)
                         .setEmail(email))
                 .setRole(role)
@@ -736,7 +732,7 @@ public class UserTestSet {
         // the server returns status code 2xx
         // the user's avatar is updated
         UserBoundary expectedUser = new UserBoundary()
-                .setUserId(new UserID()
+                .setUserId(new UserId()
                         .setSuperapp(springApplicationName)
                         .setEmail(email))
                 .setRole(role)
@@ -821,7 +817,7 @@ public class UserTestSet {
         // A PUT request is made to the path "/superapp/users/{superapp}/{email}"
         // avatar email to null
         String updatedEmail = null;
-        help_PutUserBoundary(new UserBoundary().setUserId(new UserID().setEmail(updatedEmail)), email);
+        help_PutUserBoundary(new UserBoundary().setUserId(new UserId().setEmail(updatedEmail)), email);
 
 
         // then
@@ -848,7 +844,7 @@ public class UserTestSet {
         // A PUT request is made to the path "/superapp/users/{superapp}/{email}"
         // avatar email to null
         String updatedSuperAppName = null;
-        help_PutUserBoundary(new UserBoundary().setUserId(new UserID().setSuperapp(updatedSuperAppName)), email);
+        help_PutUserBoundary(new UserBoundary().setUserId(new UserId().setSuperapp(updatedSuperAppName)), email);
 
 
         // then
@@ -973,7 +969,7 @@ public class UserTestSet {
         // the server returns status code 2xx
         // the user is stored in the database
         UserBoundary expectedUser = new UserBoundary()
-                .setUserId(new UserID()
+                .setUserId(new UserId()
                         .setSuperapp(springApplicationName)
                         .setEmail(email))
                 .setRole(role)

@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
 import superapp.logic.boundaries.*;
+import superapp.miniapps.MiniAppNames;
 
 import java.util.Date;
 import java.util.Map;
@@ -268,5 +269,71 @@ public class BaseTestSet {
                             , SuperAppObjectBoundary[].class
                             , this.springApplicationName
                             , internalObjectId );
+    }
+
+    // ###################################### commands ######################################
+
+    /**
+     * POST
+     *
+     * @param miniAppName - MiniAppNames
+     * @param commandId - CommandId
+     * @param command - String
+     * @param targetObject - TargetObject
+     * @param createdTimestamp - Date
+     * @param invokedBy - InvokedBy
+     * @param commandAttributes - Map<String, Object>
+     */
+    public Object help_PostCommandBoundary(MiniAppNames miniAppName, CommandId commandId, String command,
+                                         TargetObject targetObject, Date createdTimestamp, InvokedBy invokedBy,
+                                         Map<String, Object> commandAttributes) {
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(commandId.setMiniapp(miniAppName.toString()))
+                .setCommand(command)
+                .setTargetObject(targetObject)
+                .setInvocationTimestamp(createdTimestamp)
+                .setInvokedBy(invokedBy)
+                .setCommandAttributes(commandAttributes);
+
+        return this.restTemplate
+                .postForObject(
+
+                        this.baseUrl + "/superapp/miniapp/{miniAppName}"
+                        , commandBoundary
+                        , MiniAppCommandBoundary.class
+                        , miniAppName.toString()
+                );
+    }
+
+
+    /**
+     * GET
+     * Helper method to get all commands history of  miniapp
+     * the path is "/superapp/admin/miniapp"
+     *
+     * @return MiniAppCommandBoundary[]
+     */
+    public MiniAppCommandBoundary[] help_GetAllMiniappCommands() {
+        return this.restTemplate.getForObject(
+                this.baseUrl + "/superapp/admin/miniapp"
+                , MiniAppCommandBoundary[].class
+        );
+    }
+
+    /**
+     * GET
+     * Helper method to get command history of specific miniapp
+     * the path is "/superapp/admin/miniapp/{miniAppName}"
+     *
+     * @param miniAppNames - MiniAppNames
+     * @return MiniAppCommandBoundary[]
+     */
+    public MiniAppCommandBoundary[] help_GetSpecificMiniappCommands(MiniAppNames miniAppNames) {
+
+        return this.restTemplate.getForObject(this.baseUrl + "/superapp/admin/miniapp/{miniAppName}"
+                , MiniAppCommandBoundary[].class, miniAppNames
+        );
+
     }
 }

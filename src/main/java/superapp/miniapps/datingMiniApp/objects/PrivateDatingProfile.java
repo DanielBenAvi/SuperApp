@@ -13,17 +13,13 @@ public class PrivateDatingProfile {
     private int ageRange;   // (18-120)
     private List<Gender> genderPreferences;
     private List<Match> matches;
-    private List<String> myLikes; // list of profile dating id that I liked them
-    private List<String> unlikes; // list of profile dating id that I unliked them
-    private List<String> likesMe; // list of profile dating id that liked me
+    private List<String> likes; // list of profile dating id that I liked
 
 
     public PrivateDatingProfile() {
         this.genderPreferences = new ArrayList<>();
         this.matches = new ArrayList<>();
-        this.myLikes = new ArrayList<>();
-        this.likesMe = new ArrayList<>();
-        this.unlikes = new ArrayList<>();
+        this.likes = new ArrayList<>();
     }
 
     public PublicDatingProfile getPublicProfile() {
@@ -80,45 +76,25 @@ public class PrivateDatingProfile {
         return this;
     }
 
-    public List<String> getMyLikes() {
-        return myLikes;
+    public List<String> getLikes() {
+        return likes;
     }
 
-    public PrivateDatingProfile setMyLikes(List<String> myLikes) {
-        this.myLikes = myLikes;
-        return this;
-    }
-
-    public List<String> getLikesMe() {
-        return likesMe;
-    }
-
-    public PrivateDatingProfile setLikesMe(List<String> likesMe) {
-        this.likesMe = likesMe;
-        return this;
-    }
-
-    public List<String> getUnlikes() {
-        return unlikes;
-    }
-
-    public PrivateDatingProfile setUnlikes(List<String> unlikes) {
-        this.unlikes = unlikes;
+    public PrivateDatingProfile setLikes(List<String> likes) {
+        this.likes = likes;
         return this;
     }
 
     @Override
     public String toString() {
-        return "PrivetDatingProfile{" +
-                "publicProfile=" + publicProfile.toString() +
+        return "PrivateDatingProfile{" +
+                "publicProfile=" + publicProfile +
                 ", address=" + address +
                 ", distanceRange=" + distanceRange +
                 ", ageRange=" + ageRange +
                 ", genderPreferences=" + genderPreferences +
                 ", matches=" + matches +
-                ", myLikes=" + myLikes +
-                ", unlikes=" + unlikes +
-                ", likesMe=" + likesMe +
+                ", likes=" + likes +
                 '}';
     }
 }

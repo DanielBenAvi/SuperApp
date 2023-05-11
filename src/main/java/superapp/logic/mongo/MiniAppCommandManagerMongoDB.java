@@ -132,6 +132,8 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         /////////////////////// execute command ///////////////////////
         Object resultObjectOfCommand;
         String miniappName = commandBoundary.getCommandId().getMiniapp();
+
+        // fix func getStr name
         switch (MiniAppNames.getStr(miniappName)) {
 
             case DATING:
@@ -172,8 +174,13 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
             case "LIKE":
                 resultObjectOfCommand = commandFactory
-                                            .create(DatingCommand.LIKE_PROFILE, commandBoundary.getTargetObject())
+                                            .create(DatingCommand.LIKE_PROFILE)
                                             .execute(commandBoundary);
+                break;
+            case "CREATE":
+                resultObjectOfCommand = commandFactory
+                        .create(DatingCommand.CREATE_PROFILE)
+                        .execute(commandBoundary);
                 break;
             default:
                 resultObjectOfCommand = new InvalidCommand("An message");
@@ -210,16 +217,6 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
         // TODO-validate miniapp-name not null
     }
-
-
-
-
-
-
-
-
-
-
 
     @Override
     public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {

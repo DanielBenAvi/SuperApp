@@ -2,17 +2,17 @@ package superapp.logic.boundaries;
 
 public class CreatedBy {
 	
-	private UserID userId;
+	private UserId userId;
 
 	public CreatedBy() {
 	}
 
 
-	public UserID getUserId() {
+	public UserId getUserId() {
 		return userId;
 	}
 
-	public CreatedBy setUserId(UserID userId) {
+	public CreatedBy setUserId(UserId userId) {
 		this.userId = userId;
 		return this;
 	}
