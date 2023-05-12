@@ -12,8 +12,7 @@ public interface ObjectsService {
     public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId, SuperAppObjectBoundary update);
 
     public Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId);
-
     public List<SuperAppObjectBoundary> getAllObjects();
-
+    @Deprecated
     public void deleteAllObjects();
 }

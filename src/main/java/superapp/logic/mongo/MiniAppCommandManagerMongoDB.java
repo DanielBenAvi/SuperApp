@@ -4,16 +4,18 @@ package superapp.logic.mongo;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import superapp.data.MiniAppCommandCrud;
 import superapp.data.ObjectCrud;
 import superapp.data.UserCrud;
+import superapp.logic.MiniAppCommandWithPaging;
 import superapp.logic.boundaries.InvokedBy;
 import superapp.logic.boundaries.TargetObject;
 import superapp.miniapps.MiniAppNames;
 import superapp.data.MiniAppCommandEntity;
 import superapp.logic.ConvertHelp;
-import superapp.logic.MiniAppCommandService;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.command.Commands;
@@ -22,7 +24,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
-public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
+public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
 
     private final MiniAppCommandCrud miniAppCommandCrud;
     private final UserCrud userCrud;
@@ -152,10 +154,29 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
         return commandResult;
     }
-
+    @Deprecated
     @Override
     public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
-
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
+//
+//        // Check if the miniApp name is valid
+//        if (!validMiniAppName(miniAppName)) throw new BadRequestException("MiniApp name is not valid");
+//
+//        // Create a list of commands
+//        List<MiniAppCommandBoundary> commandBoundaryList = new ArrayList<>();
+//
+//        // Get all commands from the database and filter by miniApp name
+//        this.miniAppCommandCrud.findAll().forEach(commandEntity -> {
+//            if (commandEntity.getCommandId().contains(miniAppName)) {
+//                commandBoundaryList.add(convertToBoundary(commandEntity));
+//            }
+//        });
+//
+//        return commandBoundaryList;
+    }
+    @Override
+    public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName, String userSuperapp, String userEmail, int size, int page) {
+        ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
         // Check if the miniApp name is valid
         if (!validMiniAppName(miniAppName)) throw new BadRequestException("MiniApp name is not valid");
 
@@ -163,24 +184,51 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         List<MiniAppCommandBoundary> commandBoundaryList = new ArrayList<>();
 
         // Get all commands from the database and filter by miniApp name
-        this.miniAppCommandCrud.findAll().forEach(commandEntity -> {
+        this.miniAppCommandCrud.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "invocationTimestamp"
+                ,"targetObject","commandId")).forEach(commandEntity -> {
             if (commandEntity.getCommandId().contains(miniAppName)) {
                 commandBoundaryList.add(convertToBoundary(commandEntity));
             }
         });
 
         return commandBoundaryList;
+
+
     }
 
     @Override
+    @Deprecated
     public List<MiniAppCommandBoundary> getAllCommands() {
-        return this.miniAppCommandCrud.findAll().stream().map(this::convertToBoundary).toList();
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
+        //return this.miniAppCommandCrud.findAll().stream().map(this::convertToBoundary).toList();
     }
 
     @Override
+    public List<MiniAppCommandBoundary> getAllCommands(String userSuperapp, String userEmail, int size, int page) {
+        ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
+        return this.miniAppCommandCrud.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "invocationTimestamp"
+                        ,"targetObject","commandId"))
+                .stream().map(this::convertToBoundary).toList();
+    }
+
+    @Override
+    @Deprecated
     public void deleteAllCommands() {
+        throw new DeprecatedRequestException("cannot enter decrecated function");
+        //this.miniAppCommandCrud.deleteAll();
+    }
+
+
+
+
+
+    @Override
+    public void deleteAllCommands(String userSuperapp, String userEmail) {
+        ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
         this.miniAppCommandCrud.deleteAll();
     }
+
+
 
 
     private boolean isValidCommandId(CommandId commandId) {

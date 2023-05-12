@@ -9,6 +9,7 @@ import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
 import superapp.data.UserCrud;
 import superapp.logic.ConvertHelp;
+import superapp.logic.ObjectsServiceWithPaging;
 import superapp.logic.ObjectsServiceWithRelationshipSupport;
 import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.Location;
@@ -19,7 +20,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
-public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSupport {
+public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     private ObjectCrud objectCrudDB;
     private String springApplicationName;
     private final UserCrud userCrud;
@@ -197,7 +198,14 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithRelationshipSuppo
     }
 
     @Override
+    @Deprecated
     public void deleteAllObjects() {
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
+        //this.objectCrudDB.deleteAll();
+    }
+    @Override
+    public void deleteAllObjects(String userSuperapp,String userEmail) {
+        ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
         this.objectCrudDB.deleteAll();
     }
 

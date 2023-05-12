@@ -3,20 +3,26 @@ package superapp.logic.mongo;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import superapp.data.UserCrud;
 import superapp.data.UserRole;
 import superapp.data.UserEntity;
 import superapp.logic.ConvertHelp;
+import superapp.logic.UserServiceWithPaging;
 import superapp.logic.UsersService;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserID;
 
+import java.sql.Array;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
-public class UserManagerMongoDB implements UsersService {
+public class UserManagerMongoDB implements UserServiceWithPaging {
 
     private String superappName;
     private UserCrud usersCrudDB;
@@ -176,20 +182,43 @@ public class UserManagerMongoDB implements UsersService {
      * @return List<UserBoundary>
      */
     @Override
+    @Deprecated
     public List<UserBoundary> getAllUsers() {
+        throw new DeprecatedRequestException("do not use deprecated function");
+//        return this.usersCrudDB
+//                .findAll()
+//                .stream()
+//                .map(this::entityToBoundary)
+//                .toList();
+    }
 
+    @Override
+    public List<UserBoundary> getAllUsers(String userSuperapp, String userEmail, int size, int page) {
+        ConvertHelp.checkIfUserAdmin(usersCrudDB,userSuperapp,userEmail);
         return this.usersCrudDB
-                .findAll()
+                .findAll(PageRequest.of(page, size, Direction.ASC, "role","userId"))
                 .stream()
                 .map(this::entityToBoundary)
-                .toList();
+                .collect(Collectors.toList());
+
+
     }
+
+
 
     /**
      * This method delete all users from database
      */
+    @Deprecated
     @Override
     public void deleteAllUsers() {
+        throw new DeprecatedRequestException("do not use deprecated function");
+       // this.usersCrudDB.deleteAll();
+    }
+
+    @Override
+    public void deleteAllUsers(String userSuperapp, String userEmail) {
+        ConvertHelp.checkIfUserAdmin(usersCrudDB,userSuperapp,userEmail);
         this.usersCrudDB.deleteAll();
     }
 
@@ -314,5 +343,6 @@ public class UserManagerMongoDB implements UsersService {
 
         return true;
     }
+
 
 }

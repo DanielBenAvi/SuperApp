@@ -1,5 +1,7 @@
 package superapp.logic;
 
+import superapp.data.UserCrud;
+import superapp.data.UserEntity;
 import superapp.data.UserRole;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.CreatedBy;
@@ -8,6 +10,8 @@ import superapp.logic.boundaries.Location;
 import superapp.logic.boundaries.ObjectId;
 import superapp.logic.boundaries.TargetObject;
 import superapp.logic.boundaries.UserID;
+import superapp.logic.mongo.NotFoundException;
+import superapp.logic.mongo.UnauthorizedRequestException;
 
 public class ConvertHelp {
 
@@ -183,6 +187,19 @@ public class ConvertHelp {
         }catch (Exception e){
             throw new RuntimeException("Role not found");
         }
+    }
+
+    public static void checkIfUserAdmin(UserCrud usersCrudDB, String userSuperapp, String userEmail) {
+        String userID = ConvertHelp.concatenateIds(new String[]{ userSuperapp, userEmail});
+
+        UserEntity userEntity = usersCrudDB
+                .findById(userID)
+                .orElseThrow(() -> new NotFoundException("Couldn't find user by id  " + userID));
+
+        if(!UserRole.ADMIN.equals(userEntity.getRole())){
+            throw new UnauthorizedRequestException("User is unauthorized");
+        }
+
     }
 
 }
