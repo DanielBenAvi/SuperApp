@@ -1,5 +1,6 @@
 package superapp.miniapps.datingMiniApp.command.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
@@ -15,9 +16,7 @@ import superapp.miniapps.datingMiniApp.objects.Match;
 import superapp.miniapps.datingMiniApp.objects.PrivateDatingProfile;
 import superapp.miniapps.datingMiniApp.objects.PublicDatingProfile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class DatingLikeProfileCommand implements DatingCommand {
@@ -51,22 +50,13 @@ public class DatingLikeProfileCommand implements DatingCommand {
         ObjectId targetBoundaryID = command.getTargetObject().getObjectId();
         String targetEntityID = targetBoundaryID.getSuperapp() + ConvertHelp.DELIMITER_ID + targetBoundaryID.getInternalObjectId();
 
-
-
         SuperAppObjectEntity targetObject = this.objectCrudDB.findById(targetEntityID).get();
 
 
-        PrivateDatingProfile targetDatingProfile = (PrivateDatingProfile) targetObject.getObjectDetails().get("key");
-        Map<String, Object> map = (HashMap<String, Object>) targetObject.getObjectDetails().get("key");
+//        PrivateDatingProfile targetDatingProfile = (PrivateDatingProfile) targetObject.getObjectDetails().get("key");
 
-//        PrivateDatingProfile targetDatingProfile = new PrivateDatingProfile()
-//                .setPublicProfile((createPublicDatingProfileFromMap((HashMap<String, Object>)map.get("publicProfile"))))
-//                .setAddress((createAddressFromMap((HashMap<String, Object>) map.get("address"))))
-//                .setDistanceRange((int) map.get("distanceRange"))
-//                .setAgeRange((int) map.get("ageRange"))
-//                .setGenderPreferences((List<Gender>) map.get("genderPreferences"))
-//                .setMatches((List<Match>) map.get("matches"))
-//                .setLikes((List<String>) map.get("likes"));
+        PrivateDatingProfile targetDatingProfile
+                = datingProfileDto((LinkedHashMap<String, Object>) targetObject.getObjectDetails().get("key"));
 
 
         System.err.println(targetDatingProfile);
@@ -76,16 +66,9 @@ public class DatingLikeProfileCommand implements DatingCommand {
         String myDatingProfileId = command.getCommandAttributes().get("myDatingProfileId").toString();
         SuperAppObjectEntity myObject = this.objectCrudDB.findById(myDatingProfileId).get();
 
-        Map<String, Object> mapB = (HashMap<String, Object>) myObject.getObjectDetails().get("key");
+        PrivateDatingProfile myDatingProfile
+                = datingProfileDto((LinkedHashMap<String, Object>) myObject.getObjectDetails().get("key"));
 
-        PrivateDatingProfile myDatingProfile = new PrivateDatingProfile()
-                .setPublicProfile((createPublicDatingProfileFromMap((HashMap<String, Object>)mapB.get("publicProfile"))))
-                .setAddress((createAddressFromMap((HashMap<String, Object>) mapB.get("address"))))
-                .setDistanceRange((int) mapB.get("distanceRange"))
-                .setAgeRange((int) mapB.get("ageRange"))
-                .setGenderPreferences((List<Gender>) mapB.get("genderPreferences"))
-                .setMatches((List<Match>) mapB.get("matches"))
-                .setLikes((List<String>) mapB.get("likes"));
 
         // check match occurs
         if (targetDatingProfile.getLikes().contains(myDatingProfileId)) {
@@ -126,7 +109,21 @@ public class DatingLikeProfileCommand implements DatingCommand {
         return likesAndMatches;
     }
 
-    private PublicDatingProfile createPublicDatingProfileFromMap(HashMap<String, Object> map) {
+    private PrivateDatingProfile datingProfileDto(LinkedHashMap<String, Object> map) {
+
+        PrivateDatingProfile profile=  new PrivateDatingProfile();
+        profile.setPublicProfile((createPublicDatingProfileFromMap((LinkedHashMap<String, Object>)map.get("publicProfile"))));
+        profile.setAddress((createAddressFromMap((LinkedHashMap<String, Object>) map.get("address"))));
+        profile.setDistanceRange((int) map.get("distanceRange"));
+        profile.setAgeRange((int) map.get("ageRange"));
+        profile.setGenderPreferences((ArrayList<Gender>) map.get("genderPreferences"));
+        profile.setMatches((ArrayList<Match>) map.get("matches"));
+        profile.setLikes((ArrayList<String>) map.get("likes"));
+        return profile;
+    }
+
+
+    private PublicDatingProfile createPublicDatingProfileFromMap(LinkedHashMap<String, Object> map) {
 
         PublicDatingProfile publicDatingProfile = new PublicDatingProfile();
 
@@ -134,14 +131,14 @@ public class DatingLikeProfileCommand implements DatingCommand {
         publicDatingProfile.setGender((Gender.valueOf((String) map.get("gender"))));
         publicDatingProfile.setAge((int) map.get("age"));
         publicDatingProfile.setBio((String) map.get("bio"));
-        publicDatingProfile.setSexOrientation((List<Gender>) map.get("sexOrientation"));
-        publicDatingProfile.setInterests((List<String>) map.get("interests"));
-        publicDatingProfile.setPictures((List<String>) map.get("pictures"));
+        publicDatingProfile.setSexOrientation((ArrayList<Gender>) map.get("sexOrientation"));
+        publicDatingProfile.setInterests((ArrayList<String>) map.get("interests"));
+        publicDatingProfile.setPictures((ArrayList<String>) map.get("pictures"));
 
         return publicDatingProfile;
     }
 
-    private Address createAddressFromMap(HashMap<String, Object> map) {
+    private Address createAddressFromMap(LinkedHashMap<String, Object> map) {
         Address address = new Address()
                 .setStreet((String) map.get("street"))
                 .setCity((String) map.get("city"))

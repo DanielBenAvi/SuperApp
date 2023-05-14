@@ -131,10 +131,10 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
         /////////////////////// execute command ///////////////////////
         Object resultObjectOfCommand;
-        String miniappName = commandBoundary.getCommandId().getMiniapp();
+        MiniAppNames miniappName = MiniAppNames.getStr(commandBoundary.getCommandId().getMiniapp());
 
         // fix func getStr name
-        switch (MiniAppNames.getStr(miniappName)) {
+        switch (miniappName) {
 
             case DATING:
                 resultObjectOfCommand = executeDatingCommands(commandBoundary);

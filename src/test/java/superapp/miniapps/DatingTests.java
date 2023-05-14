@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import superapp.BaseTestSet;
+import superapp.OpenStreetMapUtils;
 import superapp.data.UserRole;
 import superapp.logic.boundaries.*;
 import superapp.miniapps.datingMiniApp.Gender;
@@ -146,6 +147,20 @@ public class DatingTests extends BaseTestSet {
 
         System.err.println("Result B Like A : " + commandBLikeAResult.toString());
 
+
+    }
+
+
+    @Test
+    public void getLatitudeLongitudeByAddress() {
+        Map<String, Double> coords;
+        String address = "The White House, Washington DC";
+
+
+        coords = OpenStreetMapUtils.getInstance().getCoordinates(address);
+
+        System.out.println("latitude :" + coords.get("lat"));
+        System.out.println("longitude:" + coords.get("lon"));
 
     }
 }

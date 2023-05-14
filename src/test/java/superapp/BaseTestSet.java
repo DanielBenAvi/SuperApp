@@ -289,7 +289,7 @@ public class BaseTestSet {
                                          Map<String, Object> commandAttributes) {
 
         MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
-                .setCommandId(commandId.setMiniapp(miniAppName.toString()))
+                .setCommandId(commandId)
                 .setCommand(command)
                 .setTargetObject(targetObject)
                 .setInvocationTimestamp(createdTimestamp)
@@ -298,7 +298,6 @@ public class BaseTestSet {
 
         return this.restTemplate
                 .postForObject(
-
                         this.baseUrl + "/superapp/miniapp/{miniAppName}"
                         , commandBoundary
                         , MiniAppCommandBoundary.class
