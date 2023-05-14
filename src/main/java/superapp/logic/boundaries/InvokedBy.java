@@ -5,16 +5,16 @@ package superapp.logic.boundaries;
  */
 
 public class InvokedBy {
-	private UserID userId;
+	private UserId userId;
 
 	public InvokedBy() {
 	}
 
-	public UserID getUserId() {
+	public UserId getUserId() {
 		return userId;
 	}
 
-	public InvokedBy setUserId(UserID userId) {
+	public InvokedBy setUserId(UserId userId) {
 		this.userId = userId;
 		return this;
 	}

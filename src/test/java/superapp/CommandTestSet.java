@@ -32,7 +32,7 @@ public class CommandTestSet extends BaseTestSet {
         boolean active = true;
         Date createdTimestamp = new Date();
         Location location = new Location().setLat(1.0).setLng(1.0);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID().setSuperapp(springApplicationName).setEmail(email));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(email));
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("demo", "demo");
 
@@ -51,7 +51,7 @@ public class CommandTestSet extends BaseTestSet {
         CommandId commandId = new CommandId();
         String command = "DO_SOMETHING";
         TargetObject targetObject = new TargetObject().setObjectId(superAppObjectBoundary.getObjectId());
-        InvokedBy invokedBy = new InvokedBy().setUserId(new UserID().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
+        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("demo", "demo");
         help_PostCommandBoundary(miniAppName, commandId, command, targetObject, new Date(), invokedBy, attributes);
@@ -231,7 +231,7 @@ public class CommandTestSet extends BaseTestSet {
         CommandId commandId = new CommandId();
         String command = "DO_SOMETHING";
         TargetObject targetObject = new TargetObject().setObjectId(superAppObjectBoundary.getObjectId());
-        InvokedBy invokedBy = new InvokedBy().setUserId(new UserID().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
+        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("demo", "demo");
         MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary()
@@ -263,7 +263,7 @@ public class CommandTestSet extends BaseTestSet {
         CommandId commandId = new CommandId();
         String command = "DO_SOMETHING";
         TargetObject targetObject = new TargetObject().setObjectId(superAppObjectBoundary.getObjectId());
-        InvokedBy invokedBy = new InvokedBy().setUserId(new UserID().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
+        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("demo", "demo");
         MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary()
@@ -297,7 +297,7 @@ public class CommandTestSet extends BaseTestSet {
         CommandId commandId = new CommandId();
         String command = "NOT_EXISTS_COMMAND";
         TargetObject targetObject = new TargetObject().setObjectId(superAppObjectBoundary.getObjectId());
-        InvokedBy invokedBy = new InvokedBy().setUserId(new UserID().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
+        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("demo", "demo");
         MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary()
@@ -329,7 +329,7 @@ public class CommandTestSet extends BaseTestSet {
         CommandId commandId = new CommandId();
         String command = null;
         TargetObject targetObject = new TargetObject().setObjectId(superAppObjectBoundary.getObjectId());
-        InvokedBy invokedBy = new InvokedBy().setUserId(new UserID().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
+        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("demo", "demo");
         MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary()
@@ -364,7 +364,7 @@ public class CommandTestSet extends BaseTestSet {
         CommandId commandId = new CommandId();
         String command = null;
         TargetObject targetObject = new TargetObject().setObjectId(new ObjectId().setSuperapp(springApplicationName).setInternalObjectId(UUID.randomUUID().toString()));
-        InvokedBy invokedBy = new InvokedBy().setUserId(new UserID().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
+        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("demo", "demo");
         MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary()

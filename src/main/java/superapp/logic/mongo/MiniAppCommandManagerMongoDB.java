@@ -55,7 +55,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
      */
     @PostConstruct
     public void init() {
-        System.err.println("************ MiniAppCommandManagerMongoDB ************ ");
+        System.err.println("****** " + this.getClass().getName() + " service initiated");
     }
 
 

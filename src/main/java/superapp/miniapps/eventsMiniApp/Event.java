@@ -4,11 +4,11 @@ import java.util.Date;
 import java.util.Map;
 
 import superapp.logic.boundaries.Location;
-import superapp.logic.boundaries.UserID;
+import superapp.logic.boundaries.UserId;
 
 public class Event {
 	
-	private UserID userId;
+	private UserId userId;
 	private Date date;
 	private String theme;
 	private Location location;
@@ -19,11 +19,11 @@ public class Event {
 		
 	}
 
-	public UserID getUserId() {
+	public UserId getUserId() {
 		return userId;
 	}
 
-	public Event setUserId(UserID userId) {
+	public Event setUserId(UserId userId) {
 		this.userId = userId;
 		return this;
 	}

@@ -6,13 +6,13 @@ package superapp.logic.boundaries;
  * @author Ido & Yosef
  */
 
-public class UserID {
+public class UserId {
 	private String superapp;
 	private String email;
 	
-	public UserID() {}
+	public UserId() {}
 
-	public UserID(String superapp, String email) {
+	public UserId(String superapp, String email) {
 		this.superapp = superapp;
 		this.email = email;
 	}
@@ -21,7 +21,7 @@ public class UserID {
 		return superapp;
 	}
 
-	public UserID setSuperapp(String superapp) {
+	public UserId setSuperapp(String superapp) {
 		this.superapp = superapp;
 		return this;
 	}
@@ -30,7 +30,7 @@ public class UserID {
 		return email;
 	}
 
-	public UserID setEmail(String email) {
+	public UserId setEmail(String email) {
 		this.email = email;
 		return this;
 	}

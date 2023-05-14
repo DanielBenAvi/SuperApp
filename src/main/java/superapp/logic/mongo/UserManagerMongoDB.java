@@ -4,7 +4,6 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import superapp.data.UserCrud;
@@ -12,11 +11,9 @@ import superapp.data.UserRole;
 import superapp.data.UserEntity;
 import superapp.logic.ConvertHelp;
 import superapp.logic.UserServiceWithPaging;
-import superapp.logic.UsersService;
 import superapp.logic.boundaries.UserBoundary;
-import superapp.logic.boundaries.UserID;
+import superapp.logic.boundaries.UserId;
 
-import java.sql.Array;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -61,11 +58,6 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
      */
     @Override
     public UserBoundary createUser(UserBoundary userBoundary) {
-
-        // this verifying never reached
-//        if (userBoundary == null){
-//            throw new RuntimeException("null UserBoundary can't be created");
-//        }
 
         // validate UserBoundary attr
         if (!isValidEmail(userBoundary.getUserId().getEmail()))
@@ -194,14 +186,13 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
 
     @Override
     public List<UserBoundary> getAllUsers(String userSuperapp, String userEmail, int size, int page) {
+
         ConvertHelp.checkIfUserAdmin(usersCrudDB,userSuperapp,userEmail);
         return this.usersCrudDB
-                .findAll(PageRequest.of(page, size, Direction.ASC, "role","userId"))
+                .findAll(PageRequest.of(page, size, Direction.ASC, "role", "userId"))
                 .stream()
                 .map(this::entityToBoundary)
                 .collect(Collectors.toList());
-
-
     }
 
 
@@ -232,7 +223,7 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
         UserEntity userEntity = new UserEntity();
 
         String email = userBoundary.getUserId().getEmail();
-        String userID = ConvertHelp.userIdBoundaryToStr(new UserID(superappName,email));
+        String userID = ConvertHelp.userIdBoundaryToStr(new UserId(superappName,email));
 
         userEntity.setUserID(userID);
 
@@ -256,7 +247,7 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
         UserBoundary userBoundary = new UserBoundary();
 
         // crate a userID object
-        UserID userID = ConvertHelp.strUserIdToBoundary(userEntity.getUserID());
+        UserId userID = ConvertHelp.strUserIdToBoundary(userEntity.getUserID());
 
         // set the userID object
         userBoundary.setUserId(userID);

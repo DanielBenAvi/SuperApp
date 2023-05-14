@@ -10,7 +10,6 @@ import superapp.data.SuperAppObjectEntity;
 import superapp.data.UserCrud;
 import superapp.logic.ConvertHelp;
 import superapp.logic.ObjectsServiceWithPaging;
-import superapp.logic.ObjectsServiceWithRelationshipSupport;
 import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.Location;
 import superapp.logic.boundaries.ObjectId;
@@ -21,6 +20,7 @@ import java.util.regex.Pattern;
 
 @Service
 public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
+
     private ObjectCrud objectCrudDB;
     private String springApplicationName;
     private final UserCrud userCrud;
@@ -40,7 +40,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     // this method is invoked after values are injected to instance
     @PostConstruct
     public void init() {
-        System.err.println("***** " + this.springApplicationName);
+        System.err.println("****** " + this.getClass().getName() + " service initiated");
     }
 
     @Override
@@ -72,7 +72,45 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     }
 
 
+    @Override
+    public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId,
+                                               SuperAppObjectBoundary update, String userSuperapp, String userEmail) {
+        return null;
+    }
 
+    @Override
+    public Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId,
+                                                              String userSuperapp, String userEmail) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<SuperAppObjectBoundary> getAllObjects(String userSuperapp, String userEmail, int size, int page) {
+        return null;
+    }
+
+    @Override
+    public void addChild(String superapp, String parentId, ObjectId childId, String userSuperapp, String userEmail) {
+
+    }
+
+    @Override
+    public List<SuperAppObjectBoundary> getChildren(String superapp, String parentInternalObjectId,
+                                                    String userSuperapp, String userEmail, int size, int page) {
+        return null;
+    }
+
+    @Override
+    public List<SuperAppObjectBoundary> getParent(String superapp, String childInternalObjectId,
+                                                  String userSuperapp, String userEmail, int size, int page) {
+        return null;
+    }
+
+    @Override
+    public void deleteAllObjects(String userSuperapp,String userEmail) {
+        ConvertHelp.checkIfUserAdmin(userCrud, userSuperapp, userEmail);
+        this.objectCrudDB.deleteAll();
+    }
 
     private SuperAppObjectEntity convertBoundaryToEntity(SuperAppObjectBoundary boundary) {
 
@@ -150,7 +188,6 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
         }
 
-        // TODO: need to check ObjectDetails attributes
         if (update.getObjectDetails() != null) {
             for (Map.Entry<String, Object> entry :update.getObjectDetails().entrySet()) {
                 if (entry.getKey() != null && entry.getValue() != null &&
@@ -167,17 +204,21 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     }
 
     @Override
+    @Deprecated
     public Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId) {
-        String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
-        if (!this.objectCrudDB.existsById(objectId))
-            throw new NotFoundException();
-
-        return this.objectCrudDB.findById(objectId).map(this::convertEntityToBoundary);
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
+//        String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
+//        if (!this.objectCrudDB.existsById(objectId))
+//            throw new NotFoundException();
+//
+//        return this.objectCrudDB.findById(objectId).map(this::convertEntityToBoundary);
     }
 
     @Override
+    @Deprecated
     public List<SuperAppObjectBoundary> getAllObjects() {
-        return this.objectCrudDB.findAll().stream().map(this::convertEntityToBoundary).toList();
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
+//        return this.objectCrudDB.findAll().stream().map(this::convertEntityToBoundary).toList();
     }
 
     private SuperAppObjectBoundary convertEntityToBoundary(SuperAppObjectEntity entity) {
@@ -203,75 +244,79 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         throw new DeprecatedRequestException("cannot enter a deprecated function");
         //this.objectCrudDB.deleteAll();
     }
-    @Override
-    public void deleteAllObjects(String userSuperapp,String userEmail) {
-        ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
-        this.objectCrudDB.deleteAll();
-    }
+
+
 
     @Override
+    @Deprecated
     public void addChild(String superApp, String parentId, ObjectId childId) {
-
-        if (!checkValidSuperApp(superApp))
-            throw new BadRequestException("superApp must be in format: " + springApplicationName);
-
-        if (!checkValidSuperApp(childId.getSuperapp()))
-            throw new BadRequestException("childId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
-
-        if (!checkValidInternalObjectId(parentId))
-            throw new BadRequestException("parentId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
-
-        if (!checkValidInternalObjectId(childId.getInternalObjectId()))
-            throw new BadRequestException("childId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
-
-        if (parentId.equals(childId.getInternalObjectId()))
-            throw new ConflictRequestException("origin and child are the same object");
-
-        SuperAppObjectEntity parent = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superApp, parentId})).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + parentId + " because it does not exist"));
-        SuperAppObjectEntity child = this.objectCrudDB.findById(ConvertHelp.objectIdBoundaryToStr(childId)).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + childId.toString() + " because it does not exist"));
-
-        if (child.getParent() != null) throw new BadRequestException("child already has a parent");
-
-        parent.addChildren(child);
-        child.setParent(parent);
-
-        this.objectCrudDB.save(parent);
-        this.objectCrudDB.save(child);
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
+//        if (!checkValidSuperApp(superApp))
+//            throw new BadRequestException("superApp must be in format: " + springApplicationName);
+//
+//        if (!checkValidSuperApp(childId.getSuperapp()))
+//            throw new BadRequestException("childId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
+//
+//        if (!checkValidInternalObjectId(parentId))
+//            throw new BadRequestException("parentId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
+//
+//        if (!checkValidInternalObjectId(childId.getInternalObjectId()))
+//            throw new BadRequestException("childId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
+//
+//        if (parentId.equals(childId.getInternalObjectId()))
+//            throw new ConflictRequestException("origin and child are the same object");
+//
+//        SuperAppObjectEntity parent = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superApp, parentId})).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + parentId + " because it does not exist"));
+//        SuperAppObjectEntity child = this.objectCrudDB.findById(ConvertHelp.objectIdBoundaryToStr(childId)).orElseThrow(() -> new NotFoundException("could not add child to object by id: " + childId.toString() + " because it does not exist"));
+//
+//        if (child.getParent() != null) throw new BadRequestException("child already has a parent");
+//
+//        parent.addChildren(child);
+//        child.setParent(parent);
+//
+//        this.objectCrudDB.save(parent);
+//        this.objectCrudDB.save(child);
 
     }
 
     @Override
+    @Deprecated
     public List<SuperAppObjectBoundary> getChildren(String superapp, String parentInternalObjectId) {
 
-        if (!checkValidSuperApp(superapp))
-            throw new BadRequestException("superApp must be in format: " + springApplicationName);
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
 
-        if (!checkValidInternalObjectId(parentInternalObjectId))
-            throw new BadRequestException("parentId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
-
-        SuperAppObjectEntity origin = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superapp, parentInternalObjectId})).orElseThrow(() -> new NotFoundException("could not get children of object by id: " + parentInternalObjectId.toString() + " because it does not exist"));
-        Set<SuperAppObjectEntity> children = origin.getChildren();
-        return children.stream().map(this::convertEntityToBoundary).toList();
+//        if (!checkValidSuperApp(superapp))
+//            throw new BadRequestException("superApp must be in format: " + springApplicationName);
+//
+//        if (!checkValidInternalObjectId(parentInternalObjectId))
+//            throw new BadRequestException("parentId must be in format: " + springApplicationName + "_" + UUID.randomUUID().toString());
+//
+//        SuperAppObjectEntity origin = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superapp, parentInternalObjectId})).orElseThrow(() -> new NotFoundException("could not get children of object by id: " + parentInternalObjectId.toString() + " because it does not exist"));
+//        Set<SuperAppObjectEntity> children = origin.getChildren();
+//        return children.stream().map(this::convertEntityToBoundary).toList();
     }
 
     @Override
+    @Deprecated
     public List<SuperAppObjectBoundary> getParent(String superapp, String childInternalObjectId) {
-        if (!checkValidSuperApp(superapp))
-            throw new BadRequestException("superApp must be in format: " + springApplicationName);
 
-        if (!checkValidInternalObjectId(childInternalObjectId))
-            throw new BadRequestException("parentId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
 
-        SuperAppObjectEntity child = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superapp, childInternalObjectId})).orElseThrow(() -> new NotFoundException("could not get origin of object by id: " + childInternalObjectId.toString() + " because it does not exist"));
-
-        if (child.getParent() != null) {
-            return Optional.of(child.getParent())
-                    .map(this::convertEntityToBoundary).stream().toList();
-        }
-
-        return List.of();
+//        if (!checkValidSuperApp(superapp))
+//            throw new BadRequestException("superApp must be in format: " + springApplicationName);
+//
+//        if (!checkValidInternalObjectId(childInternalObjectId))
+//            throw new BadRequestException("parentId must be in format: " + springApplicationName + "#" + UUID.randomUUID().toString());
+//
+//        SuperAppObjectEntity child = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superapp, childInternalObjectId})).orElseThrow(() -> new NotFoundException("could not get origin of object by id: " + childInternalObjectId.toString() + " because it does not exist"));
+//
+//        if (child.getParent() != null) {
+//            return Optional.of(child.getParent())
+//                    .map(this::convertEntityToBoundary).stream().toList();
+//        }
+//
+//        return List.of();
     }
-
 
     private boolean checkValidInternalObjectId(String internalObjectId) {
         if (internalObjectId == null)
@@ -343,8 +388,6 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 //        if (!userCrud.existsById(convertBoundaryToEntity(objectBoundary).getCreatedBy()))
 //            return 1;
 
-
-
         return 2;
     }
 
@@ -366,7 +409,5 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
         return true;
     }
-
-
 
 }

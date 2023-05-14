@@ -9,7 +9,7 @@ import superapp.data.UserEntity;
 import superapp.logic.ConvertHelp;
 import superapp.logic.UsersService;
 import superapp.logic.boundaries.UserBoundary;
-import superapp.logic.boundaries.UserID;
+import superapp.logic.boundaries.UserId;
 
 import java.util.*;
 //@Service
@@ -45,7 +45,7 @@ public class UserManagerMockupDB implements UsersService {
         UserEntity userEntity = new UserEntity();
 
         String email = userBoundary.getUserId().getEmail();
-        String userID = ConvertHelp.userIdBoundaryToStr(new UserID(superappName,email));
+        String userID = ConvertHelp.userIdBoundaryToStr(new UserId(superappName,email));
 
         userEntity.setUserID(userID);
 
@@ -69,7 +69,7 @@ public class UserManagerMockupDB implements UsersService {
         UserBoundary userBoundary = new UserBoundary();
 
         // crate a userID object
-        UserID userID = ConvertHelp.strUserIdToBoundary(userEntity.getUserID());
+        UserId userID = ConvertHelp.strUserIdToBoundary(userEntity.getUserID());
 
         // set the userID object
         userBoundary.setUserId(userID);

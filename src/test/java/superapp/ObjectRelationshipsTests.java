@@ -39,7 +39,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 , null
                 , true
                 , new Location(10.200, 10.200)
-                , new CreatedBy().setUserId(new UserID(this.springApplicationName, email))
+                , new CreatedBy().setUserId(new UserId(this.springApplicationName, email))
                 , objectDetails
         );
 

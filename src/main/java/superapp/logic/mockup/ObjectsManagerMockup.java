@@ -12,7 +12,7 @@ import java.util.*;
 
 
 //@Service
-public class ObjectsManager implements ObjectsService {
+public class ObjectsManagerMockup implements ObjectsService {
 
     private Map<String, SuperAppObjectEntity> objectsDatabaseMockup;
     private String superappName;

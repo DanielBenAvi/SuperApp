@@ -71,7 +71,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -110,7 +110,7 @@ public class ObjectTestSet {
         String type = "EVENT";
         String alias = "demo";
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -158,7 +158,7 @@ public class ObjectTestSet {
         Date creationTimestamp = Date.from(Instant.parse(input));
         Boolean active = false;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -205,7 +205,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID());
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId());
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -279,7 +279,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@@s.afeka.ac.il" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@@s.afeka.ac.il" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -316,7 +316,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID("2023LiorAriely", "demo@s.afeka.ac.il"));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId("2023LiorAriely", "demo@s.afeka.ac.il"));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -418,7 +418,7 @@ public class ObjectTestSet {
         String type = "EVENT";
         String alias = "demo";
         Boolean active = true;
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -453,7 +453,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location();
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -488,7 +488,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
 
         // THEN
         // the server response with bad request status 400 code
@@ -520,7 +520,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID().setEmail("demo@gmail.com"));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId().setEmail("demo@gmail.com"));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -554,7 +554,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -588,7 +588,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -621,7 +621,7 @@ public class ObjectTestSet {
         String type = "GROUP";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -655,7 +655,7 @@ public class ObjectTestSet {
         String alias = "";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -687,7 +687,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -751,7 +751,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -790,7 +790,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -845,7 +845,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -900,7 +900,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -941,7 +941,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -982,7 +982,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = false;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1020,7 +1020,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1065,7 +1065,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1107,7 +1107,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1152,7 +1152,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
         objectDetails.put("details2", null);
@@ -1203,7 +1203,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1246,7 +1246,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1289,7 +1289,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(1, 1);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1333,7 +1333,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(1, 1);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1436,7 +1436,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1470,7 +1470,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1518,7 +1518,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1556,7 +1556,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
