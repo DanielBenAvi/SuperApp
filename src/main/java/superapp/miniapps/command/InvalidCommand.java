@@ -1,6 +1,7 @@
 package superapp.miniapps.command;
 
 public class InvalidCommand {
+
     private String errorMessage;
 
     public InvalidCommand(String errorMessage) {

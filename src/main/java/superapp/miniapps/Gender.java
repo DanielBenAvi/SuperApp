@@ -1,4 +1,4 @@
-package superapp.miniapps.datingMiniApp;
+package superapp.miniapps;
 
 public enum Gender {
     MALE,

@@ -1,4 +1,4 @@
-package superapp.miniapps.datingMiniApp.command.impl;
+package superapp.miniapps.command.datingimpl;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,16 +6,16 @@ import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
 import superapp.data.UserCrud;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.miniapps.datingMiniApp.command.DatingCommand;
+import superapp.miniapps.command.MiniAppsCommand;
 
 @Component
-public class DatingGetPotentialDatesCommand implements DatingCommand {
+public class DatingDeactivateProfileCommand implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
     private final UserCrud usersCrudDB;
 
     @Autowired
-    public DatingGetPotentialDatesCommand(ObjectCrud objectCrudDB, UserCrud usersCrudDB) {
+    public DatingDeactivateProfileCommand(ObjectCrud objectCrudDB, UserCrud usersCrudDB) {
         this.objectCrudDB = objectCrudDB;
         this.usersCrudDB = usersCrudDB;
     }
@@ -27,3 +27,4 @@ public class DatingGetPotentialDatesCommand implements DatingCommand {
         return null;
     }
 }
+

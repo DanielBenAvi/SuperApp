@@ -16,9 +16,7 @@ import superapp.logic.boundaries.InvokedBy;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.TargetObject;
 import superapp.miniapps.MiniAppNames;
-import superapp.miniapps.command.CommandFactory;
-import superapp.miniapps.datingMiniApp.command.DatingCommand;
-import superapp.miniapps.command.InvalidCommand;
+import superapp.miniapps.command.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -111,10 +109,6 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
         // TODO - add verification of user exist, targetObject etc.
 
-        // not necessary validate
-//        if (commandBoundary == null)
-//            throw new BadRequestException("MiniAppCommandBoundary object cant be null");
-
         // set command id
         commandBoundary.getCommandId().setSuperapp(springApplicationName);
         commandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
@@ -131,27 +125,37 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
         /////////////////////// execute command ///////////////////////
         Object resultObjectOfCommand;
-        MiniAppNames miniappName = MiniAppNames.getStr(commandBoundary.getCommandId().getMiniapp());
 
-        // fix func getStr name
-        switch (miniappName) {
+        MiniAppNames miniappName = MiniAppNames
+                .strToMiniAppName(commandBoundary.getCommandId().getMiniapp());
 
-            case DATING:
-                resultObjectOfCommand = executeDatingCommands(commandBoundary);
-                break;
-            case EVENT:
-                resultObjectOfCommand = executeEventCommands(commandBoundary);
-                break;
-            case GROUP:
-                resultObjectOfCommand = executeGroupCommands(commandBoundary);
-                break;
-            case MARKETPLACE:
-                resultObjectOfCommand = executeMarketplaceCommands(commandBoundary);
-                break;
-            default:
-                resultObjectOfCommand =
-                        new InvalidCommand(MiniAppNames.UNKNOWN + " - " + miniappName + " not supported");
+        MiniAppsCommand.commands commandsToExecute;
+        commandsToExecute = MiniAppsCommand.strToCommand(commandBoundary.getCommand());
+
+        if (miniappName.equals(MiniAppNames.UNKNOWN)) {
+            resultObjectOfCommand =
+                    new InvalidCommand(miniappName + " miniapp name: "
+                            + commandBoundary.getCommandId().getMiniapp() + " not supported");
         }
+        else if (commandsToExecute.equals(MiniAppsCommand.commands.UNKNOWN_COMMAND)) {
+            resultObjectOfCommand =
+                    new InvalidCommand(miniappName + " miniapp command: "
+                            + commandBoundary.getCommand() + " not supported");
+        }
+        else {
+            resultObjectOfCommand = commandFactory
+                    .create(commandsToExecute, miniappName).execute(commandBoundary);
+        }
+
+//        switch (miniappName) {
+//            case DATING:
+//                break;
+//            case EVENT:
+//                break;
+//            case MARKETPLACE:
+//                break;
+//            default:
+//        }
 
         // convert to entity
         MiniAppCommandEntity commandEntity = convertToEntity(commandBoundary);
@@ -166,40 +170,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         return commandResult;
     }
 
-    private Object executeDatingCommands(MiniAppCommandBoundary commandBoundary) {
 
-        Object resultObjectOfCommand;
-        
-        switch (commandBoundary.getCommand()) {
-
-            case "LIKE":
-                resultObjectOfCommand = commandFactory
-                                            .create(DatingCommand.LIKE_PROFILE)
-                                            .execute(commandBoundary);
-                break;
-            case "CREATE":
-                resultObjectOfCommand = commandFactory
-                        .create(DatingCommand.CREATE_PROFILE)
-                        .execute(commandBoundary);
-                break;
-            default:
-                resultObjectOfCommand = new InvalidCommand("An message");
-        }
-
-        return resultObjectOfCommand;
-    }
-
-    private Object executeEventCommands(MiniAppCommandBoundary commandBoundary) {
-        return null;
-    }
-
-    private Object executeGroupCommands(MiniAppCommandBoundary commandBoundary) {
-        return null;
-    }
-
-    private Object executeMarketplaceCommands(MiniAppCommandBoundary commandBoundary) {
-        return null;
-    }
 
     private void validateCommand(MiniAppCommandBoundary command) {
 

@@ -16,7 +16,7 @@ public class SuperAppObjectEntity {
     private boolean active;
     private Date creationTimestamp;
     private String location;
-    private String createdBy; // createdBy is a userId boundary concatenate
+    private String createdBy;
     private Map<String, Object> objectDetails;
 
     @DBRef

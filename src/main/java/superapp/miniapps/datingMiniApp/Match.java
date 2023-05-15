@@ -1,4 +1,4 @@
-package superapp.miniapps.datingMiniApp.objects;
+package superapp.miniapps.datingMiniApp;
 
 import superapp.miniapps.chat.objects.Chat;
 
