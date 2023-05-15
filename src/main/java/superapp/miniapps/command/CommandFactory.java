@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
 import superapp.data.UserCrud;
-import superapp.logic.ObjectsService;
+import superapp.logic.ObjectsServiceWithPaging;
 import superapp.logic.mongo.ObjectManagerMongoDB;
 import superapp.logic.mongo.UserManagerMongoDB;
 import superapp.miniapps.command.datingimpl.*;
@@ -15,7 +15,7 @@ import superapp.miniapps.command.datingimpl.*;
 public class CommandFactory {
     private final ObjectCrud objectCrud;
     private final UserCrud userCrud;
-    private final ObjectsService objectsService;
+    private final ObjectsServiceWithPaging objectsService;
     private final UserManagerMongoDB userRepository;
     private final ObjectManagerMongoDB objectRepository;
 
@@ -33,7 +33,7 @@ public class CommandFactory {
     private DatingActivateProfileCommand datingActivateProfile;
 
 
-    @Autowired
+    @PostConstruct
     public void setDatingCommand(DatingLikeProfileCommand datingLikeProfile,
                           DatingUnmatchProfileCommand datingUnmatch,
                           DatingUnlikeProfileCommand datingUnlikeProfile,
@@ -59,7 +59,7 @@ public class CommandFactory {
     }
 
     @Autowired
-    public CommandFactory(ObjectCrud objectCrud, UserCrud userCrud, ObjectsService objectsService,
+    public CommandFactory(ObjectCrud objectCrud, UserCrud userCrud, ObjectsServiceWithPaging objectsService,
                           UserManagerMongoDB userRepository, ObjectManagerMongoDB objectRepository) {
 
         this.objectCrud = objectCrud;

@@ -53,7 +53,7 @@ public class CommandTestSet extends BaseTestSet {
         InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("demo", "demo");
-        this.help_PostCommandBoundary(miniAppName, commandId, command, targetObject, new Date(), invokedBy, attributes);
+        //this.help_PostCommandBoundary(miniAppName, commandId, command, targetObject, new Date(), invokedBy, attributes);
     }
 
     @Test

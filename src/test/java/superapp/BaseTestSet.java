@@ -42,93 +42,21 @@ public class BaseTestSet {
         this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects");
     }
 
-    /**
-     * POST:
-     * Helper method to create a user
-     * the path is "/superapp/users"
-     *
-     * @param email    - the email of the user
-     * @param role     - the role of the user
-     * @param username - the username of the user
-     * @param avatar   - the avatar of the user
-     * @return the user that was created
-     */
-    public UserBoundary help_PostUserBoundary(String email, String role, String username, String avatar) {
 
-        NewUserBoundary user = new NewUserBoundary();
-        user.setEmail(email).setRole(role).setUsername(username).setAvatar(avatar);
-
-        return this.restTemplate
-                .postForObject(
-                        this.baseUrl + "/superapp/users"
-                        , user
-                        , UserBoundary.class);
-    }
-
-
-    /**
-     * GET:
-     * Helper method to get a user
-     * the path is "/superapp/users/login/{superapp}/{email}"
-     *
-     * @param email - the email of the user
-     * @return the user that was created
-     */
-    public UserBoundary help_GetUserBoundary(String email) {
-        return this.restTemplate
-                .getForObject(
-                        this.baseUrl + "/superapp/users/login/{superapp}/{email}"
-                        , UserBoundary.class
-                        , springApplicationName
-                        , email);
-    }
-
-    /**
-     * PUT
-     * Helper method to update a user
-     * the path is "/superapp/users/{superapp}/{email}"
-     *
-     * @param userBoundary - the user to update
-     * @param email        - the email of the user we want to update
-     */
-    public void help_PutUserBoundary(UserBoundary userBoundary, String email) {
-        this.restTemplate.put(
-                this.baseUrl + "/superapp/users/{superapp}/{email}"
-                , userBoundary, springApplicationName
-                , email);
-    }
-
-    /**
-     * DELETE
-     * Helper method to delete a user
-     * the path is "/superapp/admin/users"
-     */
-    public void help_DeleteUsersBoundary() {
-        this.restTemplate.delete(this.baseUrl + "/superapp/admin/users");
-    }
-
-    /**
-     * GET_ALL
-     * Helper method to get all users
-     * the path is "/superapp/admin/users
-     *
-     * @return all users - UserBoundary[]
-     */
-    public UserBoundary[] help_GetAllUsersBoundary() {
-        return this.restTemplate.getForObject(this.baseUrl + "/superapp/admin/users", UserBoundary[].class);
-    }
 
     /**
      * POST:
      * Helper method to create a SuperAppObjectBoundary
      * the path is "/superapp/objects"
      *
-     * @param type
-     * @param alias
-     * @param active
-     * @param location
-     * @param createdBy
-     * @param objectDetails
+     * @param objectId - ObjectId
+     * @param type - String
+     * @param alias - String
+     * @param creationTimestamp - Date
+     * @param active - Boolean
+     * @param location - Location
+     * @param createdBy - CreatedBy
+     * @param objectDetails - Map<String, Object>
      * @return SuperAppObjectBoundary
      */
     public SuperAppObjectBoundary help_PostObjectBoundary(ObjectId objectId, String type, String alias,
@@ -157,8 +85,8 @@ public class BaseTestSet {
      * Helper method to get an object
      * the path is "/superapp/objects/{superapp}/{internalObjectId}"
      *
-     * @param internalObjectId
-     * @param springApplicationName
+     * @param internalObjectId - String
+     * @param springApplicationName - String
      * @return SuperAppObjectBoundary
      */
     public SuperAppObjectBoundary help_GetObjectBoundary(String internalObjectId, String springApplicationName) {
@@ -176,9 +104,9 @@ public class BaseTestSet {
      * Helper method to update an object
      * the path is "/superapp/objects/{superapp}/{internalObjectId}"
      *
-     * @param objectBoundary
-     * @param internalObjectId
-     * @param springApplicationName
+     * @param objectBoundary - SuperAppObjectBoundary
+     * @param internalObjectId - String
+     * @param springApplicationName - String
      */
     public void help_PutObjectBoundary(SuperAppObjectBoundary objectBoundary, String internalObjectId,
                                        String springApplicationName) {
@@ -218,7 +146,7 @@ public class BaseTestSet {
      * the path is "/superapp/objects/{superapp}/{internalObjectId}/children"
      *
      * @param internalObjectId- is a parent-target
-     * @param childObjId
+     * @param childObjId - Object
      */
     public void putRelationBetweenObjects(String internalObjectId, Object childObjId) {
 
@@ -235,7 +163,7 @@ public class BaseTestSet {
      * Helper method to get all parent objects of some object
      * the path is "/superapp/objects/{superapp}/{internalObjectId}/parents"
      *
-     * @param internalObjectId
+     * @param internalObjectId - String
      * @return SuperAppObjectBoundary[] - parent of internalObjectId
      */
     public SuperAppObjectBoundary[] getRelationParents(String internalObjectId) {
@@ -255,7 +183,7 @@ public class BaseTestSet {
      * Helper method to get all children objects of some object
      * the path is "/superapp/objects/{superapp}/{internalObjectId}/children"
      *
-     * @param internalObjectId
+     * @param internalObjectId - String
      * @return SuperAppObjectBoundary[] - children of internalObjectId
      */
     public SuperAppObjectBoundary[] getRelationChildren(String internalObjectId) {
@@ -346,20 +274,7 @@ public class BaseTestSet {
     }
 
 
-    // ###################################### commands ######################################
-
-    public void help_PostCommandBoundary(MiniAppNames miniAppNames, CommandId commandId, String command, TargetObject targetObject, Date createdTimestamp, InvokedBy invokedBy, Map<String, Object> commandAttributes) {
-        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary();
-        commandBoundary
-                .setCommandId(commandId)
-                .setCommand(command)
-                .setTargetObject(targetObject)
-                .setInvocationTimestamp(createdTimestamp)
-                .setInvokedBy(invokedBy)
-                .setCommandAttributes(commandAttributes)
-        ;
-        this.restTemplate.postForObject(this.baseUrl + "/superapp/miniapp/" + miniAppNames, commandBoundary, MiniAppCommandBoundary.class);
-    }
+    // ###################################### Objects ######################################
 
 
     public MiniAppCommandBoundary[] help_GetAllMiniappBoundary() {
@@ -435,4 +350,5 @@ public class BaseTestSet {
         );
 
     }
+
 }
