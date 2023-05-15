@@ -1,9 +1,5 @@
 package superapp.logic.boundaries;
 
-/**
- * @author Ido & Yosef
- */
-
 public class InvokedBy {
 	private UserId userId;
 
@@ -23,6 +19,5 @@ public class InvokedBy {
 	public String toString() {
 		return "InvokedBy [userId=" + userId + "]";
 	}
-
 
 }

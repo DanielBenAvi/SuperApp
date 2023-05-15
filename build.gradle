@@ -29,7 +29,7 @@ dependencies {
 	testImplementation 'org.springframework.integration:spring-integration-test'
 }
 
-
 tasks.named('test') {
 	useJUnitPlatform()
 }
+

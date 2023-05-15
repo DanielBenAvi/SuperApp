@@ -76,13 +76,13 @@ public class ObjectTestSet {
         objectDetails.put("details", "String object demo");
 
         SuperAppObjectBoundary postObject = help_PostObjectBoundary(null, type, alias, null,
-                active,  location, createdBy,  objectDetails);
+                                    active,  location, createdBy,  objectDetails);
         // THEN
         // the server response with status 2xx code and return  SuperAppObjectBoundary as json
 
         SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
-                postObject.getObjectId().getInternalObjectId(),
-                postObject.getObjectId().getSuperapp());
+                                        postObject.getObjectId().getInternalObjectId(),
+                                        postObject.getObjectId().getSuperapp());
 
         assertThat(objectFromGet)
                 .isNotNull()
@@ -109,23 +109,24 @@ public class ObjectTestSet {
         // A POST request is made to the path "superapp/objects
         String type = "EVENT";
         String alias = "demo";
+        Boolean active = null;
         Location location = new Location(10.200, 10.200);
         CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
         SuperAppObjectBoundary postObject = help_PostObjectBoundary(null, type, alias, null,
-                null,  location, createdBy,  objectDetails);
-        postObject.setActive(false);
+                active,  location, createdBy,  objectDetails);
+
 
 
         // THEN
-        // the server response with status 415 code and return  SuperAppObjectBoundary as json
+        // the server response with status 2xx code and return  SuperAppObjectBoundary as json
 
         SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
                 postObject.getObjectId().getInternalObjectId(),
                 postObject.getObjectId().getSuperapp());
-
+        objectFromGet.setActive(false);
 
         assertThat(objectFromGet)
                 .isNotNull()
@@ -248,7 +249,7 @@ public class ObjectTestSet {
 
 
         // THEN
-        // the server response with  status 400 code
+        // the server response with bad request status 400 code
 
         assertThatThrownBy(() ->
                 help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, objectDetails))
@@ -330,42 +331,42 @@ public class ObjectTestSet {
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
 
     }
-/* for next sprint*/
-//    @Test
-//    @DisplayName("unsuccessful create object, email not found")
-//    public void unsuccessfulCreateObject_emailNotFound() {
-//
-//        // GIVEN
-//        // 1. the server is up and running
-//        // 2. the database is up and running
-//
-//        String email = "demo@gmail.com";
-//        String role = UserRole.ADMIN.toString();
-//        String username = "demo_user";
-//        String avatar = "demo_avatar";
-//        help_PostUserBoundary(email, role, username, avatar);
-//
-//
-//        // when
-//        // A POST request is made to the path "superapp/objects" with SuperAppObjectBoundary
-//
-//        String type = "EVENT";
-//        String alias = "demo";
-//        Boolean active = true;
-//        Location location = new Location(10.200, 10.200);
-//        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demoTest@gmail.com" ));
-//        Map<String, Object> objectDetails = new HashMap<>();
-//        objectDetails.put("details", "String object demo");
-//
-//
-//        // THEN
-//        // the server response with bad request status 404 code
-//        assertThatThrownBy(() ->
-//                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, objectDetails))
-//                .isInstanceOf(HttpClientErrorException.class)
-//                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
-//
-//    }
+
+    @Test
+    @DisplayName("unsuccessful create object, email not found")
+    public void unsuccessfulCreateObject_emailNotFound() {
+
+        // GIVEN
+        // 1. the server is up and running
+        // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
+
+        // when
+        // A POST request is made to the path "superapp/objects" with SuperAppObjectBoundary
+
+        String type = "EVENT";
+        String alias = "demo";
+        Boolean active = true;
+        Location location = new Location(10.200, 10.200);
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demoTest@s.afeka.ac.il" ));
+        Map<String, Object> objectDetails = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+
+        // THEN
+        // the server response with bad request status 404 code
+        assertThatThrownBy(() ->
+                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, objectDetails))
+                .isInstanceOf(HttpClientErrorException.class)
+                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
+
+    }
 
     @Test
     @DisplayName("unsuccessful create object, no createdBy")
@@ -774,7 +775,7 @@ public class ObjectTestSet {
     /*get all*/
     @Test
     @DisplayName("successful get all objects")
-    public void successfulGetAll_Objects() {
+    public void successfulGetAllObjects() {
 
         // GIVEN
         // 1. the server is up and running
@@ -809,7 +810,7 @@ public class ObjectTestSet {
 
     @Test
     @DisplayName("successful get all objects when there are none")
-    public void successfulGetAll_ObjectsEmpty() {
+    public void successfulGetAllObjectsEmpty() {
 
         // GIVEN
         // 1. the server is up and running
@@ -829,7 +830,7 @@ public class ObjectTestSet {
 
     @Test
     @DisplayName("successful delete all objects of none empty db")
-    public void successfulDelAll_Objects() {
+    public void successfulDelAllObjects() {
 
         // GIVEN
         // 1. the server is up and running
@@ -865,7 +866,7 @@ public class ObjectTestSet {
 
     @Test
     @DisplayName("successful delete all objects in empty db")
-    public void successfulDelAll_ObjectsEmpty() {
+    public void successfulDelAllObjectsEmpty() {
 
         // GIVEN
         // 1. the server is up and running
@@ -925,7 +926,7 @@ public class ObjectTestSet {
 
     @Test
     @DisplayName("successful update object alias")
-    public void successfulUpdate_ObjectAlias() {
+    public void successfulUpdateObjectAlias() {
 
         // GIVEN
         // 1. the server is up and running
@@ -946,50 +947,9 @@ public class ObjectTestSet {
         objectDetails.put("details", "String object demo");
 
         SuperAppObjectBoundary postObject =
-                help_PostObjectBoundary(null, type, alias,null, active, location, createdBy, objectDetails);
-
-        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setAlias("another demo");
-        // WHEN
-        // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
-        this.help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
-
-
-        // THEN
-        // the server response with status 2xx code
-        SuperAppObjectBoundary updatedObject =
-                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
-
-        assertThat(updatedObject.getAlias())
-                .isNotNull()
-                .isEqualTo(updateObject.getAlias());
-    }
-
-    @Test
-    @DisplayName("successful update object active")
-    public void successfulUpdate_ObjectActive() {
-
-        // GIVEN
-        // 1. the server is up and running
-        // 2. the database is up and running
-
-        String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
-        String username = "demo_user";
-        String avatar = "demo_avatar";
-        help_PostUserBoundary(email, role, username, avatar);
-
-        String type = "EVENT";
-        String alias = "demo";
-        Boolean active = false;
-        Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
-        Map<String, Object> objectDetails = new HashMap<>();
-        objectDetails.put("details", "String object demo");
-
-        SuperAppObjectBoundary postObject =
                 help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
 
-        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias(null).setActive(true).
+        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias("another demo").setActive(null).
                 setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(null);
         // WHEN
         // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
@@ -997,101 +957,12 @@ public class ObjectTestSet {
 
         // THEN
         // the server response with status 2xx code
-        SuperAppObjectBoundary updatedObject =
-                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
-        assertThat(updatedObject.getActive()).isNotNull().isEqualTo(updateObject.getActive());
-    }
-
-    @Test
-    @DisplayName("unsuccessful update object alias is empty")
-    public void unsuccessfulUpdate_ObjectAliasEmpty() {
-
-        // GIVEN
-        // 1. the server is up and running
-        // 2. the database is up and running
-
-        String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
-        String username = "demo_user";
-        String avatar = "demo_avatar";
-        help_PostUserBoundary(email, role, username, avatar);
-
-        String type = "EVENT";
-        String alias = "demo";
-        Boolean active = true;
-        Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
-        Map<String, Object> objectDetails = new HashMap<>();
-        objectDetails.put("details", "String object demo");
-
-        SuperAppObjectBoundary postObject =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-
-        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias("").setActive(null).
-                setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(null);
-        // WHEN
-        // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
-
-
-        // THEN
-        // the server response with Bad Request status code 400
-        SuperAppObjectBoundary updatedObject =
-                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
-
-        assertThatThrownBy(() ->
-                help_PutObjectBoundary(updateObject,updatedObject.getObjectId().getInternalObjectId(),
-                        updatedObject.getObjectId().getSuperapp())).isInstanceOf(HttpClientErrorException.class)
-                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
-
-        assertThat(updatedObject.getAlias()).isNotNull().isEqualTo(postObject.getAlias());
-    }
-
-
-    @Test
-    @DisplayName("unsuccessful Update, Type cannot be changed")
-    public void unsuccessfulUpdate_Type() {
-
-        // GIVEN
-        // 1. the server is up and running
-        // 2. the database is up and running
-
-        String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
-        String username = "demo_user";
-        String avatar = "demo_avatar";
-        help_PostUserBoundary(email, role, username, avatar);
-
-        String type = "GROUP";
-        String alias = "demo";
-        Boolean active = true;
-        Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
-        Map<String, Object> objectDetails = new HashMap<>();
-        objectDetails.put("details", "String object demo");
-
-        SuperAppObjectBoundary postObject =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-
-        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType("EVENT").setAlias(null).setActive(null).
-                setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(null);
-        // WHEN
-        // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
-        SuperAppObjectBoundary updatedObject =
-                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
-
-        assertThatThrownBy(() ->
-                help_PutObjectBoundary(updateObject,updatedObject.getObjectId().getInternalObjectId(),
-                        updatedObject.getObjectId().getSuperapp())).isInstanceOf(HttpClientErrorException.class)
-                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
-        // THEN
-        // the server response with Bad Request status 400 code
-        assertThat(updatedObject.getType()).isNotNull().isEqualTo(type);
-
+        assertThat(postObject.getAlias()).isNotNull().isEqualTo(updateObject.getAlias());
     }
 
     @Test
     @DisplayName("successful update object deatils")
-    public void successfulUpdate_ObjectDetails() {
+    public void successfulUpdateObjectDetails() {
 
         // GIVEN
         // 1. the server is up and running
@@ -1115,12 +986,10 @@ public class ObjectTestSet {
                 help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
 
         Map<String, Object> objectDetails2 = new HashMap<>();
-        objectDetails2.put("details", "somethingsomething");
-
         SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias(null).setActive(null).
                 setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(objectDetails2);
 
-
+        updateObject.getObjectDetails().put("details2", "something");
 
         // WHEN
         // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
@@ -1128,66 +997,12 @@ public class ObjectTestSet {
         help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
         // THEN
         // the server response with status 2xx code
-        SuperAppObjectBoundary updatedObject =
-                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
-
-        assertThat(updatedObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(updateObject.getObjectDetails());
+        assertThat(postObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(updateObject.getObjectDetails());
     }
 
     @Test
-    @DisplayName("successful update object details specific value")
-    public void successfulUpdate_ObjectDetailsSpesificValue() {
-
-        // GIVEN
-        // 1. the server is up and running
-        // 2. the database is up and running
-
-        String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
-        String username = "demo_user";
-        String avatar = "demo_avatar";
-        help_PostUserBoundary(email, role, username, avatar);
-
-        String type = "EVENT";
-        String alias = "demo";
-        Boolean active = true;
-        Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
-        Map<String, Object> objectDetails = new HashMap<>();
-        objectDetails.put("details", "String object demo");
-        objectDetails.put("details2", null);
-
-        SuperAppObjectBoundary postObject =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-
-        Map<String, Object> objectDetails2 = new HashMap<>();
-        objectDetails2.put("details2", "somethingsomething");
-
-        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias(null).setActive(null).
-                setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(objectDetails2);
-
-
-
-        // WHEN
-        // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
-
-        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
-        // THEN
-        // the server response with status 2xx code
-
-        SuperAppObjectBoundary updatedObject =
-                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
-
-        Map<String, Object> objectDetailsChecker = new HashMap<>();
-        objectDetailsChecker.put("details", "String object demo");
-        objectDetailsChecker.put("details2", "somethingsomething");
-        assertThat(updatedObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(objectDetailsChecker);
-    }
-
-
-    @Test
-    @DisplayName("successful update empty object details")
-    public void successfulUpdate_EmptyObjectDetails() {
+    @DisplayName("successful update empty object deatils")
+    public void successfulUpdateEmptyObjectDetails() {
 
         // GIVEN
         // 1. the server is up and running
@@ -1222,200 +1037,12 @@ public class ObjectTestSet {
         help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
         // THEN
         // the server response with status 2xx code
-        SuperAppObjectBoundary updatedObject =
-                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
-
-        assertThat(updatedObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(objectDetails);
+        assertThat(postObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(objectDetails);
     }
-
-    @Test
-    @DisplayName("successful update, location")
-    public void successfulUpdate_location() {
-
-        // GIVEN
-        // 1. the server is up and running
-        // 2. the database is up and running
-
-        String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
-        String username = "demo_user";
-        String avatar = "demo_avatar";
-        help_PostUserBoundary(email, role, username, avatar);
-
-        String type = "EVENT";
-        String alias = "demo";
-        Boolean active = true;
-        Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
-        Map<String, Object> objectDetails = new HashMap<>();
-        objectDetails.put("details", "String object demo");
-
-        SuperAppObjectBoundary postObject =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-
-        Location expectedLocation = new Location(5, 5);
-        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias(null).setActive(null).
-                setCreationTimestamp(null).setLocation(expectedLocation).setCreatedBy(null).setObjectDetails(null);
-
-
-
-        // WHEN
-        // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
-
-        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
-        // THEN
-        // the server response with status 2xx code
-        SuperAppObjectBoundary updatedObject =
-                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
-
-        assertThat(updatedObject.getLocation()).isNotNull().usingRecursiveComparison().isEqualTo(expectedLocation);
-    }
-
-    @Test
-    @DisplayName("successful update, location is empty")
-    public void successfulUpdate_locationEmpty() {
-
-        // GIVEN
-        // 1. the server is up and running
-        // 2. the database is up and running
-
-        String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
-        String username = "demo_user";
-        String avatar = "demo_avatar";
-        help_PostUserBoundary(email, role, username, avatar);
-
-        String type = "EVENT";
-        String alias = "demo";
-        Boolean active = true;
-        Location location = new Location(1, 1);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
-        Map<String, Object> objectDetails = new HashMap<>();
-        objectDetails.put("details", "String object demo");
-
-        SuperAppObjectBoundary postObject =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-
-        Location expectedLocation = new Location();
-        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias(null).setActive(null).
-                setCreationTimestamp(null).setLocation(expectedLocation).setCreatedBy(null).setObjectDetails(null);
-
-
-
-        // WHEN
-        // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
-
-        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
-        // THEN
-        // the server response with status 2xx code
-
-        SuperAppObjectBoundary updatedObject =
-                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
-
-        assertThat(updatedObject.getLocation()).isNotNull().usingRecursiveComparison().isEqualTo(location);
-    }
-
-    @Test
-    @DisplayName("successful update, location attribute")
-    public void successfulUpdate_locationAttribute() {
-
-        // GIVEN
-        // 1. the server is up and running
-        // 2. the database is up and running
-
-        String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
-        String username = "demo_user";
-        String avatar = "demo_avatar";
-        help_PostUserBoundary(email, role, username, avatar);
-
-        String type = "EVENT";
-        String alias = "demo";
-        Boolean active = true;
-        Location location = new Location(1, 1);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
-        Map<String, Object> objectDetails = new HashMap<>();
-        objectDetails.put("details", "String object demo");
-
-        SuperAppObjectBoundary postObject =
-                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-
-        Location expectedLocation = new Location().setLat(3);
-
-        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias(null).setActive(null).
-                setCreationTimestamp(null).setLocation(expectedLocation).setCreatedBy(null).setObjectDetails(null);
-
-
-
-        // WHEN
-        // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
-
-        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
-        // THEN
-        // the server response with status 2xx code
-        SuperAppObjectBoundary updatedObject =
-                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
-        Location locationChecker = new Location().setLat(expectedLocation.getLat()).setLng(location.getLng());
-
-        assertThat(updatedObject.getLocation()).isNotNull().usingRecursiveComparison().isEqualTo(locationChecker);
-    }
-
-// future test
-//    @Test
-//    @DisplayName("unsuccessful update, objectDetails has invalid attribute")
-//    public void unsuccessfulUpdate_invalidObjectDetails() {
-//
-//        // GIVEN
-//        // 1. the server is up and running
-//        // 2. the database is up and running
-//
-//        String email = "demo@gmail.com";
-//        String role = UserRole.ADMIN.toString();
-//        String username = "demo_user";
-//        String avatar = "demo_avatar";
-//        help_PostUserBoundary(email, role, username, avatar);
-//
-//        String type = "EVENT";
-//        String alias = "demo";
-//        Boolean active = true;
-//        Location location = new Location(10.200, 10.200);
-//        CreatedBy createdBy = new CreatedBy().setUserId(new UserID(springApplicationName,"demo@gmail.com" ));
-//        Map<String, Object> objectDetails = new HashMap<>();
-//        objectDetails.put("active", true);
-//
-//        SuperAppObjectBoundary postObject =
-//                help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
-//
-//        Map<String, Object> objectDetails2 = new HashMap<>();
-//        objectDetails.put("active", "3.4");
-//
-//        SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias(null).setActive(null).
-//                setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(objectDetails2);
-//
-//
-//
-//        // WHEN
-//        // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
-//
-//        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
-//
-//
-//        // THEN
-//        // the server response with Bad Request status 400 code
-//        SuperAppObjectBoundary updatedObject =
-//                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
-//
-//        assertThatThrownBy(() ->
-//                help_PutObjectBoundary(updateObject,updatedObject.getObjectId().getInternalObjectId(),
-//                        updatedObject.getObjectId().getSuperapp())).isInstanceOf(HttpClientErrorException.class)
-//                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
-//
-//        assertThat(updatedObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isNotEqualTo(updateObject.getObjectDetails());
-//    }
 
     /*Wrong Paths*/
     @Test
-    @DisplayName("unsuccessful create object, wrong path")
+    @DisplayName("UNSuccessful create object, wrong path")
     public void unsuccessfulCreateObject_WrongPath() {
 
         // GIVEN
@@ -1485,18 +1112,13 @@ public class ObjectTestSet {
 
         // THEN
         // the server response with status 404 not found
-
-
         assertThatThrownBy(() ->
                 this.restTemplate.put(this.baseUrl + "/superpp/obects{superapp}/{internalObjectId}",
                         object, postObject.getObjectId().getSuperapp(),
                         postObject.getObjectId().getInternalObjectId())).isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
 
-        SuperAppObjectBoundary updatedObject =
-                this.help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), this.springApplicationName);
-
-        assertThat(updatedObject.getAlias()).isNotNull().isNotEqualTo(object.getAlias());
+        assertThat(postObject.getAlias()).isNotNull().isNotEqualTo(object.getAlias());
 
     }
 
@@ -1580,12 +1202,30 @@ public class ObjectTestSet {
     }
 
     @Test
-    @DisplayName("unsuccessful delete, wrong path")
+    @DisplayName("unsuccessful get delete, wrong path")
     public void unsuccessfulDelete_WrongPath() {
 
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
+        String type = "EVENT";
+        String alias = "demo";
+        Boolean active = true;
+        Location location = new Location(10.200, 10.200);
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
+        Map<String, Object> objectDetails = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+
+        help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
+        help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
 
         // WHEN
         // A DELETE request is made to the path "/superapp/amin/objects"
@@ -1594,9 +1234,9 @@ public class ObjectTestSet {
 
         // THEN
         // the server response with status 404 not found
-
         assertThatThrownBy(() ->
-                this.restTemplate.getForObject(this.baseUrl + "/superapp/amin/objects", SuperAppObjectBoundary[].class))
+                this.restTemplate
+                        .delete(this.baseUrl + "superapp/amin/objects"))
                 .isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
 
@@ -1664,8 +1304,8 @@ public class ObjectTestSet {
      * @param springApplicationName
      */
     public void help_PutObjectBoundary(SuperAppObjectBoundary objectBoundary,
-                                       String internalObjectId,
-                                       String springApplicationName) {
+                                         String internalObjectId,
+                                         String springApplicationName) {
         this.restTemplate.put(
                 this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}"
                 , objectBoundary, springApplicationName

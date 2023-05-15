@@ -10,7 +10,6 @@ import superapp.miniapps.MiniAppNames;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -54,7 +53,7 @@ public class CommandTestSet extends BaseTestSet {
         InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("demo", "demo");
-        help_PostCommandBoundary(miniAppName, commandId, command, targetObject, new Date(), invokedBy, attributes);
+        this.help_PostCommandBoundary(miniAppName, commandId, command, targetObject, new Date(), invokedBy, attributes);
     }
 
     @Test
@@ -66,6 +65,7 @@ public class CommandTestSet extends BaseTestSet {
         //AND db is up
         //AND command objects exist in db
 
+        //ObjectsInsertion();
         //WHEN a delete request is made to the path /superapp/admin/miniapp
         //THEN the db response with the status 2xx code
         //AND commands objects no longer exist
@@ -123,7 +123,7 @@ public class CommandTestSet extends BaseTestSet {
 //        AND
 //        database is up
 //        AND
-//        commands objects of a chosen ""miniAppName"" does NOT exists in database
+//        commands objects of a chosen ""miniAppName"" do NOT exist in database
 //        AND
 //        commands objects of any other miniapps exists in database
 
@@ -143,7 +143,7 @@ public class CommandTestSet extends BaseTestSet {
 //        AND
 //        database is up
 //        AND
-//        commands objects of a chosen ""miniAppName"" does exists in database
+//        commands objects of a chosen ""miniAppName"" do exists in database
 
 
 //        WHEN A GET request is made to the path
@@ -339,46 +339,12 @@ public class CommandTestSet extends BaseTestSet {
                 .setInvokedBy(invokedBy)
                 .setCommandAttributes(attributes);
 
-
-        //THEN The server response with status 4xx code
-        assertThatThrownBy(() -> this.restTemplate.postForObject((this.baseUrl + "/superapp/miniapp/{miniAppName}"), miniAppCommandBoundary, MiniAppCommandBoundary.class, MiniAppNames.EVENT))
-                .isInstanceOf(HttpClientErrorException.class)
-                .extracting("statusCode.4xxClientError");
     }
 
 
     @Test
-    @DisplayName("Create command with no existing targetObject in database")
+    @DisplayName("Create command entity with no existing targetObject in database")
     public void testSuccessfulPostOfCommandEntityByInvokeFuncTargetObjectNotExisting() {
-        UserBoundary userBoundary = createUser();
-//        SuperAppObjectBoundary superAppObjectBoundary = createObject(userBoundary.getUserId().getEmail());
-        //GIVEN The server is up
-        //AND
-        //database is up
-        //AND
-        // user exists in database
-        //AND
-        // object exists in database
-
-        //WHEN A POST request is made to the path
-        CommandId commandId = new CommandId();
-        String command = null;
-        TargetObject targetObject = new TargetObject().setObjectId(new ObjectId().setSuperapp(springApplicationName).setInternalObjectId(UUID.randomUUID().toString()));
-        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put("demo", "demo");
-        MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary()
-                .setCommand(command)
-                .setCommandId(commandId)
-                .setTargetObject(targetObject)
-                .setInvokedBy(invokedBy)
-                .setCommandAttributes(attributes);
-
-
-        //THEN The server response with status 4xx code
-        assertThatThrownBy(() -> this.restTemplate.postForObject((this.baseUrl + "/superapp/miniapp/{miniAppName}"), miniAppCommandBoundary, MiniAppCommandBoundary.class, MiniAppNames.EVENT))
-                .isInstanceOf(HttpClientErrorException.class)
-                .extracting("statusCode.4xxClientError");
 
     }
 

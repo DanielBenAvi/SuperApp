@@ -1,11 +1,5 @@
 package superapp.logic.boundaries;
 
-
-/**
- * 
- * @author Ido & Yosef
- */
-
 public class UserId {
 	private String superapp;
 	private String email;
