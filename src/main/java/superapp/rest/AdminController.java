@@ -87,6 +87,7 @@ public class AdminController {
 							   @RequestParam(name = "userEmail", required = false) String userEmail) {
 
 		this.usersService.deleteAllUsers(userSuperapp,userEmail);
+//
 		System.err.println("All users deleted");
 	}
 
