@@ -42,8 +42,6 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
         ObjectId targetBoundaryID = command.getTargetObject().getObjectId();
         String targetEntityID = targetBoundaryID.getSuperapp() + ConvertHelp.DELIMITER_ID + targetBoundaryID.getInternalObjectId();
 
-
-
         // get my profile dating
         String myDatingProfileId = command.getCommandAttributes().get("myDatingProfileId").toString();
         SuperAppObjectEntity myObject = this.objectCrudDB.findById(myDatingProfileId).get();

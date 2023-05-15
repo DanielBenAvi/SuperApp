@@ -9,7 +9,7 @@ import superapp.logic.boundaries.SuperAppObjectBoundary;
 
 @RestController
 public class RelationshipController {
-    private ObjectsServiceWithPaging objectsService;
+    private final ObjectsServiceWithPaging objectsService;
 
     @Autowired
     public RelationshipController(ObjectsServiceWithPaging objectsService) {

@@ -3,21 +3,11 @@ package superapp.miniapps.command;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import superapp.data.ObjectCrud;
-import superapp.data.UserCrud;
-import superapp.logic.ObjectsServiceWithPaging;
-import superapp.logic.mongo.ObjectManagerMongoDB;
-import superapp.logic.mongo.UserManagerMongoDB;
 import superapp.miniapps.command.datingimpl.*;
 
 
 @Component
 public class CommandFactory {
-    private final ObjectCrud objectCrud;
-    private final UserCrud userCrud;
-    private final ObjectsServiceWithPaging objectsService;
-    private final UserManagerMongoDB userRepository;
-    private final ObjectManagerMongoDB objectRepository;
 
     // Commands
     private DatingLikeProfileCommand datingLikeProfile;
@@ -33,8 +23,8 @@ public class CommandFactory {
     private DatingActivateProfileCommand datingActivateProfile;
 
 
-    @PostConstruct
-    public void setDatingCommand(DatingLikeProfileCommand datingLikeProfile,
+    @Autowired
+    public  CommandFactory(DatingLikeProfileCommand datingLikeProfile,
                           DatingUnmatchProfileCommand datingUnmatch,
                           DatingUnlikeProfileCommand datingUnlikeProfile,
                           DatingGetProfileCommand datingGetProfile,
@@ -58,21 +48,10 @@ public class CommandFactory {
         this.datingActivateProfile = datingActivateProfile;
     }
 
-    @Autowired
-    public CommandFactory(ObjectCrud objectCrud, UserCrud userCrud, ObjectsServiceWithPaging objectsService,
-                          UserManagerMongoDB userRepository, ObjectManagerMongoDB objectRepository) {
-
-        this.objectCrud = objectCrud;
-        this.userCrud = userCrud;
-        this.objectsService = objectsService;
-        this.userRepository = userRepository;
-        this.objectRepository = objectRepository;
-    }
-
 
     @PostConstruct
     public void init() {
-        System.err.println("****** All commands initiated");
+        System.err.println("****** " + this.getClass().getName() + " initiated");
     }
 
     public MiniAppsCommand create(MiniAppsCommand.commands commandCode, Object... params) {

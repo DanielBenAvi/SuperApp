@@ -1,46 +1,49 @@
 package superapp.logic.mongo;
 
-
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import superapp.data.MiniAppCommandCrud;
-import superapp.data.MiniAppCommandEntity;
 import superapp.data.ObjectCrud;
 import superapp.data.UserCrud;
-import superapp.logic.ConvertHelp;
-import superapp.logic.MiniAppCommandService;
-import superapp.logic.boundaries.CommandId;
+import superapp.logic.MiniAppCommandWithPaging;
 import superapp.logic.boundaries.InvokedBy;
-import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.TargetObject;
 import superapp.miniapps.MiniAppNames;
-import superapp.miniapps.command.*;
+import superapp.data.MiniAppCommandEntity;
+import superapp.logic.ConvertHelp;
+import superapp.logic.boundaries.CommandId;
+import superapp.logic.boundaries.MiniAppCommandBoundary;
+import superapp.miniapps.command.CommandFactory;
+import superapp.miniapps.command.InvalidCommand;
+import superapp.miniapps.command.MiniAppsCommand;
+
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
 @Service
-public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
+public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
 
     private final MiniAppCommandCrud miniAppCommandCrud;
     private final UserCrud userCrud;
     private final ObjectCrud objectCrud;
     private final CommandFactory commandFactory;
-    private String springApplicationName;
 
+    private String springApplicationName;
 
     @Autowired
     public MiniAppCommandManagerMongoDB(MiniAppCommandCrud miniAppCommandCrud, UserCrud userCrud,
-                                        ObjectCrud objectCrud,CommandFactory commandFactory) {
-
+                                        ObjectCrud objectCrud, CommandFactory commandFactory) {
         this.miniAppCommandCrud = miniAppCommandCrud;
         this.userCrud = userCrud;
         this.objectCrud = objectCrud;
         this.commandFactory = commandFactory;
     }
+
 
     /**
      * This method injects a configuration value of spring.
@@ -57,8 +60,9 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
      */
     @PostConstruct
     public void init() {
-        System.err.println("************ MiniAppCommandManagerMongoDB ************ ");
+        System.err.println("****** " + this.getClass().getName() + " service initiated");
     }
+
 
     /**
      * This method convert MiniAppCommand Entity to Boundary
@@ -91,14 +95,13 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         cmdEntity.setCommand(cmdBoundary.getCommand());
 
         CommandId commandId = cmdBoundary.getCommandId();
+        String[] ids = new String[]{commandId.getSuperapp(), commandId.getMiniapp(), commandId.getInternalCommandId()};
+        cmdEntity.setCommandId(ConvertHelp.concatenateIds(ids));
 
-        String[] ids = new String[] {commandId.getSuperapp(), commandId.getMiniapp(), commandId.getInternalCommandId()};
-
-        cmdEntity.setCommandId(ConvertHelp.concatenateIds(ids))
-                .setCommandAttributes(cmdBoundary.getCommandAttributes())
-                .setInvocationTimestamp(cmdBoundary.getInvocationTimestamp())
-                .setTargetObject(ConvertHelp.targetObjBoundaryToStr(cmdBoundary.getTargetObject()))
-                .setInvokedBy(ConvertHelp.invokedByBoundaryToStr(cmdBoundary.getInvokedBy()));
+        cmdEntity.setCommandAttributes(cmdBoundary.getCommandAttributes());
+        cmdEntity.setInvocationTimestamp(cmdBoundary.getInvocationTimestamp());
+        cmdEntity.setTargetObject(ConvertHelp.targetObjBoundaryToStr(cmdBoundary.getTargetObject()));
+        cmdEntity.setInvokedBy(ConvertHelp.invokedByBoundaryToStr(cmdBoundary.getInvokedBy()));
 
         return cmdEntity;
     }
@@ -188,10 +191,29 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
         // TODO-validate miniapp-name not null
     }
-
+    @Deprecated
     @Override
     public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
-
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
+//
+//        // Check if the miniApp name is valid
+//        if (!validMiniAppName(miniAppName)) throw new BadRequestException("MiniApp name is not valid");
+//
+//        // Create a list of commands
+//        List<MiniAppCommandBoundary> commandBoundaryList = new ArrayList<>();
+//
+//        // Get all commands from the database and filter by miniApp name
+//        this.miniAppCommandCrud.findAll().forEach(commandEntity -> {
+//            if (commandEntity.getCommandId().contains(miniAppName)) {
+//                commandBoundaryList.add(convertToBoundary(commandEntity));
+//            }
+//        });
+//
+//        return commandBoundaryList;
+    }
+    @Override
+    public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName, String userSuperapp, String userEmail, int size, int page) {
+        ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
         // Check if the miniApp name is valid
         if (!validMiniAppName(miniAppName)) throw new BadRequestException("MiniApp name is not valid");
 
@@ -199,24 +221,52 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         List<MiniAppCommandBoundary> commandBoundaryList = new ArrayList<>();
 
         // Get all commands from the database and filter by miniApp name
-        this.miniAppCommandCrud.findAll().forEach(commandEntity -> {
+        this.miniAppCommandCrud.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "invocationTimestamp"
+                ,"targetObject","commandId")).forEach(commandEntity -> {
             if (commandEntity.getCommandId().contains(miniAppName)) {
                 commandBoundaryList.add(convertToBoundary(commandEntity));
             }
         });
 
         return commandBoundaryList;
+
+
     }
 
     @Override
+    @Deprecated
     public List<MiniAppCommandBoundary> getAllCommands() {
-        return this.miniAppCommandCrud.findAll().stream().map(this::convertToBoundary).toList();
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
+        //return this.miniAppCommandCrud.findAll().stream().map(this::convertToBoundary).toList();
     }
 
     @Override
+    public List<MiniAppCommandBoundary> getAllCommands(String userSuperapp, String userEmail, int size, int page) {
+        ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
+        return this.miniAppCommandCrud.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "invocationTimestamp"
+                        ,"targetObject","commandId"))
+                .stream().map(this::convertToBoundary).toList();
+    }
+
+    @Override
+    @Deprecated
     public void deleteAllCommands() {
+        throw new DeprecatedRequestException("cannot enter decrecated function");
+        //this.miniAppCommandCrud.deleteAll();
+    }
+
+
+
+
+
+    @Override
+    public void deleteAllCommands(String userSuperapp, String userEmail) {
+        ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
         this.miniAppCommandCrud.deleteAll();
     }
+
+
+
 
     private boolean isValidCommandId(CommandId commandId) {
         // check if commandId is null
@@ -225,9 +275,9 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         // check if commandId fields are null and not empty
         if (commandId.getSuperapp() == null || commandId.getSuperapp().isEmpty()) return false;
 
-        // check if commandId fields are null and miniapp is valid
+        // check if commandId fields are null
         if (commandId.getMiniapp() == null) return false;
-        if (!validMiniAppName(commandId.getMiniapp())) return false;
+
         // check if commandId fields are null
         return commandId.getInternalCommandId() != null;
     }
@@ -243,10 +293,10 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
         if (invokedBy.getUserId().getSuperapp() == null) return false;
 
-        // check if user exist in database
-        AtomicBoolean userExist = checkIfUserExists(invokedBy);
-
-        if (!userExist.get()) throw new NotFoundException("user id is not valid");
+//        // check if user exist in database
+//        AtomicBoolean userExist = checkIfUserExists(invokedBy);
+//
+//        if (!userExist.get()) throw new NotFoundException("user id is not valid");
 
         return true;
     }
@@ -265,6 +315,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         // check if targetObject is null
         if (targetObject == null) return false;
 
+        // check if targetObject fields are null
 
         // check if targetObject fields are null
         if (targetObject.getObjectId() == null) return false;
@@ -273,9 +324,9 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
 
         if (targetObject.getObjectId().getSuperapp() == null) return false;
 
-        AtomicBoolean objectExist = checkIfObjectExists(targetObject);
-        if (!objectExist.get())
-            throw new NotFoundException("object id is not valid");
+//        AtomicBoolean objectExist = checkIfObjectExists(targetObject);
+//        if (!objectExist.get())
+//            throw new NotFoundException("object id is not valid");
 
         return true;
     }
@@ -298,5 +349,4 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandService {
         }
         return true;
     }
-
 }
