@@ -7,12 +7,14 @@ import org.springframework.web.bind.annotation.*;
 import superapp.logic.ObjectsServiceWithPaging;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 
+
 import java.util.List;
 
 @RestController
 public class ObjectBoundaryController {
 
-	private ObjectsServiceWithPaging objectsService; // objectsService interface
+	private ObjectsServiceWithPaging objectsService;
+
 
 
 	@Autowired

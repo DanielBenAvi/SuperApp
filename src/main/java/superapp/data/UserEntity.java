@@ -1,5 +1,6 @@
 package superapp.data;
 
+import org.springframework.context.annotation.Role;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

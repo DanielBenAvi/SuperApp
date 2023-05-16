@@ -1,0 +1,105 @@
+package superapp.logic.mockup;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import superapp.data.UserCrud;
+import superapp.data.UserRole;
+import superapp.logic.mongo.NotFoundException;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+@Component
+public class RBAC {
+
+    private UserCrud userCrudDB;
+    private Map<String, Role> roles;
+
+    @Autowired
+    public RBAC(UserCrud userCrudDB) {
+
+        this.userCrudDB = userCrudDB;
+
+        this.roles = new HashMap<>();
+        createRole(UserRole.ADMIN.toString());
+        createRole(UserRole.SUPERAPP_USER.toString());
+        createRole(UserRole.MINIAPP_USER.toString());
+
+        roles.get(UserRole.ADMIN.toString())
+                .setPermissions(
+                        new HashSet<>(
+                                Arrays.asList("deleteAllCommands",
+                                                "deleteAllObjects",
+                                                "deleteAllUsers",
+                                                "getAllCommands",
+                                                "getAllMiniAppCommands",
+                                                "getAllUsers",
+                                                "updateUser",
+                                                "createUser",
+                                                "login")
+                        ));
+
+        roles.get(UserRole.SUPERAPP_USER.toString())
+                .setPermissions(
+                        new HashSet<>(
+                                Arrays.asList("getSpecificObject", //-include active=false
+                                        "getAllObjects", //-include active=false
+                                        "createObject",
+                                        "updateObject",
+                                        "addChild",
+                                        "getChildren",// -include active=false
+                                        "getParent", // -include active=false
+                                        "updateUser",
+                                        "createUser",
+                                        "login")
+                        ));
+
+        roles.get(UserRole.MINIAPP_USER.toString())
+                .setPermissions(
+                        new HashSet<>(
+                                Arrays.asList("getSpecificObject", //-just active=true
+                                        "getAllObjects", //-just active=true
+                                        "getChildren", //-just active=true
+                                        "getParent", //-just active=true
+                                        "invokeCommand",
+                                        "updateUser",
+                                        "createUser",
+                                        "login")
+                        ));
+
+    }
+
+    public void createRole(String roleName) {
+        Role role = new Role(roleName);
+        roles.put(roleName, role);
+    }
+
+    public boolean hasPermission(String entityUserId, String permission) {
+
+        String userRoleName = this.userCrudDB
+                .findById(entityUserId).orElseThrow(() -> new NotFoundException()).getRole().name();
+
+//        String userRoleName = this.userCrudDB
+//                                            .findById(entityUserId)
+//                                            .get()
+//                                            .getRole()
+//                                            .name();
+
+        return roles
+                .get(userRoleName)
+                .getPermissions()
+                .contains(permission);
+    }
+
+    public void addPermissionToRole(String roleName, String permission) {
+        //        Role role = getRole(roleName);
+        //        if (role != null) {
+        //            role.addPermission(permission);
+        //        }
+    }
+
+}
+

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.server.DelegatingServerHttpResponse;
 import org.springframework.stereotype.Service;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
@@ -16,6 +15,7 @@ import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.Location;
 import superapp.logic.boundaries.ObjectId;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
+import superapp.logic.mockup.RBAC;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -26,11 +26,13 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     private ObjectCrud objectCrudDB;
     private String springApplicationName;
     private final UserCrud userCrud;
+    private RBAC roleBasedAccessControl;
 
     @Autowired
-    public ObjectManagerMongoDB(ObjectCrud objectCrudDB,UserCrud userCrud) {
+    public ObjectManagerMongoDB(ObjectCrud objectCrudDB,UserCrud userCrud, RBAC roleBasedAccessControl) {
         this.objectCrudDB = objectCrudDB;
         this.userCrud = userCrud;
+        this.roleBasedAccessControl = roleBasedAccessControl;
     }
 
     // this method injects a configuration value of spring
@@ -53,12 +55,20 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
         if (validateValue == 0)
             throw new BadRequestException("object must contain all fields");
-
         else if (validateValue == 1)
             throw new NotFoundException("object must contain all fields");
         else  {
 
-            // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
+            String userId = ConvertHelp.concatenateIds(
+                    new String[]{objectBoundary.getCreatedBy().getUserId().getSuperapp(),
+                            objectBoundary.getCreatedBy().getUserId().getEmail()
+                    });
+
+            if(!userCrud.existsById(userId))
+                throw new NotFoundException("user " + userId + " not found in database");
+
+            if (!roleBasedAccessControl.hasPermission(userId, "createObject"))
+                throw new UnauthorizedRequestException("user " + userId + " has no permission to createObject");
 
             SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
 
@@ -73,11 +83,17 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
     }
 
-
     @Override
     public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId,
                                                SuperAppObjectBoundary update, String userSuperapp, String userEmail) {
-        // TODO - do not forget to do validation of user role and if user exists in database
+
+        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        if(!userCrud.existsById(userId))
+            throw new NotFoundException("user " + userId + " not found in database");
+
+        if (!roleBasedAccessControl.hasPermission(userId, "updateObject"))
+            throw new UnauthorizedRequestException("user " + userId + " has no permission to updateObject");
+
 
         String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
 
@@ -130,7 +146,14 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     @Override
     public Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId,
                                                               String userSuperapp, String userEmail) {
-        // TODO - do not forget to do validation of user role and if user exists in database
+
+        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        if(!userCrud.existsById(userId))
+            throw new NotFoundException("user " + userId + " not found in database");
+
+        if (!roleBasedAccessControl.hasPermission(userId, "getSpecificObject"))
+            throw new UnauthorizedRequestException("user " + userId + " has no permission to getSpecificObject");
+
         String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
         if (!this.objectCrudDB.existsById(objectId))
             throw new NotFoundException();
@@ -141,7 +164,14 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
     @Override
     public List<SuperAppObjectBoundary> getAllObjects(String userSuperapp, String userEmail, int size, int page) {
-        // TODO - do not forget to do validation of user role and if user exists in database
+
+        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        if(!userCrud.existsById(userId))
+            throw new NotFoundException("user " + userId + " not found in database");
+
+        if (!roleBasedAccessControl.hasPermission(userId, "getAllObjects"))
+            throw new UnauthorizedRequestException("user " + userId + " has no permission to getAllObjects");
+
         return this.objectCrudDB
                 .findAll(PageRequest.of(page, size, Sort.Direction.ASC, "creationTimestamp", "type", "objectId"))
                 .getContent()
@@ -152,7 +182,15 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
     @Override
     public void addChild(String superapp, String parentId, ObjectId childId, String userSuperapp, String userEmail) {
-        // TODO - do not forget to do validation of user role and if user exists in database
+
+        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        if(!userCrud.existsById(userId))
+            throw new NotFoundException("user " + userId + "not found in database");
+
+        if (!roleBasedAccessControl.hasPermission(userId, "addChild"))
+            throw new UnauthorizedRequestException("user " + userId + " has no permission to addChild");
+
+
         if (!checkValidSuperApp(superapp))
             throw new BadRequestException("superApp must be in format: " + springApplicationName);
 
@@ -190,7 +228,14 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     @Override
     public List<SuperAppObjectBoundary> getChildren(String superapp, String parentInternalObjectId,
                                                     String userSuperapp, String userEmail, int size, int page) {
-        // TODO - do not forget to do validation of user role and if user exists in database
+
+
+        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        if(!userCrud.existsById(userId))
+            throw new NotFoundException("user " + userId + "not found in database");
+
+        if (!roleBasedAccessControl.hasPermission(userId, "getChildren"))
+            throw new UnauthorizedRequestException("user " + userId + " has no permission to getChildren");
 
         if (!checkValidSuperApp(superapp))
             throw new BadRequestException("superApp must be in format: " + springApplicationName);
@@ -199,24 +244,30 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             throw new BadRequestException
                     ("parentId must be in format: " + springApplicationName + "_" + UUID.randomUUID().toString());
 
-        SuperAppObjectEntity origin = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superapp, parentInternalObjectId})).orElseThrow(() -> new NotFoundException("could not get children of object by id: " + parentInternalObjectId.toString() + " because it does not exist"));
-        Set<SuperAppObjectEntity> children = origin.getChildren();
-        return children.stream().map(this::convertEntityToBoundary).toList();
+//        SuperAppObjectEntity origin = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superapp, parentInternalObjectId})).orElseThrow(() -> new NotFoundException("could not get children of object by id: " + parentInternalObjectId.toString() + " because it does not exist"));
+//        Set<SuperAppObjectEntity> children = origin.getChildren();
+//        return children.stream().map(this::convertEntityToBoundary).toList();
 
-//        return this.objectCrudDB
-//                .findAllChildrenByObject_Id(
-//                        ConvertHelp.concatenateIds(new String[]{superapp, parentInternalObjectId}),
-//                        PageRequest.of(page, size, Sort.Direction.ASC,
-//                                "creationTimestamp", "type", "objectId"))
-//                .stream()
-//                .map(this::convertEntityToBoundary)
-//                .toList();
+        return this.objectCrudDB
+                .findAllByParent_objectId(
+                        ConvertHelp.concatenateIds(new String[]{superapp, parentInternalObjectId}),
+                        PageRequest.of(page, size, Sort.Direction.ASC,
+                                "creationTimestamp", "type", "objectId"))
+                .stream()
+                .map(this::convertEntityToBoundary)
+                .toList();
     }
 
     @Override
     public List<SuperAppObjectBoundary> getParent(String superapp, String childInternalObjectId,
                                                   String userSuperapp, String userEmail, int size, int page) {
-        // TODO - do not forget to do validation of user role and if user exists in database
+
+        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        if(!userCrud.existsById(userId))
+            throw new NotFoundException("user " + userId + "not found in database");
+
+        if (!roleBasedAccessControl.hasPermission(userId, "getParent"))
+            throw new UnauthorizedRequestException("user " + userId + " has no permission to getParent");
 
         if (!checkValidSuperApp(superapp))
             throw new BadRequestException("superApp must be in format: " + springApplicationName);
@@ -225,25 +276,25 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             throw new BadRequestException
                     ("parentId must be in format: " + springApplicationName + "_" + UUID.randomUUID().toString());
 
-        SuperAppObjectEntity child = this.objectCrudDB.findById(ConvertHelp.concatenateIds(
-                        new String[]{superapp, childInternalObjectId}))
-                .orElseThrow(() ->
-                        new NotFoundException
-                                ("could not get origin of object by id: " + childInternalObjectId.toString() + " because it does not exist"));
-
-        if (child.getParent() != null) {
-            return Optional.of(child.getParent())
-                    .map(this::convertEntityToBoundary).stream().toList();
-        }
-
-        return List.of();
-//        return this.objectCrudDB
-//                .findAllParentsByObject_Id(
-//                        ConvertHelp.concatenateIds(new String[]{superapp, childInternalObjectId}),
-//                        PageRequest.of(page, size, Sort.Direction.ASC, "creationTimestamp", "type", "objectId"))
-//                .stream()
-//                .map(this::convertEntityToBoundary)
-//                .toList();
+        //        SuperAppObjectEntity child = this.objectCrudDB.findById(ConvertHelp.concatenateIds(
+        //                        new String[]{superapp, childInternalObjectId}))
+        //                .orElseThrow(() ->
+        //                        new NotFoundException
+        //                                ("could not get origin of object by id: " + childInternalObjectId.toString() + " because it does not exist"));
+        //
+        //        if (child.getParent() != null) {
+        //            return Optional.of(child.getParent())
+        //                    .map(this::convertEntityToBoundary).stream().toList();
+        //        }
+        //
+        //        return List.of();
+        return this.objectCrudDB
+                .findAllByChildren_objectId(
+                        ConvertHelp.concatenateIds(new String[]{superapp, childInternalObjectId}),
+                        PageRequest.of(page, size, Sort.Direction.ASC, "creationTimestamp", "type", "objectId"))
+                .stream()
+                .map(this::convertEntityToBoundary)
+                .toList();
     }
     @Override
     public void deleteAllObjects(String userSuperapp,String userEmail) {

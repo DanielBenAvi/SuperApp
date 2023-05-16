@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String> {
-//    public List<SuperAppObjectEntity> findAllChildrenByObject_Id(@Param("objectId") String objectId, Pageable pageable);
-//
-//    public List<SuperAppObjectEntity> findAllParentsByObject_Id(@Param("objectId") String objectId, Pageable pageable);
+    public List<SuperAppObjectEntity> findAllByParent_objectId(@Param("parentObjectId") String parentObjectId, Pageable pageable);
+
+    public List<SuperAppObjectEntity> findAllByChildren_objectId(@Param("childObjectId") String childObjectId, Pageable pageable);
 }
