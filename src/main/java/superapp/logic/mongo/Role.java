@@ -1,6 +1,4 @@
-package superapp.logic.mockup;
-
-import superapp.data.UserRole;
+package superapp.logic.mongo;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -15,7 +15,6 @@ import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.Location;
 import superapp.logic.boundaries.ObjectId;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
-import superapp.logic.mockup.RBAC;
 
 import java.util.*;
 import java.util.regex.Pattern;

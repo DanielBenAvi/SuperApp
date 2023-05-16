@@ -1,11 +1,11 @@
-package superapp.logic.mockup;
+package superapp.logic.mongo;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.UserCrud;
 import superapp.data.UserRole;
-import superapp.logic.mongo.NotFoundException;
+
 
 import java.util.Arrays;
 import java.util.HashMap;
