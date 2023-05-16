@@ -9,7 +9,7 @@ import superapp.miniapps.command.datingimpl.*;
 @Component
 public class CommandFactory {
 
-    // Commands
+    // Commands dating
     private DatingLikeProfileCommand datingLikeProfile;
     private DatingUnmatchProfileCommand datingUnmatch;
     private DatingUnlikeProfileCommand datingUnlikeProfile;
@@ -21,6 +21,8 @@ public class CommandFactory {
     private DatingDeactivateProfileCommand datingDeactivateProfile;
     private DatingCreateProfileCommand datingCreateProfile;
     private DatingActivateProfileCommand datingActivateProfile;
+
+    // Events command
 
 
     @Autowired
@@ -35,6 +37,7 @@ public class CommandFactory {
                           DatingDeactivateProfileCommand datingDeactivateProfile,
                           DatingCreateProfileCommand datingCreateProfile,
                           DatingActivateProfileCommand datingActivateProfile) {
+
         this.datingLikeProfile = datingLikeProfile;
         this.datingUnmatch = datingUnmatch;
         this.datingUnlikeProfile = datingUnlikeProfile;

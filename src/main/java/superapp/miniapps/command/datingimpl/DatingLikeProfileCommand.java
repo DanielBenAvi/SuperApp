@@ -54,6 +54,7 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
         SuperAppObjectEntity targetObject = this.objectCrudDB.findById(targetEntityID).get();
         Object objectDetailsValue = targetObject.getObjectDetails().get("key");
         PrivateDatingProfile targetDatingProfile = new PrivateDatingProfile();
+
         if (objectDetailsValue instanceof LinkedHashMap) {
 
             LinkedHashMap<String, Object> objectDetailsMap = (LinkedHashMap<String, Object>) objectDetailsValue;
@@ -110,7 +111,9 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
     }
 
     private PrivateDatingProfile datingProfileDto(LinkedHashMap<String, Object> map) {
+
         PrivateDatingProfile profile = new PrivateDatingProfile();
+
         profile.setPublicProfile(createPublicDatingProfileFromMap((LinkedHashMap<String, Object>) map.get("publicProfile")));
         profile.setAddress(createAddressFromMap((LinkedHashMap<String, Object>) map.get("address")));
         profile.setDistanceRange((int) map.get("distanceRange"));

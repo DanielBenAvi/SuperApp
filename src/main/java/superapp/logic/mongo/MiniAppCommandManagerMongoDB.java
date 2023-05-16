@@ -133,6 +133,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
                 .strToMiniAppName(commandBoundary.getCommandId().getMiniapp());
 
         MiniAppsCommand.commands commandsToExecute;
+
         commandsToExecute = MiniAppsCommand.strToCommand(commandBoundary.getCommand());
 
         if (miniappName.equals(MiniAppNames.UNKNOWN)) {
@@ -147,18 +148,9 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
         }
         else {
             resultObjectOfCommand = commandFactory
-                    .create(commandsToExecute, miniappName).execute(commandBoundary);
+                    .create(commandsToExecute).execute(commandBoundary);
         }
 
-//        switch (miniappName) {
-//            case DATING:
-//                break;
-//            case EVENT:
-//                break;
-//            case MARKETPLACE:
-//                break;
-//            default:
-//        }
 
         // convert to entity
         MiniAppCommandEntity commandEntity = convertToEntity(commandBoundary);
@@ -213,6 +205,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
     }
     @Override
     public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName, String userSuperapp, String userEmail, int size, int page) {
+
         ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
         // Check if the miniApp name is valid
         if (!validMiniAppName(miniAppName)) throw new BadRequestException("MiniApp name is not valid");

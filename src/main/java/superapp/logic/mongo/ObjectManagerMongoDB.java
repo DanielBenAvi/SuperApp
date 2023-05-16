@@ -3,6 +3,8 @@ package superapp.logic.mongo;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.server.DelegatingServerHttpResponse;
 import org.springframework.stereotype.Service;
 import superapp.data.ObjectCrud;
@@ -75,37 +77,174 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     @Override
     public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId,
                                                SuperAppObjectBoundary update, String userSuperapp, String userEmail) {
-        return null;
+        // TODO - do not forget to do validation of user role and if user exists in database
+
+        String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
+
+        SuperAppObjectEntity exists = this.objectCrudDB.findById(objectId).
+                orElseThrow(() -> new NotFoundException("could not update object by id: " + objectId + " because it does not exist"));
+        SuperAppObjectBoundary existsBoundary = convertEntityToBoundary(exists);
+
+        if (update.getType() != null && !update.getType().isEmpty()) {
+            exists.setType(update.getType());
+        }
+
+        if (update.getAlias() != null && !update.getAlias().isEmpty()) {
+            exists.setAlias(update.getAlias());
+        }
+
+        if (update.getActive() != null) {
+            exists.setActive(update.getActive());
+        }
+
+        // TODO - maybe to validate the lng and lat degrees (lng: -180 to 180, lat: -90 to 90)
+        if (update.getLocation() != null) {
+            double lng = existsBoundary.getLocation().getLng();
+            double lat = existsBoundary.getLocation().getLat();
+
+            if (update.getLocation().getLng() != null) {
+                lng = update.getLocation().getLng();
+            }
+
+            if (update.getLocation().getLat() != null) {
+                lat = update.getLocation().getLat();
+            }
+
+            exists.setLocation(ConvertHelp.locationBoundaryToStr(new Location(lng, lat)));
+        }
+
+        if (update.getObjectDetails() != null) {
+            exists.getObjectDetails().clear();
+            for (Map.Entry<String, Object> entry : update.getObjectDetails().entrySet()) {
+                if (entry.getValue() != null) {
+                    exists.getObjectDetails().put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+
+        exists = this.objectCrudDB.save(exists);
+
+        return this.convertEntityToBoundary(exists);
     }
 
     @Override
     public Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId,
                                                               String userSuperapp, String userEmail) {
-        return Optional.empty();
+        // TODO - do not forget to do validation of user role and if user exists in database
+        String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
+        if (!this.objectCrudDB.existsById(objectId))
+            throw new NotFoundException();
+
+        return this.objectCrudDB.findById(objectId).map(this::convertEntityToBoundary);
     }
+
 
     @Override
     public List<SuperAppObjectBoundary> getAllObjects(String userSuperapp, String userEmail, int size, int page) {
-        return null;
+        // TODO - do not forget to do validation of user role and if user exists in database
+        return this.objectCrudDB
+                .findAll(PageRequest.of(page, size, Sort.Direction.ASC, "creationTimestamp", "type", "objectId"))
+                .getContent()
+                .stream()
+                .map(this::convertEntityToBoundary)
+                .toList();
     }
 
     @Override
     public void addChild(String superapp, String parentId, ObjectId childId, String userSuperapp, String userEmail) {
+        // TODO - do not forget to do validation of user role and if user exists in database
+        if (!checkValidSuperApp(superapp))
+            throw new BadRequestException("superApp must be in format: " + springApplicationName);
+
+        if (!checkValidSuperApp(childId.getSuperapp()))
+            throw new BadRequestException("childId must be in format: " + springApplicationName + "_" + UUID.randomUUID().toString());
+
+        if (!checkValidInternalObjectId(parentId))
+            throw new BadRequestException("parentId must be in format: " + springApplicationName + "_" + UUID.randomUUID().toString());
+
+        if (!checkValidInternalObjectId(childId.getInternalObjectId()))
+            throw new BadRequestException("childId must be in format: " + springApplicationName + "_" + UUID.randomUUID().toString());
+
+        if (parentId.equals(childId.getInternalObjectId()))
+            throw new ConflictRequestException("origin and child are the same object");
+
+        SuperAppObjectEntity parent = this.objectCrudDB.findById(
+                        ConvertHelp.concatenateIds(new String[]{superapp, parentId}))
+                .orElseThrow(() ->
+                        new NotFoundException("could not add child to object by id: " + parentId + " because it does not exist")
+                );
+        SuperAppObjectEntity child = this.objectCrudDB.findById(ConvertHelp.objectIdBoundaryToStr(childId))
+                .orElseThrow(() ->
+                        new NotFoundException("could not add child to object by id: " + childId.toString() + " because it does not exist"));
+
+        if (child.getParent() != null) throw new BadRequestException("child already has a parent");
+
+        parent.addChildren(child);
+        child.setParent(parent);
+
+        this.objectCrudDB.save(parent);
+        this.objectCrudDB.save(child);
 
     }
 
     @Override
     public List<SuperAppObjectBoundary> getChildren(String superapp, String parentInternalObjectId,
                                                     String userSuperapp, String userEmail, int size, int page) {
-        return null;
+        // TODO - do not forget to do validation of user role and if user exists in database
+
+        if (!checkValidSuperApp(superapp))
+            throw new BadRequestException("superApp must be in format: " + springApplicationName);
+
+        if (!checkValidInternalObjectId(parentInternalObjectId))
+            throw new BadRequestException
+                    ("parentId must be in format: " + springApplicationName + "_" + UUID.randomUUID().toString());
+
+        SuperAppObjectEntity origin = this.objectCrudDB.findById(ConvertHelp.concatenateIds(new String[]{superapp, parentInternalObjectId})).orElseThrow(() -> new NotFoundException("could not get children of object by id: " + parentInternalObjectId.toString() + " because it does not exist"));
+        Set<SuperAppObjectEntity> children = origin.getChildren();
+        return children.stream().map(this::convertEntityToBoundary).toList();
+
+//        return this.objectCrudDB
+//                .findAllChildrenByObject_Id(
+//                        ConvertHelp.concatenateIds(new String[]{superapp, parentInternalObjectId}),
+//                        PageRequest.of(page, size, Sort.Direction.ASC,
+//                                "creationTimestamp", "type", "objectId"))
+//                .stream()
+//                .map(this::convertEntityToBoundary)
+//                .toList();
     }
 
     @Override
     public List<SuperAppObjectBoundary> getParent(String superapp, String childInternalObjectId,
                                                   String userSuperapp, String userEmail, int size, int page) {
-        return null;
-    }
+        // TODO - do not forget to do validation of user role and if user exists in database
 
+        if (!checkValidSuperApp(superapp))
+            throw new BadRequestException("superApp must be in format: " + springApplicationName);
+
+        if (!checkValidInternalObjectId(childInternalObjectId))
+            throw new BadRequestException
+                    ("parentId must be in format: " + springApplicationName + "_" + UUID.randomUUID().toString());
+
+        SuperAppObjectEntity child = this.objectCrudDB.findById(ConvertHelp.concatenateIds(
+                        new String[]{superapp, childInternalObjectId}))
+                .orElseThrow(() ->
+                        new NotFoundException
+                                ("could not get origin of object by id: " + childInternalObjectId.toString() + " because it does not exist"));
+
+        if (child.getParent() != null) {
+            return Optional.of(child.getParent())
+                    .map(this::convertEntityToBoundary).stream().toList();
+        }
+
+        return List.of();
+//        return this.objectCrudDB
+//                .findAllParentsByObject_Id(
+//                        ConvertHelp.concatenateIds(new String[]{superapp, childInternalObjectId}),
+//                        PageRequest.of(page, size, Sort.Direction.ASC, "creationTimestamp", "type", "objectId"))
+//                .stream()
+//                .map(this::convertEntityToBoundary)
+//                .toList();
+    }
     @Override
     public void deleteAllObjects(String userSuperapp,String userEmail) {
         ConvertHelp.checkIfUserAdmin(userCrud, userSuperapp, userEmail);
@@ -142,65 +281,67 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     }
 
     @Override
+    @Deprecated
     public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId, SuperAppObjectBoundary update) {
-        String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
 
-        SuperAppObjectEntity exists = this.objectCrudDB.findById(objectId).
-                orElseThrow(() -> new NotFoundException("could not update object by id: " + objectId + " because it does not exist"));
-        SuperAppObjectBoundary existsBoundary = convertEntityToBoundary(exists);
-        // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
-
-        if (exists == null) throw new BadRequestException("Could not find object by id: " + objectId);
-
-        boolean dirty_flag = false;
-        if (update.getType() != null) {
-            throw new BadRequestException();
-        }
-
-        if (update.getAlias() != null ) {
-            if (update.getAlias().isEmpty())
-                throw new BadRequestException();
-
-            exists.setAlias(update.getAlias());
-            dirty_flag = true;
-        }
-
-        if (update.getActive() != null) {
-            exists.setActive(update.getActive());
-            dirty_flag = true;
-        }
-
-        if (update.getLocation() != null) {
-            if (update.getLocation().getLng() == 0.0 && update.getLocation().getLat() != 0.0) {
-                exists.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()
-                        .setLng(existsBoundary.getLocation().getLng())));
-                dirty_flag = true;
-            }
-            else if (update.getLocation().getLng() != 0.0 && update.getLocation().getLat() == 0.0) {
-                exists.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()
-                        .setLat(existsBoundary.getLocation().getLat())));
-                dirty_flag = true;
-            }
-            else if (update.getLocation().getLng() != 0.0 && update.getLocation().getLat() != 0.0){
-                exists.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()));
-                dirty_flag = true;
-            }
-
-        }
-
-        if (update.getObjectDetails() != null) {
-            for (Map.Entry<String, Object> entry :update.getObjectDetails().entrySet()) {
-                if (entry.getKey() != null && entry.getValue() != null &&
-                        exists.getObjectDetails().containsKey(entry.getKey())) {
-                    exists.getObjectDetails().put(entry.getKey(), entry.getValue());
-                    dirty_flag = true;
-                }
-            }
-        }
-
-        if (dirty_flag) exists = this.objectCrudDB.save(exists);
-
-        return this.convertEntityToBoundary(exists);
+//        String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
+//
+//        SuperAppObjectEntity exists = this.objectCrudDB.findById(objectId).
+//                orElseThrow(() -> new NotFoundException("could not update object by id: " + objectId + " because it does not exist"));
+//        SuperAppObjectBoundary existsBoundary = convertEntityToBoundary(exists);
+//
+//        if (exists == null) throw new BadRequestException("Could not find object by id: " + objectId);
+//
+//        boolean dirty_flag = false;
+//        if (update.getType() != null) {
+//            throw new BadRequestException();
+//        }
+//
+//        if (update.getAlias() != null ) {
+//            if (update.getAlias().isEmpty())
+//                throw new BadRequestException();
+//
+//            exists.setAlias(update.getAlias());
+//            dirty_flag = true;
+//        }
+//
+//        if (update.getActive() != null) {
+//            exists.setActive(update.getActive());
+//            dirty_flag = true;
+//        }
+//
+//        if (update.getLocation() != null) {
+//            if (update.getLocation().getLng() == 0.0 && update.getLocation().getLat() != 0.0) {
+//                exists.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()
+//                        .setLng(existsBoundary.getLocation().getLng())));
+//                dirty_flag = true;
+//            }
+//            else if (update.getLocation().getLng() != 0.0 && update.getLocation().getLat() == 0.0) {
+//                exists.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()
+//                        .setLat(existsBoundary.getLocation().getLat())));
+//                dirty_flag = true;
+//            }
+//            else if (update.getLocation().getLng() != 0.0 && update.getLocation().getLat() != 0.0){
+//                exists.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()));
+//                dirty_flag = true;
+//            }
+//
+//        }
+//
+//        if (update.getObjectDetails() != null) {
+//            for (Map.Entry<String, Object> entry :update.getObjectDetails().entrySet()) {
+//                if (entry.getKey() != null && entry.getValue() != null &&
+//                        exists.getObjectDetails().containsKey(entry.getKey())) {
+//                    exists.getObjectDetails().put(entry.getKey(), entry.getValue());
+//                    dirty_flag = true;
+//                }
+//            }
+//        }
+//
+//        if (dirty_flag) exists = this.objectCrudDB.save(exists);
+//
+//        return this.convertEntityToBoundary(exists);
     }
 
     @Override
