@@ -1,6 +1,7 @@
 package superapp.logic.mongo;
 
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.UserCrud;
@@ -72,7 +73,12 @@ public class RBAC {
 
     }
 
-    public void createRole(String roleName) {
+    @PostConstruct
+    public void init() {
+        System.err.println("****** " + this.getClass().getName() + " service initiated");
+    }
+
+    private void createRole(String roleName) {
         Role role = new Role(roleName);
         roles.put(roleName, role);
     }
@@ -94,12 +100,6 @@ public class RBAC {
                 .contains(permission);
     }
 
-    public void addPermissionToRole(String roleName, String permission) {
-        //        Role role = getRole(roleName);
-        //        if (role != null) {
-        //            role.addPermission(permission);
-        //        }
-    }
 
 }
 
