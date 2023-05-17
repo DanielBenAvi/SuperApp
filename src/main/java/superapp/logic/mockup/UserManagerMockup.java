@@ -13,7 +13,7 @@ import superapp.logic.boundaries.UserId;
 
 import java.util.*;
 //@Service
-public class UserManagerMockupDB implements UsersService {
+public class UserManagerMockup implements UsersService {
     private String superappName;
     private Map<String, UserEntity> databaseMockup;
 

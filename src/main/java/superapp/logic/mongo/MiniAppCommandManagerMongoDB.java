@@ -17,7 +17,7 @@ import superapp.data.MiniAppCommandEntity;
 import superapp.logic.ConvertHelp;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.miniapps.command.CommandFactory;
+import superapp.miniapps.command.CommandInvoker;
 import superapp.miniapps.command.InvalidCommand;
 import superapp.miniapps.command.MiniAppsCommand;
 
@@ -31,17 +31,17 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
     private final MiniAppCommandCrud miniAppCommandCrud;
     private final UserCrud userCrud;
     private final ObjectCrud objectCrud;
-    private final CommandFactory commandFactory;
+    private final CommandInvoker commandInvoker;
 
     private String springApplicationName;
 
     @Autowired
     public MiniAppCommandManagerMongoDB(MiniAppCommandCrud miniAppCommandCrud, UserCrud userCrud,
-                                        ObjectCrud objectCrud, CommandFactory commandFactory) {
+                                        ObjectCrud objectCrud, CommandInvoker commandInvoker) {
         this.miniAppCommandCrud = miniAppCommandCrud;
         this.userCrud = userCrud;
         this.objectCrud = objectCrud;
-        this.commandFactory = commandFactory;
+        this.commandInvoker = commandInvoker;
     }
 
 
@@ -147,8 +147,9 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
                             + commandBoundary.getCommand() + " not supported");
         }
         else {
-            resultObjectOfCommand = commandFactory
-                    .create(commandsToExecute).execute(commandBoundary);
+            resultObjectOfCommand = commandInvoker
+                                                .create(commandsToExecute)
+                                                .execute(commandBoundary);
         }
 
 

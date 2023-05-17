@@ -7,7 +7,7 @@ import superapp.miniapps.command.datingimpl.*;
 
 
 @Component
-public class CommandFactory {
+public class CommandInvoker {
 
     // Commands dating
     private DatingLikeProfileCommand datingLikeProfile;
@@ -24,9 +24,8 @@ public class CommandFactory {
 
     // Events command
 
-
     @Autowired
-    public  CommandFactory(DatingLikeProfileCommand datingLikeProfile,
+    public CommandInvoker(DatingLikeProfileCommand datingLikeProfile,
                           DatingUnmatchProfileCommand datingUnmatch,
                           DatingUnlikeProfileCommand datingUnlikeProfile,
                           DatingGetProfileCommand datingGetProfile,
