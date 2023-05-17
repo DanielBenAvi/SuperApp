@@ -38,10 +38,11 @@ public class AdminController {
 	 */
 	@GetMapping(path = {"/superapp/admin/users"},
 				produces = {MediaType.APPLICATION_JSON_VALUE})
-	public UserBoundary[] allUsers(@RequestParam(name = "userSuperapp", required = false) String userSuperapp,
-								   @RequestParam(name = "userEmail", required = false) String userEmail,
-								   @RequestParam(name = "size", required = false, defaultValue = "15") int size,
-								   @RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+	public UserBoundary[] allUsers(
+			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+		    @RequestParam(name = "userEmail", required = true) String userEmail,
+		    @RequestParam(name = "size", required = false, defaultValue = "15") int size,
+		    @RequestParam(name = "page", required = false, defaultValue = "0") int page) {
 
 		return this.usersService.getAllUsers(userSuperapp, userEmail, size, page).toArray(new UserBoundary[0]);
 	}
@@ -55,11 +56,12 @@ public class AdminController {
 	 */
 	@GetMapping(path = {"/superapp/admin/miniapp/{miniAppName}"},
 				produces = {MediaType.APPLICATION_JSON_VALUE})
-	public MiniAppCommandBoundary[] specificMiniAppCommands(@PathVariable("miniAppName") String miniAppName,
-															@RequestParam(name = "userSuperapp", required = false) String userSuperapp,
-															@RequestParam(name = "userEmail", required = false) String userEmail,
-															@RequestParam(name = "size", required = false, defaultValue = "15") int size,
-															@RequestParam(name = "page", required = false, defaultValue = "0") int page){
+	public MiniAppCommandBoundary[] specificMiniAppCommands(
+			@PathVariable("miniAppName") String miniAppName,
+			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+			@RequestParam(name = "userEmail", required = true) String userEmail,
+			@RequestParam(name = "size", required = false, defaultValue = "15") int size,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page){
 
 		return this.miniAppCommandService.getAllMiniAppCommands(miniAppName,userSuperapp,userEmail,size,page)
 				.toArray(new MiniAppCommandBoundary[0]);
@@ -71,10 +73,11 @@ public class AdminController {
 	 */ 
 	@GetMapping(path = {"/superapp/admin/miniapp"},
 				produces = {MediaType.APPLICATION_JSON_VALUE})
-	public MiniAppCommandBoundary[] miniAppCommands(@RequestParam(name = "userSuperapp", required = false) String userSuperapp,
-													@RequestParam(name = "userEmail", required = false) String userEmail,
-													@RequestParam(name = "size", required = false, defaultValue = "15") int size,
-													@RequestParam(name = "page", required = false, defaultValue = "0") int page){
+	public MiniAppCommandBoundary[] miniAppCommands(
+			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+			@RequestParam(name = "userEmail", required = true) String userEmail,
+			@RequestParam(name = "size", required = false, defaultValue = "15") int size,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page){
 
 		return this.miniAppCommandService.getAllCommands(userSuperapp,userEmail,size,page).toArray(new MiniAppCommandBoundary[0]);
 	}
@@ -83,11 +86,11 @@ public class AdminController {
 	 * This method delete all users.
 	 */
 	@DeleteMapping(path = {"/superapp/admin/users"})
-	public void deleteAllUsers(@RequestParam(name = "userSuperapp", required = false) String userSuperapp,
-							   @RequestParam(name = "userEmail", required = false) String userEmail) {
+	public void deleteAllUsers(
+			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+			@RequestParam(name = "userEmail", required = true) String userEmail) {
 
 		this.usersService.deleteAllUsers(userSuperapp,userEmail);
-//
 		System.err.println("All users deleted");
 	}
 
@@ -95,8 +98,9 @@ public class AdminController {
 	 * This method delete all objects of superapp.
 	 */
 	@DeleteMapping(path = {"/superapp/admin/objects"})
-	public void deleteAllObjects(@RequestParam(name = "userSuperapp", required = false) String userSuperapp,
-								 @RequestParam(name = "userEmail", required = false) String userEmail) {
+	public void deleteAllObjects(
+			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+			@RequestParam(name = "userEmail", required = true) String userEmail) {
 
 		this.objectsService.deleteAllObjects(userSuperapp,userEmail);
 		System.err.println("All superapp objects deleted");
@@ -108,8 +112,9 @@ public class AdminController {
 	 * This method delete all commands history.
 	 */
 	@DeleteMapping(path = {"/superapp/admin/miniapp"})
-	public void deleteAllCommands(@RequestParam(name = "userSuperapp", required = false) String userSuperapp,
-								  @RequestParam(name = "userEmail", required = false) String userEmail) {
+	public void deleteAllCommands(
+			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+			@RequestParam(name = "userEmail", required = true) String userEmail) {
 
 		this.miniAppCommandService.deleteAllCommands(userSuperapp,userEmail);
 		System.err.println("All commands history deleted");
