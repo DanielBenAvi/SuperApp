@@ -19,12 +19,15 @@ public interface MiniAppsCommand {
         GET_LIKES,
         GET_MATCHES,
         GET_POTENTIAL_DATES,
-        GET_MY_EVENTS // describe each is must
+        GET_MY_EVENTS, // describe each is must
+        JOIN_EVENT,
+
     }
+
     static commands strToCommand(String command) {
         try {
             return commands.valueOf(command);
-        }catch (Exception e){
+        } catch (Exception e) {
             return commands.UNKNOWN_COMMAND;
         }
     }

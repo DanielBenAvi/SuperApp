@@ -4,6 +4,8 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.miniapps.command.datingimpl.*;
+import superapp.miniapps.command.eventImpl.EventGetMyEventsCommand;
+import superapp.miniapps.command.eventImpl.EventJoinEventCommand;
 
 
 @Component
@@ -22,6 +24,11 @@ public class CommandInvoker {
     private DatingCreateProfileCommand datingCreateProfile;
     private DatingActivateProfileCommand datingActivateProfile;
 
+    private EventGetMyEventsCommand eventGetMyEventsCommand;
+
+    private EventJoinEventCommand eventJoinEventCommand;
+
+
     // Events command
 
     @Autowired
@@ -35,7 +42,10 @@ public class CommandInvoker {
                           DatingEditProfileCommand datingEditProfile,
                           DatingDeactivateProfileCommand datingDeactivateProfile,
                           DatingCreateProfileCommand datingCreateProfile,
-                          DatingActivateProfileCommand datingActivateProfile) {
+                          DatingActivateProfileCommand datingActivateProfile,
+                          EventGetMyEventsCommand eventGetMyEventsCommand,
+                          EventJoinEventCommand eventJoinEventCommand
+    ) {
 
         this.datingLikeProfile = datingLikeProfile;
         this.datingUnmatch = datingUnmatch;
@@ -48,6 +58,8 @@ public class CommandInvoker {
         this.datingDeactivateProfile = datingDeactivateProfile;
         this.datingCreateProfile = datingCreateProfile;
         this.datingActivateProfile = datingActivateProfile;
+        this.eventGetMyEventsCommand = eventGetMyEventsCommand;
+        this.eventJoinEventCommand = eventJoinEventCommand;
     }
 
 
@@ -82,6 +94,10 @@ public class CommandInvoker {
                 return datingGetMatches;
             case GET_POTENTIAL_DATES:
                 return datingGetPotentialDates;
+            case GET_MY_EVENTS:
+                return eventGetMyEventsCommand;
+            case JOIN_EVENT:
+                return eventJoinEventCommand;
             default:
                 return null; // create default command?
         }
