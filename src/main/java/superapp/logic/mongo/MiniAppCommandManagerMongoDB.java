@@ -215,16 +215,17 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
         List<MiniAppCommandBoundary> commandBoundaryList = new ArrayList<>();
 
         // Get all commands from the database and filter by miniApp name
-        this.miniAppCommandCrud.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "invocationTimestamp"
-                ,"targetObject","commandId")).forEach(commandEntity -> {
-            if (commandEntity.getCommandId().contains(miniAppName)) {
-                commandBoundaryList.add(convertToBoundary(commandEntity));
-            }
-        });
+//        this.miniAppCommandCrud.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "invocationTimestamp"
+//                ,"targetObject","commandId")).forEach(commandEntity -> {
+//            if (commandEntity.getCommandId().contains(miniAppName)) {
+//                commandBoundaryList.add(convertToBoundary(commandEntity));
+//            }
+//        });
+//
+//        return commandBoundaryList;
 
-        return commandBoundaryList;
-
-
+        return this.miniAppCommandCrud.findAllByCommandIdContaining(miniAppName,PageRequest.of(page, size, Sort.Direction.ASC, "invocationTimestamp"
+                ,"targetObject","commandId")).stream().map(this::convertToBoundary).toList();
     }
 
     @Override
@@ -236,6 +237,9 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
 
     @Override
     public List<MiniAppCommandBoundary> getAllCommands(String userSuperapp, String userEmail, int size, int page) {
+
+
+
         ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
         return this.miniAppCommandCrud.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "invocationTimestamp"
                         ,"targetObject","commandId"))
