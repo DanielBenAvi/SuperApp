@@ -4,8 +4,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.miniapps.command.datingimpl.*;
-import superapp.miniapps.command.eventImpl.EventGetMyEventsCommand;
-import superapp.miniapps.command.eventImpl.EventJoinEventCommand;
+import superapp.miniapps.command.eventImpl.*;
 
 
 @Component
@@ -28,6 +27,11 @@ public class CommandInvoker {
 
     private EventJoinEventCommand eventJoinEventCommand;
 
+    private EventSearchEventByName eventSearchEventByName;
+    private EventSearchEventByDate eventSearchEventByDate;
+    private EventSearchEventByLocation eventSearchEventByLocation;
+    private EventSearchEventByPreferences eventSearchEventByPreferences;
+
 
     // Events command
 
@@ -44,7 +48,11 @@ public class CommandInvoker {
                           DatingCreateProfileCommand datingCreateProfile,
                           DatingActivateProfileCommand datingActivateProfile,
                           EventGetMyEventsCommand eventGetMyEventsCommand,
-                          EventJoinEventCommand eventJoinEventCommand
+                          EventJoinEventCommand eventJoinEventCommand,
+                          EventSearchEventByName eventSearchEventByName,
+                          EventSearchEventByDate eventSearchEventByDate,
+                          EventSearchEventByLocation eventSearchEventByLocation,
+                          EventSearchEventByPreferences eventSearchEventByPreferences
     ) {
 
         this.datingLikeProfile = datingLikeProfile;
@@ -60,6 +68,10 @@ public class CommandInvoker {
         this.datingActivateProfile = datingActivateProfile;
         this.eventGetMyEventsCommand = eventGetMyEventsCommand;
         this.eventJoinEventCommand = eventJoinEventCommand;
+        this.eventSearchEventByName = eventSearchEventByName;
+        this.eventSearchEventByDate = eventSearchEventByDate;
+        this.eventSearchEventByLocation = eventSearchEventByLocation;
+        this.eventSearchEventByPreferences = eventSearchEventByPreferences;
     }
 
 
@@ -98,6 +110,14 @@ public class CommandInvoker {
                 return eventGetMyEventsCommand;
             case JOIN_EVENT:
                 return eventJoinEventCommand;
+            case SEARCH_EVENTS_BY_NAME:
+                return eventSearchEventByName;
+            case SEARCH_EVENTS_BY_LOCATION:
+                return eventSearchEventByLocation;
+            case SEARCH_EVENTS_BY_DATE:
+                return eventSearchEventByDate;
+            case SEARCH_EVENTS_BY_PREFERENCES:
+                return eventSearchEventByPreferences;
             default:
                 return null; // create default command?
         }

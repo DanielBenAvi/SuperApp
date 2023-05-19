@@ -3,8 +3,6 @@ package superapp.miniapps.command.eventImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
@@ -13,30 +11,29 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 import superapp.miniapps.command.MiniAppsCommand;
 
-import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.List;
 
 @Component
-public class EventGetMyEventsCommand implements MiniAppsCommand {
+public class EventSearchEventByName implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
 
     @Autowired
-    public EventGetMyEventsCommand(ObjectCrud objectCrudDB) {
+    public EventSearchEventByName(ObjectCrud objectCrudDB) {
         this.objectCrudDB = objectCrudDB;
     }
 
     @Override
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
-        String userEmail = commandBoundary.getInvokedBy().getUserId().getEmail();
+        String name = commandBoundary.getCommandAttributes().get("name").toString();
         String type = "EVENT";
         Date now = new Date();
         int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
         int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 
 
-        return this.objectCrudDB.findAllByTypeAndMyEvents(userEmail, type, now, PageRequest.of(page, size, Sort.by("creationTimestamp").descending()))
+        return this.objectCrudDB.searchEventByName(type, now, name, PageRequest.of(page, size, Sort.by("creationTimestamp").descending()))
                 .stream()
                 .map(this::convertEntityToBoundary)
                 .toList();

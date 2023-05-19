@@ -12,4 +12,5 @@ import java.util.List;
 public interface MiniAppCommandCrud extends MongoRepository<MiniAppCommandEntity, String> {
 
     List<MiniAppCommandEntity> findAllByCommandIdContaining(String miniAppName, Pageable pageable);
+
 }
