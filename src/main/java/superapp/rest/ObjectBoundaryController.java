@@ -96,4 +96,66 @@ public class ObjectBoundaryController {
 		this.objectsService.updateObject(superapp, internalObjectId, updatedObject, userSuperapp, userEmail);
 	}
 
+
+	/**
+	 * Request all Object Boundary with specific type
+	 *
+	 * @return SuperAppObjectBoundary Array
+	 */
+	@GetMapping(path = {"/superapp/objects/search/byType/{type}"},
+				produces = {MediaType.APPLICATION_JSON_VALUE})
+	public SuperAppObjectBoundary[] getAllObjectsByType(
+										@PathVariable("type") String type,
+										@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+										@RequestParam(name = "userEmail", required = true) String userEmail,
+										@RequestParam(name = "size", required = false, defaultValue = "15") int size,
+										@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+
+		return this.objectsService
+				.getAllObjectsByType(type, userSuperapp, userEmail, size, page)
+				.toArray(new SuperAppObjectBoundary[0]);
+	}
+
+	/**
+	 * Request all Object Boundary with specific alias
+	 *
+	 * @return SuperAppObjectBoundary Array
+	 */
+	@GetMapping(path = {"/superapp/objects/search/byAlias/{alias}"},
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public SuperAppObjectBoundary[] getAllObjectsByAlias(
+			@PathVariable("alias") String alias,
+			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+			@RequestParam(name = "userEmail", required = true) String userEmail,
+			@RequestParam(name = "size", required = false, defaultValue = "15") int size,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+
+		return this.objectsService
+				.getAllObjectsByAlias(alias, userSuperapp, userEmail, size, page)
+				.toArray(new SuperAppObjectBoundary[0]);
+	}
+
+
+	/**
+	 * Request all Object Boundary that in a distance from specific lat, lng.
+	 *
+	 * @return SuperAppObjectBoundary Array
+	 */
+	@GetMapping(path = {"/superapp/objects/search/byLocation/{lat}/{lng}/{distance}"},
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public SuperAppObjectBoundary[] getAllObjectsByLocation(
+			@PathVariable("lat") Double lat,
+			@PathVariable("lng") Double lng,
+			@PathVariable("distance") Double distance,
+			@RequestParam(name = "distanceUnits", required = false, defaultValue = "NEUTRAL") String distanceUnits,
+			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+			@RequestParam(name = "userEmail", required = true) String userEmail,
+			@RequestParam(name = "size", required = false, defaultValue = "15") int size,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+
+		return this.objectsService
+				.getAllObjectsByLocation(lat, lng, distance, distanceUnits, userSuperapp, userEmail, size, page)
+				.toArray(new SuperAppObjectBoundary[0]);
+	}
+
 }
