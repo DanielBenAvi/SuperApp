@@ -11,7 +11,8 @@ public class MiniAppCommandBoundary {
 	private Date invocationTimestamp;
 	private InvokedBy invokedBy;
 	private Map<String,Object> commandAttributes;
-	
+
+	private Boolean asyncFlag;
 	public MiniAppCommandBoundary() {
 	}
 
@@ -69,11 +70,24 @@ public class MiniAppCommandBoundary {
 		return this;
 	}
 
+	public Boolean isAsyncFlag() {
+		return asyncFlag;
+	}
+
+	public void setAsyncFlag(boolean asyncFlag) {
+		this.asyncFlag = asyncFlag;
+	}
+
 	@Override
 	public String toString() {
-		return "CommandBoundary [commandId=" + commandId + ", command=" + command + ", targetObject=" + targetObject
-				+ ", invocationTimestamp=" + invocationTimestamp + ", invokedBy=" + invokedBy + ", commandAttributes="
-				+ commandAttributes + "]";
+		return "MiniAppCommandBoundary{" +
+				"commandId=" + commandId +
+				", command='" + command + '\'' +
+				", targetObject=" + targetObject +
+				", invocationTimestamp=" + invocationTimestamp +
+				", invokedBy=" + invokedBy +
+				", commandAttributes=" + commandAttributes +
+				", asyncFlag=" + asyncFlag +
+				'}';
 	}
-	
 }
