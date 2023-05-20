@@ -36,7 +36,7 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
     public List<SuperAppObjectEntity> findAllByLocation(Double lat, Double lng, Double distance, String distanceUnits, Pageable pageable);
 
-    @Query("{'objectDetails.attendees': {'$in':[?0] },'type' :?1, 'objectDetails.date': {'$gt': ?2 } }")
+    @Query("{'type' :?1, 'objectDetails.attendees': {'$in':[?0] }, 'objectDetails.date': {'$gt': ?2 } }")
     public List<SuperAppObjectEntity> findAllByTypeAndMyEvents(String userEmail, String type, Date now, PageRequest creationTimestamp);
 
     // search by event name

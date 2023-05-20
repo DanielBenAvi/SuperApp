@@ -20,7 +20,7 @@ public class MiniAppCommandController {
         this.logic = logic;
     }
 
-    @Autowired
+//    @Autowired
     /*public void setMiniAppCmdService(MiniAppCommandService miniAppCmdService) {
         this.miniAppCommandService = miniAppCmdService;
     }*/
