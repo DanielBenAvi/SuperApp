@@ -1,18 +1,15 @@
 package superapp.logic.mongo;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import superapp.data.MiniAppCommandCrud;
 import superapp.data.ObjectCrud;
 import superapp.data.UserCrud;
-import superapp.logic.ASYNCSupport;
+import superapp.logic.MiniAppCommandWithPaging;
 import superapp.logic.boundaries.InvokedBy;
 import superapp.logic.boundaries.TargetObject;
 import superapp.miniapps.MiniAppNames;
@@ -20,7 +17,7 @@ import superapp.data.MiniAppCommandEntity;
 import superapp.logic.ConvertHelp;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.miniapps.command.CommandFactory;
+import superapp.miniapps.command.CommandInvoker;
 import superapp.miniapps.command.InvalidCommand;
 import superapp.miniapps.command.MiniAppsCommand;
 
@@ -29,23 +26,22 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
-public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
+public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
 
     private final MiniAppCommandCrud miniAppCommandCrud;
     private final UserCrud userCrud;
     private final ObjectCrud objectCrud;
-    private final CommandFactory commandFactory;
-    private ObjectMapper jackson;
-    private JmsTemplate jmsTemplate;
+    private final CommandInvoker commandInvoker;
+
     private String springApplicationName;
 
     @Autowired
     public MiniAppCommandManagerMongoDB(MiniAppCommandCrud miniAppCommandCrud, UserCrud userCrud,
-                                        ObjectCrud objectCrud, CommandFactory commandFactory) {
+                                        ObjectCrud objectCrud, CommandInvoker commandInvoker) {
         this.miniAppCommandCrud = miniAppCommandCrud;
         this.userCrud = userCrud;
         this.objectCrud = objectCrud;
-        this.commandFactory = commandFactory;
+        this.commandInvoker = commandInvoker;
     }
 
 
@@ -65,14 +61,8 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
     @PostConstruct
     public void init() {
         System.err.println("****** " + this.getClass().getName() + " service initiated");
-        this.jackson = new ObjectMapper();
     }
 
-    @Autowired
-    public void setJmsTemplate(JmsTemplate jmsTemplate) {
-        this.jmsTemplate = jmsTemplate;
-        this.jmsTemplate.setDeliveryDelay(3000L);
-    }
 
     /**
      * This method convert MiniAppCommand Entity to Boundary
@@ -88,7 +78,7 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
         commandBoundary.setTargetObject(ConvertHelp.strTargetObjectToBoundary(commandEntity.getTargetObject()));
         commandBoundary.setInvocationTimestamp(commandEntity.getInvocationTimestamp());
         commandBoundary.setInvokedBy(ConvertHelp.strInvokedByToBoundary(commandEntity.getInvokedBy()));
-        commandBoundary.setAsyncFlag(false);
+
         return commandBoundary;
     }
 
@@ -131,7 +121,7 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
 
         try {
             validateCommand(commandBoundary);
-        } catch (Exception exception) {
+        } catch (Exception exception){
             throw exception;
         }
 
@@ -150,13 +140,16 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
             resultObjectOfCommand =
                     new InvalidCommand(miniappName + " miniapp name: "
                             + commandBoundary.getCommandId().getMiniapp() + " not supported");
-        } else if (commandsToExecute.equals(MiniAppsCommand.commands.UNKNOWN_COMMAND)) {
+        }
+        else if (commandsToExecute.equals(MiniAppsCommand.commands.UNKNOWN_COMMAND)) {
             resultObjectOfCommand =
                     new InvalidCommand(miniappName + " miniapp command: "
                             + commandBoundary.getCommand() + " not supported");
-        } else {
-            resultObjectOfCommand = commandFactory
-                    .create(commandsToExecute).execute(commandBoundary);
+        }
+        else {
+            resultObjectOfCommand = commandInvoker
+                                                .create(commandsToExecute)
+                                                .execute(commandBoundary);
         }
 
 
@@ -174,6 +167,7 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
     }
 
 
+
     private void validateCommand(MiniAppCommandBoundary command) {
 
         // validate invoked by
@@ -187,13 +181,9 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
         if (command.getCommand() == null)
             throw new BadRequestException("command cant be null");
 
-        if(command.isAsyncFlag() == null){
-            throw new BadRequestException("command cant be null");
-        }
 
         // TODO-validate miniapp-name not null
     }
-
     @Deprecated
     @Override
     public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
@@ -214,11 +204,10 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
 //
 //        return commandBoundaryList;
     }
-
     @Override
     public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName, String userSuperapp, String userEmail, int size, int page) {
 
-        ConvertHelp.checkIfUserAdmin(userCrud, userSuperapp, userEmail);
+        ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
         // Check if the miniApp name is valid
         if (!validMiniAppName(miniAppName)) throw new BadRequestException("MiniApp name is not valid");
 
@@ -226,16 +215,17 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
         List<MiniAppCommandBoundary> commandBoundaryList = new ArrayList<>();
 
         // Get all commands from the database and filter by miniApp name
-        this.miniAppCommandCrud.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "invocationTimestamp"
-                , "targetObject", "commandId")).forEach(commandEntity -> {
-            if (commandEntity.getCommandId().contains(miniAppName)) {
-                commandBoundaryList.add(convertToBoundary(commandEntity));
-            }
-        });
+//        this.miniAppCommandCrud.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "invocationTimestamp"
+//                ,"targetObject","commandId")).forEach(commandEntity -> {
+//            if (commandEntity.getCommandId().contains(miniAppName)) {
+//                commandBoundaryList.add(convertToBoundary(commandEntity));
+//            }
+//        });
+//
+//        return commandBoundaryList;
 
-        return commandBoundaryList;
-
-
+        return this.miniAppCommandCrud.findAllByCommandIdContaining(miniAppName,PageRequest.of(page, size, Sort.Direction.ASC, "invocationTimestamp"
+                ,"targetObject","commandId")).stream().map(this::convertToBoundary).toList();
     }
 
     @Override
@@ -247,9 +237,12 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
 
     @Override
     public List<MiniAppCommandBoundary> getAllCommands(String userSuperapp, String userEmail, int size, int page) {
-        ConvertHelp.checkIfUserAdmin(userCrud, userSuperapp, userEmail);
+
+
+
+        ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
         return this.miniAppCommandCrud.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "invocationTimestamp"
-                        , "targetObject", "commandId"))
+                        ,"targetObject","commandId"))
                 .stream().map(this::convertToBoundary).toList();
     }
 
@@ -261,11 +254,16 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
     }
 
 
+
+
+
     @Override
     public void deleteAllCommands(String userSuperapp, String userEmail) {
-        ConvertHelp.checkIfUserAdmin(userCrud, userSuperapp, userEmail);
+        ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
         this.miniAppCommandCrud.deleteAll();
     }
+
+
 
 
     private boolean isValidCommandId(CommandId commandId) {
@@ -349,44 +347,4 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
         }
         return true;
     }
-
-    @Override
-    public MiniAppCommandBoundary asyncHandle(MiniAppCommandBoundary miniAppCommandBoundary) {
-        miniAppCommandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
-        miniAppCommandBoundary.setInvocationTimestamp(new Date());
-        if (miniAppCommandBoundary.getCommandAttributes() == null) {
-            miniAppCommandBoundary.setCommandAttributes(new HashMap<>());
-        }
-        miniAppCommandBoundary.getCommandAttributes().put("status", "in process");
-        try {
-            String json = this.jackson.writeValueAsString(miniAppCommandBoundary);
-            System.err.println("*** sending: " + json);
-            this.jmsTemplate.convertAndSend("commandsQueue", json);
-            return miniAppCommandBoundary;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @JmsListener(destination = "commandsQueue")
-    public void handleMessage(String json) {
-        try {
-            System.err.println(this.convertToBoundary(this.miniAppCommandCrud.save(
-                    this.convertToEntity(
-                            this.setStatus(
-                                    this.jackson.readValue(json, MiniAppCommandBoundary.class),"remootly-accepted")))));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-    private MiniAppCommandBoundary setStatus(MiniAppCommandBoundary miniapp, String status) {
-        if (miniapp.getCommandAttributes() == null) {
-            miniapp.setCommandAttributes(new HashMap<>());
-        }
-        miniapp.getCommandAttributes().put("status", status);
-
-        return miniapp;
-    }
 }
-

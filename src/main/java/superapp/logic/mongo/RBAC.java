@@ -55,7 +55,10 @@ public class RBAC {
                                         "getParent", // -include active=false
                                         "updateUser",
                                         "createUser",
-                                        "login")
+                                        "login",
+                                        "getAllObjectsByType",
+                                        "getAllObjectsByAlias",
+                                        "getAllObjectsByLocation")
                         ));
 
         roles.get(UserRole.MINIAPP_USER.toString())
@@ -65,10 +68,13 @@ public class RBAC {
                                         "getAllObjects", //-just active=true
                                         "getChildren", //-just active=true
                                         "getParent", //-just active=true
-                                        "invokeCommand",
+                                        "invokeCommand", //-just active=true
                                         "updateUser",
                                         "createUser",
-                                        "login")
+                                        "login",
+                                        "getAllObjectsByType",
+                                        "getAllObjectsByAlias",
+                                        "getAllObjectsByLocation")
                         ));
 
     }

@@ -22,7 +22,7 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 
 
 //@Service
-public class MiniAppCommandManager implements MiniAppCommandService {
+public class MiniAppCommandManagerMockup implements MiniAppCommandService {
 
     private Map<String, MiniAppCommandEntity> dataBaseMockup;
     private String superAppName;

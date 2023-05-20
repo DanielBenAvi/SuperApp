@@ -4,10 +4,11 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.miniapps.command.datingimpl.*;
+import superapp.miniapps.command.eventImpl.*;
 
 
 @Component
-public class CommandFactory {
+public class CommandInvoker {
 
     // Commands dating
     private DatingLikeProfileCommand datingLikeProfile;
@@ -22,11 +23,20 @@ public class CommandFactory {
     private DatingCreateProfileCommand datingCreateProfile;
     private DatingActivateProfileCommand datingActivateProfile;
 
+    private EventGetMyEventsCommand eventGetMyEventsCommand;
+
+    private EventJoinEventCommand eventJoinEventCommand;
+
+    private EventSearchEventByName eventSearchEventByName;
+    private EventSearchEventByDate eventSearchEventByDate;
+    private EventSearchEventByLocation eventSearchEventByLocation;
+    private EventSearchEventByPreferences eventSearchEventByPreferences;
+
+
     // Events command
 
-
     @Autowired
-    public  CommandFactory(DatingLikeProfileCommand datingLikeProfile,
+    public CommandInvoker(DatingLikeProfileCommand datingLikeProfile,
                           DatingUnmatchProfileCommand datingUnmatch,
                           DatingUnlikeProfileCommand datingUnlikeProfile,
                           DatingGetProfileCommand datingGetProfile,
@@ -36,7 +46,14 @@ public class CommandFactory {
                           DatingEditProfileCommand datingEditProfile,
                           DatingDeactivateProfileCommand datingDeactivateProfile,
                           DatingCreateProfileCommand datingCreateProfile,
-                          DatingActivateProfileCommand datingActivateProfile) {
+                          DatingActivateProfileCommand datingActivateProfile,
+                          EventGetMyEventsCommand eventGetMyEventsCommand,
+                          EventJoinEventCommand eventJoinEventCommand,
+                          EventSearchEventByName eventSearchEventByName,
+                          EventSearchEventByDate eventSearchEventByDate,
+                          EventSearchEventByLocation eventSearchEventByLocation,
+                          EventSearchEventByPreferences eventSearchEventByPreferences
+    ) {
 
         this.datingLikeProfile = datingLikeProfile;
         this.datingUnmatch = datingUnmatch;
@@ -49,6 +66,12 @@ public class CommandFactory {
         this.datingDeactivateProfile = datingDeactivateProfile;
         this.datingCreateProfile = datingCreateProfile;
         this.datingActivateProfile = datingActivateProfile;
+        this.eventGetMyEventsCommand = eventGetMyEventsCommand;
+        this.eventJoinEventCommand = eventJoinEventCommand;
+        this.eventSearchEventByName = eventSearchEventByName;
+        this.eventSearchEventByDate = eventSearchEventByDate;
+        this.eventSearchEventByLocation = eventSearchEventByLocation;
+        this.eventSearchEventByPreferences = eventSearchEventByPreferences;
     }
 
 
@@ -83,6 +106,18 @@ public class CommandFactory {
                 return datingGetMatches;
             case GET_POTENTIAL_DATES:
                 return datingGetPotentialDates;
+            case GET_MY_EVENTS:
+                return eventGetMyEventsCommand;
+            case JOIN_EVENT:
+                return eventJoinEventCommand;
+            case SEARCH_EVENTS_BY_NAME:
+                return eventSearchEventByName;
+            case SEARCH_EVENTS_BY_LOCATION:
+                return eventSearchEventByLocation;
+            case SEARCH_EVENTS_BY_DATE:
+                return eventSearchEventByDate;
+            case SEARCH_EVENTS_BY_PREFERENCES:
+                return eventSearchEventByPreferences;
             default:
                 return null; // create default command?
         }

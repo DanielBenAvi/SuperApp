@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+import superapp.data.UserRole;
 import superapp.logic.boundaries.*;
 
 import java.util.HashMap;
@@ -52,14 +53,18 @@ public class ObjectRelationshipsTests extends BaseTestSet {
      *
      * @param internalObjectId String
      */
-    private void assertAfterRelationNotShallBeUpdated(String internalObjectId) {
+    private void assertAfterRelationNotShallBeUpdated(String internalObjectId, String userSuperapp, String userEmail,
+                                                      int size, int page) {
 
-        SuperAppObjectBoundary[] parentResult = this.getRelationParents(internalObjectId);
+        SuperAppObjectBoundary[] parentResult = this.getRelationParents(internalObjectId, userSuperapp, userEmail
+        , size, page);
         assertThat(parentResult)
                 .isNotNull()
                 .isEmpty();
 
-        SuperAppObjectBoundary[] childrenResult = this.getRelationChildren(internalObjectId);
+        SuperAppObjectBoundary[] childrenResult = this.getRelationChildren(internalObjectId, userSuperapp, userEmail
+                , size, page);
+
         assertThat(childrenResult)
                 .isNotNull()
                 .isEmpty();
@@ -69,32 +74,42 @@ public class ObjectRelationshipsTests extends BaseTestSet {
     @DisplayName("Invalid url for GET children")
     public void invalidGetChildrenUrlTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contains an object with child object
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName,"demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com", this.springApplicationName,"demo child");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo child");
 
         // create relation
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild.getObjectId());
+                                        , postedObjectChild.getObjectId(),springApplicationName, email);
 
         // WHEN
         // A GET request is made to the path
-        // "superapp/objects/2023b.LiorAriely/"postedObjectParent-internalObjectId"/childrens"
+        // "superapp/objects/{superapp}/{internalObjectId}/childrens
+        // ?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}"
 
         // THEN
         // The server response with status 404 not found AND not return any array of object boundary
         assertThatThrownBy(() ->
-                this.restTemplate.getForObject(this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/childrens"
+                this.restTemplate.getForObject(this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/childrens" +
+                                "?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}"
                                 , SuperAppObjectBoundary[].class
                                 , this.springApplicationName
                                 , postedObjectParent.getObjectId().getInternalObjectId()
+                                , springApplicationName
+                                , email, 10, 0
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
@@ -106,33 +121,45 @@ public class ObjectRelationshipsTests extends BaseTestSet {
     @DisplayName("Invalid url for GET parent")
     public void invalidGetParentsUrlTest() {
 
+
+
         // GIVEN
         // 3. db contains child object with parent object
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName, "demo parent");
+                = createObjectAndPostHelper(email , this.springApplicationName, "demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com", this.springApplicationName, "demo child");
+                = createObjectAndPostHelper(email , this.springApplicationName, "demo child");
 
         // create relation
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild.getObjectId());
+                                        , postedObjectChild.getObjectId(), springApplicationName, email);
 
         // WHEN
         // A GET request is made to the path
-        // "superapp/objects/2023b.LiorAriely/"postedObjectParent-internalObjectId"/parent"
+        // "superapp/objects/{superapp}/{internalObjectId}/parent
+        // ?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}"
 
         // THEN
         // The server response with status 404 not found AND not return any array of object boundary
 
         assertThatThrownBy(() ->
-                this.restTemplate.getForObject(this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/parent"
+                this.restTemplate.getForObject(this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}/parent" +
+                                "?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}"
                         , SuperAppObjectBoundary[].class
                         , this.springApplicationName
                         , postedObjectChild.getObjectId().getInternalObjectId()
+                        , springApplicationName
+                        , email, 10, 0
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
@@ -146,35 +173,46 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // GIVEN
         // 3. db contains 2 objects without relation
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName,"demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com", this.springApplicationName,"demo child");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo child");
 
         // WHEN
         // A PUT request is made to the path
-        // "superapp/object/2023b.LiorAriely/postedObjectParent-internalObjectId/children"
-        // AND pass ObjectId of postedObjectChild
+        // "superapp/objects/{superapp}/{internalObjectId}/childrens
+        //  ?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}"
 
         // THEN
         // The server response with status 404 not found AND relation between objects not updated/saved.
 
         assertThatThrownBy(() ->
                         this.restTemplate.put(
-                                this.baseUrl + "/superapp/object/{superapp}/{internalObjectId}/children"
+                                this.baseUrl + "/superapp/object/{superapp}/{internalObjectId}/children" +
+                                        "?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}"
                                 , postedObjectChild.getObjectId()
                                 , this.springApplicationName
-                                , postedObjectParent.getObjectId().getInternalObjectId())
+                                , postedObjectParent.getObjectId().getInternalObjectId()
+                                , springApplicationName
+                                , email, 10, 0)
                 )
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
                 .isEqualTo(HttpStatus.NOT_FOUND.value());
 
-        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId());
-        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId());
+        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId(), springApplicationName,
+                email , 10 , 0);
+        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId(), springApplicationName,
+                email , 10 , 0);
 
     }
 
@@ -185,31 +223,39 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // GIVEN
         // 3. db contains 3 objects without relation
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName, "demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com", this.springApplicationName, "demo child");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo child");
 
         // third object
         SuperAppObjectBoundary postedObject
-                = createObjectAndPostHelper("demo@gmail.com", this.springApplicationName, "demo");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo");
 
         // WHEN
         // A PUT request is made to the path
-        // "superapp/objects/2023b.LiorAriely/postedObjectParent-internalObjectId/children"
+        // "superapp/objects/{superapp}/{internalObjectId}/childrens
+        //  ?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}"
         // AND pass ObjectId of postedObjectChild
 
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild.getObjectId());
+                                        , postedObjectChild.getObjectId(),springApplicationName, email);
 
         // THEN
         // The server response with status 2xx OK AND relation between 2 objects updated and saved in db.
 
         SuperAppObjectBoundary[] parentOfChild
-                = this.getRelationParents(postedObjectChild.getObjectId().getInternalObjectId());
+                = this.getRelationParents(postedObjectChild.getObjectId().getInternalObjectId(),springApplicationName, email
+        , 10 , 0);
 
         assertThat(parentOfChild)
                 .isNotNull()
@@ -219,7 +265,8 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 .containsExactly(postedObjectParent);
 
         SuperAppObjectBoundary[] childOfParent
-                = this.getRelationChildren(postedObjectParent.getObjectId().getInternalObjectId());
+                = this.getRelationChildren(postedObjectParent.getObjectId().getInternalObjectId(), springApplicationName, email
+        , 10, 0);
 
         assertThat(childOfParent)
                 .isNotNull()
@@ -228,7 +275,8 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 .usingRecursiveFieldByFieldElementComparator()
                 .containsExactly(postedObjectChild);
 
-        assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId());
+        assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId(), springApplicationName, email
+        , 10 , 0);
 
     }
 
@@ -236,20 +284,26 @@ public class ObjectRelationshipsTests extends BaseTestSet {
     @DisplayName("Successfully bind relation between 2 objects to parent object")
     public void bindRelationSuccessfullyTest_2() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contains 3 objects without relation
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName, "demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo parent");
 
         // child 1 object
         SuperAppObjectBoundary postedObjectChild_1
-                = createObjectAndPostHelper("demoChild1@gmail.com", this.springApplicationName, "demo child 1");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo child 1");
 
 
         // child 3 object
         SuperAppObjectBoundary postedObjectChild_2
-                = createObjectAndPostHelper("demoChild2@gmail.com", this.springApplicationName, "demo child 2");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo child 2");
 
         // WHEN
         // A PUT request is made to the path
@@ -257,15 +311,17 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // AND pass ObjectIds of postedObjectChild_1 and postedObjectChild_2
 
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                , postedObjectChild_1.getObjectId());
+                , postedObjectChild_1.getObjectId(), springApplicationName, email);
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                , postedObjectChild_2.getObjectId());
+                , postedObjectChild_2.getObjectId(), springApplicationName, email);
+
         // THEN
         // The server response with status 2xx OK AND relation between 3 objects updated and saved in db.
         // the relation will be parented with 2 children.
 
         SuperAppObjectBoundary[] childrenOfParent
-                = this.getRelationChildren(postedObjectParent.getObjectId().getInternalObjectId());
+                = this.getRelationChildren(postedObjectParent.getObjectId().getInternalObjectId()
+                , springApplicationName, email , 10 ,0);
 
         assertThat(childrenOfParent)
                 .isNotNull()
@@ -274,7 +330,8 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
 
         SuperAppObjectBoundary[] parentsOfChild_1
-                = this.getRelationParents(postedObjectChild_1.getObjectId().getInternalObjectId());
+                = this.getRelationParents(postedObjectChild_1.getObjectId().getInternalObjectId()
+                , springApplicationName, email , 10 ,0);
 
         assertThat(parentsOfChild_1)
                 .isNotNull()
@@ -284,7 +341,8 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 .containsExactly(postedObjectParent);
 
         SuperAppObjectBoundary[] parentsOfChild_2
-                = this.getRelationParents(postedObjectChild_2.getObjectId().getInternalObjectId());
+                = this.getRelationParents(postedObjectChild_2.getObjectId().getInternalObjectId()
+                , springApplicationName, email , 10 ,0);
 
         assertThat(parentsOfChild_2)
                 .isNotNull()
@@ -299,24 +357,30 @@ public class ObjectRelationshipsTests extends BaseTestSet {
     @DisplayName("Bind child that has parent to another parent")
     public void bindRelationToObjThatHasParentTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contains 3 objects: 1 parent, 1 child, 1 object without relation.
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName,"demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com", this.springApplicationName,"demo child");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo child");
 
         // create relation
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild.getObjectId());
+                                        , postedObjectChild.getObjectId(), springApplicationName, email);
 
         // other parent object
         SuperAppObjectBoundary postedObjectOtherParent
-                = createObjectAndPostHelper("demoOtherParent@gmail.com", this.springApplicationName,"demo other parent");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo other parent");
 
         // WHEN
         // A PUT request is made to the path
@@ -328,12 +392,13 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectOtherParent.getObjectId().getInternalObjectId()
-                                                , postedObjectChild.getObjectId()
+                                                , postedObjectChild.getObjectId(), springApplicationName, email
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertAfterRelationNotShallBeUpdated(postedObjectOtherParent.getObjectId().getInternalObjectId());
+        assertAfterRelationNotShallBeUpdated(postedObjectOtherParent.getObjectId().getInternalObjectId()
+                , springApplicationName, email, 10 , 0);
 
 
     }
@@ -342,11 +407,17 @@ public class ObjectRelationshipsTests extends BaseTestSet {
     @DisplayName("Bind relation child to non existing object")
     public void bindRelationToNonExistObjectTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contain only one object
 
         SuperAppObjectBoundary postedObject
-                = createObjectAndPostHelper("demo@gmail.com", this.springApplicationName, "demo");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo");
 
         // WHEN
         // A PUT request is made to the path
@@ -357,13 +428,14 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // The server response with status 404 not found AND relation between objects not updated/saved.
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects("c2759119-f06f-4f3c-a8ca-9db9b16301c1"
-                                            , postedObject.getObjectId()
+                                            , postedObject.getObjectId(), springApplicationName, email
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
                 .isEqualTo(HttpStatus.NOT_FOUND.value());
 
-        assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId());
+        assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId(), springApplicationName, email
+        ,10, 0);
 
     }
 
@@ -371,11 +443,17 @@ public class ObjectRelationshipsTests extends BaseTestSet {
     @DisplayName("Bind relation to non existing objectId")
     public void bindNonExistObjectIdTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contain only one object
 
         SuperAppObjectBoundary postedObject
-                = createObjectAndPostHelper("demo@gmail.com", this.springApplicationName, "demo");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo");
 
         // WHEN
         // A PUT request is made to the path
@@ -395,12 +473,13 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObject.getObjectId().getInternalObjectId()
-                                                , objectId))
+                                                , objectId, springApplicationName, email))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
                 .isEqualTo(HttpStatus.NOT_FOUND.value());
 
-        assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId());
+        assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId()
+                ,springApplicationName, email, 10 , 0);
 
     }
 
@@ -408,11 +487,17 @@ public class ObjectRelationshipsTests extends BaseTestSet {
     @DisplayName("Bind object relation to itself")
     public void bindRelationToItselfTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contain only one object
 
         SuperAppObjectBoundary postedObject
-                = createObjectAndPostHelper("demo@gmail.com", this.springApplicationName, "demo");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo");
 
         // WHEN
         // A PUT request is made to the path
@@ -424,13 +509,14 @@ public class ObjectRelationshipsTests extends BaseTestSet {
 
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObject.getObjectId().getInternalObjectId()
-                                    , postedObject.getObjectId()
+                                    , postedObject.getObjectId(), springApplicationName, email
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
                 .isEqualTo(HttpStatus.CONFLICT.value());
 
-        assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId());
+        assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId()
+                , springApplicationName, email , 10 , 0);
 
     }
 
@@ -438,16 +524,22 @@ public class ObjectRelationshipsTests extends BaseTestSet {
     @DisplayName("Bind object relations with ObjectIdBoundary(child) null")
     public void bindRelationWithObjectIdNullTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contains 2 objects without relation
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName, "demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com", this.springApplicationName, "demo child");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo child");
 
         // when
         // A PUT request is made to the path
@@ -458,30 +550,38 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // The server response with status 415 unsupported media type AND relation between objects not updated/saved.
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                                , null)
+                                                , null, springApplicationName, email)
                 )
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
                 .isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
 
-        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId());
-        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId());
+        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId()
+                ,springApplicationName ,email ,10 , 0);
+        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId(), springApplicationName
+        , email ,10 ,0);
     }
 
     @Test
     @DisplayName("Bind object relation with superappApplicationName null")
     public void bindRelationWithSuperappApplicationNameNullTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contains 2 objects without relation
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName, "demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com", this.springApplicationName, "demo child");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo child");
 
         // WHEN
         // A PUT request is made to the path
@@ -495,29 +595,38 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
                                     , new ObjectId().setInternalObjectId(childInternalObjectId)
+                        , springApplicationName , email
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());
 
-        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId());
-        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId());
+        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId()
+                , springApplicationName , email , 10 ,0);
+        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId()
+                , springApplicationName , email , 10 ,0);
     }
 
     @Test
     @DisplayName("Bind object relations with invalid attributes of superappApplicationName ")
     public void bindRelationWithInvalidSuperappApplicationNameTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contains 2 objects without relation
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName, "demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com", this.springApplicationName, "demo child");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo child");
 
         // WHEN
         // A PUT request is made to the path
@@ -530,29 +639,38 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
                                     , new ObjectId().setSuperapp("2023b-LiorAriely").setInternalObjectId(childInternalObjectId)
+                        ,springApplicationName , email
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());
 
-        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId());
-        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId());
+        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId()
+                , springApplicationName , email , 10 ,0);
+        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId()
+                , springApplicationName , email , 10 ,0);
     }
 
     @Test
     @DisplayName("Bind object relations with invalid internalObjectId in ObjectId")
     public void bindRelationWithInvalidInternalObjectIdTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contains 2 objects without relation
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName,"demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com", this.springApplicationName,"demo child");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo child");
 
         // WHEN
         // A PUT request is made to the path
@@ -564,29 +682,38 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
                                         , new ObjectId().setSuperapp(this.springApplicationName).setInternalObjectId("0")
+                        , springApplicationName , email
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());
 
-        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId());
-        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId());
+        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId()
+                , springApplicationName , email , 10 ,0);
+        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId()
+                , springApplicationName , email , 10 ,0);
     }
 
     @Test
     @DisplayName("Bind object relations with null internalObjectId in ObjectId")
     public void bindRelationWithInternalObjectIdNullTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contains 2 objects without relation
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName,"demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo parent");
 
         // child object
         SuperAppObjectBoundary postedObjectChild
-                = createObjectAndPostHelper("demoChild@gmail.com", this.springApplicationName,"demo child");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo child");
 
         // WHEN
         // A PUT request is made to the path
@@ -599,44 +726,53 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
                                         , new ObjectId().setSuperapp(this.springApplicationName)
+                        , springApplicationName , email
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());
 
-        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId());
-        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId());
+        assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId()
+                , springApplicationName , email , 10 ,0);
+        assertAfterRelationNotShallBeUpdated(postedObjectChild.getObjectId().getInternalObjectId()
+                , springApplicationName , email , 10 ,0);
     }
 
     @Test
     @DisplayName("Get all children of parent that has children")
     public void getChildrenOfParentTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contains 4 objects: 1 parent object, 2 children objects, 1 object without relation
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName,"demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo parent");
 
         // child 1 object
         SuperAppObjectBoundary postedObjectChild_1
-                = createObjectAndPostHelper("demoChild1@gmail.com", this.springApplicationName,"demo child 1");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo child 1");
 
         // child 2 object
         SuperAppObjectBoundary postedObjectChild_2
-                = createObjectAndPostHelper("demoChild2@gmail.com", this.springApplicationName,"demo child 2");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo child 2");
 
         // create relation 1
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild_1.getObjectId());
+                                        , postedObjectChild_1.getObjectId() , springApplicationName , email);
         // create relation 2
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild_2.getObjectId());
+                                        , postedObjectChild_2.getObjectId() , springApplicationName , email);
 
         //  object without relation
         SuperAppObjectBoundary noRelationObject
-                = createObjectAndPostHelper("demo@gmail.com", this.springApplicationName,"demo");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo");
 
 
         // WHEN
@@ -644,7 +780,8 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // "superapp/objects/2023b.LiorAriely/postedObjectParent--internalObjectId/children"
 
         SuperAppObjectBoundary[] children
-                = this.getRelationChildren(postedObjectParent.getObjectId().getInternalObjectId());
+                = this.getRelationChildren(postedObjectParent.getObjectId().getInternalObjectId()
+        , springApplicationName , email , 10 , 0);
 
         // THEN
         // The server response with status 2xx OK AND return array of children objects
@@ -660,18 +797,25 @@ public class ObjectRelationshipsTests extends BaseTestSet {
     @DisplayName("Get all children of parent that does not have children")
     public void getChildrenOfParentWithoutChildrenTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contain only one object
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName,"demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo parent");
 
         // WHEN
         // A GET request is made to the path
         // "superapp/objects/2023b.LiorAriely/postedObjectParent-internalObjectId/children"
         SuperAppObjectBoundary[] children
-                = this.getRelationChildren(postedObjectParent.getObjectId().getInternalObjectId());
+                = this.getRelationChildren(postedObjectParent.getObjectId().getInternalObjectId()
+                , springApplicationName , email , 10 ,0);
 
         // THEN
         // The server response with status 200 OK AND return array of children objects
@@ -684,44 +828,54 @@ public class ObjectRelationshipsTests extends BaseTestSet {
     @DisplayName("Get parent of child")
     public void getParentOfChildTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contains 4 objects: 1 parent object, 2 children objects, 1 object without relation
 
         // parent object
         SuperAppObjectBoundary postedObjectParent
-                = createObjectAndPostHelper("demoParent@gmail.com", this.springApplicationName,"demo parent");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo parent");
 
         // child 1 object
         SuperAppObjectBoundary postedObjectChild_1
-                = createObjectAndPostHelper("demoChild1@gmail.com", this.springApplicationName,"demo child 1");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo child 1");
 
         // child 2 object
         SuperAppObjectBoundary postedObjectChild_2
-                = createObjectAndPostHelper("demoChild2@gmail.com", this.springApplicationName,"demo child 2");
+                = createObjectAndPostHelper(email, this.springApplicationName,"demo child 2");
 
         // create relation
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild_1.getObjectId());
+                                        , postedObjectChild_1.getObjectId()
+        ,springApplicationName, email );
 
         this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
-                                        , postedObjectChild_2.getObjectId());
+                                        , postedObjectChild_2.getObjectId()
+                ,springApplicationName, email);
 
         //  object without relation
         SuperAppObjectBoundary postedObject
-                = createObjectAndPostHelper("demo@gmail.com", this.springApplicationName, "demo");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo");
 
         // WHEN
         // A GET request is made to the path
         // "superapp/objects/2023b.LiorAriely/postedObjectChild_1--internalObjectId/parents"
 
         SuperAppObjectBoundary[] parentOfChild1
-                = this.getRelationParents(postedObjectChild_1.getObjectId().getInternalObjectId());
+                = this.getRelationParents(postedObjectChild_1.getObjectId().getInternalObjectId()
+                ,springApplicationName, email, 10, 0);
 
         // WHEN
         // A GET request is made to the path
         // "superapp/objects/2023b.LiorAriely/postedObjectChild_2--internalObjectId/parents"
         SuperAppObjectBoundary[] parentOfChild2
-                = this.getRelationParents(postedObjectChild_2.getObjectId().getInternalObjectId());
+                = this.getRelationParents(postedObjectChild_2.getObjectId().getInternalObjectId()
+                ,springApplicationName, email, 10, 0);
 
         // THEN
         // The server response with status 2xx OK AND return array with one parent object
@@ -739,7 +893,8 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 .usingRecursiveFieldByFieldElementComparator()
                 .containsExactly(parentOfChild2);
 
-        this.assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId());
+        this.assertAfterRelationNotShallBeUpdated(postedObject.getObjectId().getInternalObjectId()
+                ,springApplicationName, email, 10, 0);
 
     }
 
@@ -747,17 +902,24 @@ public class ObjectRelationshipsTests extends BaseTestSet {
     @DisplayName("Get parent object of object, object does not have parent")
     public void getParentWithoutChildrenTest() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 3. db contain only one  objects
 
         // child object
         SuperAppObjectBoundary postedObject
-                = createObjectAndPostHelper("demo@gmail.com", this.springApplicationName, "demo");
+                = createObjectAndPostHelper(email, this.springApplicationName, "demo");
 
         // WHEN
         // A GET request is made to the path
         // "superapp/objects/2023b.LiorAriely/postedObject-internalObjectId/parents"
-        SuperAppObjectBoundary[] parents = this.getRelationParents(postedObject.getObjectId().getInternalObjectId());
+        SuperAppObjectBoundary[] parents = this.getRelationParents(postedObject.getObjectId().getInternalObjectId()
+                ,springApplicationName, email, 10, 0);
 
         // THEN
         // The server response with status 2xx OK and return empty array

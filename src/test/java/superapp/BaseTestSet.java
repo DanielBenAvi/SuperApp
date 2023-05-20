@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
+import superapp.data.UserRole;
 import superapp.logic.boundaries.*;
 import superapp.miniapps.MiniAppNames;
 
@@ -37,9 +38,20 @@ public class BaseTestSet {
 
     @AfterEach
     public void tearDown() {
-        this.restTemplate.delete(this.baseUrl + "/superapp/admin/miniapp");
-        this.restTemplate.delete(this.baseUrl + "/superapp/admin/users");
-        this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects");
+        String email = "admin@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "admin_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/miniapp?userSuperapp={userSuperapp}&userEmail={email}"
+                , springApplicationName,email);
+
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects?userSuperapp={userSuperapp}&userEmail={email}"
+                , springApplicationName,email);
+
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/users?userSuperapp={userSuperapp}&userEmail={email}"
+                , springApplicationName,email);
     }
 
 
@@ -89,14 +101,17 @@ public class BaseTestSet {
      * @param springApplicationName - String
      * @return SuperAppObjectBoundary
      */
-    public SuperAppObjectBoundary help_GetObjectBoundary(String internalObjectId, String springApplicationName) {
-
+    public SuperAppObjectBoundary help_GetObjectBoundary(String internalObjectId, String springApplicationName, String userSuperapp, String userEmail) {
         return this.restTemplate
                 .getForObject(
-                        this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}"
+                        this.baseUrl + "/superapp/objects/{superapp}/" +
+                                "{internalObjectId}?userSuperapp={userSuperapp}&userEmail={email}"
                         , SuperAppObjectBoundary.class
                         , springApplicationName
-                        , internalObjectId);
+                        , internalObjectId
+                        , userSuperapp
+                        , userEmail);
+
     }
 
     /**
@@ -108,14 +123,15 @@ public class BaseTestSet {
      * @param internalObjectId - String
      * @param springApplicationName - String
      */
-    public void help_PutObjectBoundary(SuperAppObjectBoundary objectBoundary, String internalObjectId,
-                                       String springApplicationName) {
-
+    public void help_PutObjectBoundary(SuperAppObjectBoundary objectBoundary,
+                                       String internalObjectId,
+                                       String springApplicationName,
+                                       String userSuperapp,
+                                       String userEmail) {
         this.restTemplate.put(
-                this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}"
-                , objectBoundary
-                , springApplicationName
-                , internalObjectId);
+                this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}?userSuperapp={userSuperapp}&" +
+                        "userEmail={email}"
+                , objectBoundary, springApplicationName, internalObjectId, userSuperapp, userEmail);
     }
 
     /**
@@ -123,8 +139,9 @@ public class BaseTestSet {
      * Helper method to delete all objects
      * the path is "/superapp/admin/objects"
      */
-    public void help_DeleteObjectsBoundary() {
-        this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects");
+    public void help_DeleteObjectsBoundary(String userSuperapp, String userEmail) {
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects?userSuperapp={superapp}&" +
+                "userEmail={email}",userSuperapp, userEmail);
     }
 
     /**
@@ -134,10 +151,12 @@ public class BaseTestSet {
      *
      * @return SuperAppObjectBoundary[]
      */
-    public SuperAppObjectBoundary[] help_GetAllObjectsBoundary() {
-
+    public SuperAppObjectBoundary[] help_GetAllObjectsBoundary(String userSuperapp, String userEmail,
+                                                               int size, int page) {
         return this.restTemplate
-                .getForObject(this.baseUrl + "/superapp/objects", SuperAppObjectBoundary[].class);
+                .getForObject(this.baseUrl + "/superapp/objects?userSuperapp={superapp}&" +
+                                "userEmail={email}&size={size}&page={page}", SuperAppObjectBoundary[].class,userSuperapp,
+                        userEmail, size, page);
     }
 
     /**
@@ -148,14 +167,18 @@ public class BaseTestSet {
      * @param internalObjectId- is a parent-target
      * @param childObjId - Object
      */
-    public void putRelationBetweenObjects(String internalObjectId, Object childObjId) {
+    public void putRelationBetweenObjects(String internalObjectId, Object childObjId, String userSuperapp,
+                                          String userEmail) {
 
-        String putRelationUrl = "/superapp/objects/{superapp}/{internalObjectId}/children";
+        String putRelationUrl = "/superapp/objects/{superapp}/{internalObjectId}/children?userSuperapp={superapp}&" +
+                "userEmail={email}";
         this.restTemplate.put(
                 this.baseUrl + putRelationUrl
                 , childObjId
                 , this.springApplicationName
-                , internalObjectId);
+                , internalObjectId
+                , userSuperapp
+                , userEmail);
     }
 
     /**
@@ -166,16 +189,22 @@ public class BaseTestSet {
      * @param internalObjectId - String
      * @return SuperAppObjectBoundary[] - parent of internalObjectId
      */
-    public SuperAppObjectBoundary[] getRelationParents(String internalObjectId) {
+    public SuperAppObjectBoundary[] getRelationParents(String internalObjectId, String userSuperapp,
+                                                       String userEmail, int size, int page) {
 
-        String getParentUrl = "/superapp/objects/{superapp}/{internalObjectId}/parents";
+        String getParentUrl = "/superapp/objects/{superapp}/{internalObjectId}/parents?userSuperapp={superapp}&" +
+                "userEmail={email}&size={size}&page={page}";
 
         return this.restTemplate
                 .getForObject(
                         this.baseUrl + getParentUrl
                         , SuperAppObjectBoundary[].class
                         , this.springApplicationName
-                        , internalObjectId);
+                        , internalObjectId
+                        , userSuperapp
+                        , userEmail
+                        , size
+                        , page );
     }
 
     /**
@@ -186,16 +215,22 @@ public class BaseTestSet {
      * @param internalObjectId - String
      * @return SuperAppObjectBoundary[] - children of internalObjectId
      */
-    public SuperAppObjectBoundary[] getRelationChildren(String internalObjectId) {
+    public SuperAppObjectBoundary[] getRelationChildren(String internalObjectId, String userSuperapp,
+                                                        String userEmail, int size, int page) {
 
-        String getChildrenUrl = "/superapp/objects/{superapp}/{internalObjectId}/children";
+        String getChildrenUrl = "/superapp/objects/{superapp}/{internalObjectId}/children?userSuperapp={superapp}&" +
+                "userEmail={email}&size={size}&page={page}";
 
         return this.restTemplate
                 .getForObject(
                         this.baseUrl + getChildrenUrl
                         , SuperAppObjectBoundary[].class
                         , this.springApplicationName
-                        , internalObjectId);
+                        , internalObjectId
+                        , userSuperapp
+                        , userEmail
+                        , size
+                        , page );
     }
 
 

@@ -19,8 +19,8 @@ public class RelationshipController {
     @PutMapping(path = {"/superapp/objects/{superapp}/{internalObjectId}/children"},
                 consumes = {MediaType.APPLICATION_JSON_VALUE})
     public void updateChildren(
-            @RequestParam(name = "userSuperapp", required = false) String userSuperapp,
-            @RequestParam(name = "userEmail", required = false) String userEmail,
+            @RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+            @RequestParam(name = "userEmail", required = true) String userEmail,
             @PathVariable("superapp") String superapp,
             @PathVariable("internalObjectId") String parentInternalObjectId,
             @RequestBody ObjectId childObjectId) {
@@ -33,8 +33,8 @@ public class RelationshipController {
     @GetMapping(path = {"/superapp/objects/{superapp}/{internalObjectId}/children"},
                 produces = {MediaType.APPLICATION_JSON_VALUE})
     public SuperAppObjectBoundary[] getChildren(
-            @RequestParam(name = "userSuperapp", required = false) String userSuperapp,
-            @RequestParam(name = "userEmail", required = false) String userEmail,
+            @RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+            @RequestParam(name = "userEmail", required = true) String userEmail,
             @RequestParam(name = "size", required = false, defaultValue = "15") int size,
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @PathVariable("superapp") String superapp,
@@ -48,8 +48,8 @@ public class RelationshipController {
     @GetMapping(path = {"/superapp/objects/{superapp}/{internalObjectId}/parents"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public SuperAppObjectBoundary[] getParent(
-            @RequestParam(name = "userSuperapp", required = false) String userSuperapp,
-            @RequestParam(name = "userEmail", required = false) String userEmail,
+            @RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+            @RequestParam(name = "userEmail", required = true) String userEmail,
             @RequestParam(name = "size", required = false, defaultValue = "15") int size,
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @PathVariable("superapp") String superapp,
