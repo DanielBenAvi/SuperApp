@@ -1,14 +1,18 @@
 package superapp.logic.mongo;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import superapp.data.MiniAppCommandCrud;
 import superapp.data.ObjectCrud;
 import superapp.data.UserCrud;
+import superapp.logic.ASYNCSupport;
 import superapp.logic.MiniAppCommandWithPaging;
 import superapp.logic.boundaries.InvokedBy;
 import superapp.logic.boundaries.TargetObject;
@@ -26,13 +30,15 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
-public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
+public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
 
     private final MiniAppCommandCrud miniAppCommandCrud;
     private final UserCrud userCrud;
     private final ObjectCrud objectCrud;
     private final CommandInvoker commandInvoker;
 
+    private ObjectMapper jackson;
+    private JmsTemplate jmsTemplate;
     private String springApplicationName;
 
     @Autowired
@@ -60,9 +66,16 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
      */
     @PostConstruct
     public void init() {
+
         System.err.println("****** " + this.getClass().getName() + " service initiated");
+        this.jackson = new ObjectMapper();
     }
 
+    @Autowired
+    public void setJmsTemplate(JmsTemplate jmsTemplate) {
+        this.jmsTemplate = jmsTemplate;
+        this.jmsTemplate.setDeliveryDelay(3000L);
+    }
 
     /**
      * This method convert MiniAppCommand Entity to Boundary
@@ -346,5 +359,44 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithPaging {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public MiniAppCommandBoundary asyncHandle(MiniAppCommandBoundary miniAppCommandBoundary) {
+        miniAppCommandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
+        miniAppCommandBoundary.setInvocationTimestamp(new Date());
+        if (miniAppCommandBoundary.getCommandAttributes() == null) {
+            miniAppCommandBoundary.setCommandAttributes(new HashMap<>());
+        }
+        miniAppCommandBoundary.getCommandAttributes().put("status", "in process");
+        try {
+            String json = this.jackson.writeValueAsString(miniAppCommandBoundary);
+            System.err.println("*** sending: " + json);
+            this.jmsTemplate.convertAndSend("commandsQueue", json);
+            return miniAppCommandBoundary;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @JmsListener(destination = "commandsQueue")
+    public void handleMessage(String json) {
+        try {
+            System.err.println(this.convertToBoundary(this.miniAppCommandCrud.save(
+                    this.convertToEntity(
+                            this.setStatus(
+                                    this.jackson.readValue(json, MiniAppCommandBoundary.class),"remootly-accepted")))));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    private MiniAppCommandBoundary setStatus(MiniAppCommandBoundary miniapp, String status) {
+        if (miniapp.getCommandAttributes() == null) {
+            miniapp.setCommandAttributes(new HashMap<>());
+        }
+        miniapp.getCommandAttributes().put("status", status);
+
+        return miniapp;
     }
 }

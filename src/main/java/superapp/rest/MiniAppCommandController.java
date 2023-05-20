@@ -12,7 +12,7 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 @RestController
 public class MiniAppCommandController {
 
-    private MiniAppCommandService miniAppCommandService;
+  //  private MiniAppCommandService miniAppCommandService;
     private ASYNCSupport logic;
 
     @Autowired
@@ -21,9 +21,9 @@ public class MiniAppCommandController {
     }
 
     @Autowired
-    public void setMiniAppCmdService(MiniAppCommandService miniAppCmdService) {
+    /*public void setMiniAppCmdService(MiniAppCommandService miniAppCmdService) {
         this.miniAppCommandService = miniAppCmdService;
-    }
+    }*/
 
     /**
      * @param miniAppName            String
@@ -54,10 +54,10 @@ public class MiniAppCommandController {
         miniAppCommandBoundary.getCommandId().setMiniapp(miniAppName);
         try {
             if (asyncFlag) {
-                return this.logic.asyncHandle((MiniAppCommandBoundary)miniAppCommandService.invokeCommand(miniAppCommandBoundary));
+                return this.logic.asyncHandle((MiniAppCommandBoundary)logic.invokeCommand(miniAppCommandBoundary));
             } else
-                return (MiniAppCommandBoundary)miniAppCommandService.invokeCommand(miniAppCommandBoundary);
-            //TODO:need of casing becaues invoke returns Object
+                return (MiniAppCommandBoundary)logic.invokeCommand(miniAppCommandBoundary);
+            //TODO:need of casing because invoke returns Object
         }catch (RuntimeException re) {
             throw new RuntimeException("Cannot invoke command");
         }
