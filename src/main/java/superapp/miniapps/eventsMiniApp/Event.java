@@ -18,7 +18,7 @@ public class Event {
     private String image;
     private String contact;
     private Set<String> attendees;
-    private Map<String, String> preferences;
+    private Set<String> preferences;
 
     public Event() {
 
@@ -87,11 +87,11 @@ public class Event {
         return this;
     }
 
-    public Map<String, String> getPreferences() {
+    public Set<String> getPreferences() {
         return preferences;
     }
 
-    public Event setPreferences(Map<String, String> preferences) {
+    public Event setPreferences(Set<String> preferences) {
         this.preferences = preferences;
         return this;
     }
