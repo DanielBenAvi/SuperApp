@@ -2,6 +2,9 @@ package superapp.data;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.GeoResults;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,11 +37,15 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
     public List<SuperAppObjectEntity> findAllByAliasAndActiveIsTrue(@Param("alias") String alias, PageRequest pageRequest);
 
-    public List<SuperAppObjectEntity> findAllByLocation(@Param("lat")Double lat,
-                                                        @Param("lng")Double lng,
-                                                        @Param("distance")Double distance,
-                                                        @Param("distanceUnits")String distanceUnits,
-                                                        Pageable pageable);
+ //
+
+
+    //@Query("{ 'location' : { 'near' : [location.x, location.y], 'maxDistance' : distance}}")
+    @Query( "{ 'geoNear' : 'SuperAppObjectEntity', 'location' : [x, y], 'maxDistance' : distance}")
+
+    public List<SuperAppObjectEntity> findAllByLocationNear(@Param("location") Point location,
+                                                            @Param("distance") Distance distance,
+                                                            Pageable pageable);
 
     @Query("{'type' :?1, 'objectDetails.attendees': {'$in':[?0] }, 'objectDetails.date': {'$gt': ?2 } }")
     public List<SuperAppObjectEntity> findAllByTypeAndMyEvents(String userEmail, String type, Date now, PageRequest creationTimestamp);

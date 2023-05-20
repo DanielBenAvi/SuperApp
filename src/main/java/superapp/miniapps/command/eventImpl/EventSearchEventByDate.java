@@ -47,7 +47,7 @@ public class EventSearchEventByDate implements MiniAppsCommand {
         boundary.setAlias(entity.getAlias());
         boundary.setActive(entity.getActive());
         boundary.setCreationTimestamp(entity.getCreationTimestamp());
-        boundary.setLocation(ConvertHelp.strLocationEntityToBoundary(entity.getLocation()));
+        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
         boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
 
         boundary.setObjectDetails(entity.getObjectDetails());

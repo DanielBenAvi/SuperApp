@@ -3,8 +3,6 @@ package superapp.miniapps.command.eventImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
@@ -13,7 +11,6 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 import superapp.miniapps.command.MiniAppsCommand;
 
-import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +49,7 @@ public class EventGetMyEventsCommand implements MiniAppsCommand {
         boundary.setAlias(entity.getAlias());
         boundary.setActive(entity.getActive());
         boundary.setCreationTimestamp(entity.getCreationTimestamp());
-        boundary.setLocation(ConvertHelp.strLocationEntityToBoundary(entity.getLocation()));
+        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
         boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
 
         boundary.setObjectDetails(entity.getObjectDetails());

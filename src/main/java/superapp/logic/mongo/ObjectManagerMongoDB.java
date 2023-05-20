@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 import superapp.data.*;
 import superapp.logic.ConvertHelp;
@@ -124,7 +127,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                 lat = update.getLocation().getLat();
             }
 
-            exists.setLocation(ConvertHelp.locationBoundaryToStr(new Location(lng, lat)));
+            exists.setLocation(ConvertHelp.locationBoundaryToEntity(new Location(lng, lat)));
         }
 
         if (update.getObjectDetails() != null) {
@@ -412,10 +415,10 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 //        if (user.getRole().equals(UserRole.MINIAPP_USER))
 
 
-
+        Distance distance1 = new Distance(distance, Metrics.NEUTRAL);
         // this is return for User Role SUPERAPP_USER
             return this.objectCrudDB
-                    .findAllByLocation(lat, lng, distance, distanceUnits, pageRequest)
+                    .findAllByLocationNear(new Point(lng, lat) , distance1, pageRequest)
                     .stream()
                     .map(this::convertEntityToBoundary)
                     .toList();
@@ -440,7 +443,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         if (boundary.getActive() != null) entity.setActive(boundary.getActive());
         else entity.setActive(false);
 
-        entity.setLocation(ConvertHelp.locationBoundaryToStr(boundary.getLocation()));
+        entity.setLocation(ConvertHelp.locationBoundaryToEntity(boundary.getLocation()));
         entity.setCreatedBy(ConvertHelp.createByBoundaryToStr(boundary.getCreatedBy()));
         entity.setObjectDetails(boundary.getObjectDetails());
 
@@ -550,7 +553,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         boundary.setAlias(entity.getAlias());
         boundary.setActive(entity.getActive());
         boundary.setCreationTimestamp(entity.getCreationTimestamp());
-        boundary.setLocation(ConvertHelp.strLocationEntityToBoundary(entity.getLocation()));
+        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
         boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
 
         boundary.setObjectDetails(entity.getObjectDetails());

@@ -104,7 +104,7 @@ public class ObjectsManagerMockup implements ObjectsService {
         else throw new RuntimeException("invalid activity");
 
         if (update.getLocation() != null)
-            existingEntity.setLocation(ConvertHelp.locationBoundaryToStr(update.getLocation()));
+            existingEntity.setLocation(ConvertHelp.locationBoundaryToEntity(update.getLocation()));
         else throw new RuntimeException("invalid location");
 
         if (update.getObjectDetails() != null)
@@ -176,7 +176,7 @@ public class ObjectsManagerMockup implements ObjectsService {
         boundary.setAlias(entity.getAlias());
         boundary.setActive(entity.getActive());
         boundary.setCreationTimestamp(entity.getCreationTimestamp());
-        boundary.setLocation(ConvertHelp.strLocationEntityToBoundary(entity.getLocation()));
+        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
         boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
 
         boundary.setObjectDetails(entity.getObjectDetails());
@@ -203,7 +203,7 @@ public class ObjectsManagerMockup implements ObjectsService {
         else
             entity.setActive(false);
 
-        entity.setLocation(ConvertHelp.locationBoundaryToStr(boundary.getLocation()));
+        entity.setLocation(ConvertHelp.locationBoundaryToEntity(boundary.getLocation()));
         entity.setCreatedBy(ConvertHelp.createByBoundaryToStr(boundary.getCreatedBy()));
         entity.setObjectDetails(boundary.getObjectDetails());
 

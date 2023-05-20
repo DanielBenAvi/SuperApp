@@ -144,9 +144,9 @@ public class ObjectBoundaryController {
 	@GetMapping(path = {"/superapp/objects/search/byLocation/{lat}/{lng}/{distance}"},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public SuperAppObjectBoundary[] getAllObjectsByLocation(
-			@PathVariable("lat") Double lat,
-			@PathVariable("lng") Double lng,
-			@PathVariable("distance") Double distance,
+			@PathVariable("lat") String lat,
+			@PathVariable("lng") String lng,
+			@PathVariable("distance") String distance,
 			@RequestParam(name = "distanceUnits", required = false, defaultValue = "NEUTRAL") String distanceUnits,
 			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
 			@RequestParam(name = "userEmail", required = true) String userEmail,
@@ -154,7 +154,8 @@ public class ObjectBoundaryController {
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
 
 		return this.objectsService
-				.getAllObjectsByLocation(lat, lng, distance, distanceUnits, userSuperapp, userEmail, size, page)
+				.getAllObjectsByLocation(Double.parseDouble(lat), Double.parseDouble(lng), Double.parseDouble(distance),
+						distanceUnits, userSuperapp, userEmail, size, page)
 				.toArray(new SuperAppObjectBoundary[0]);
 	}
 

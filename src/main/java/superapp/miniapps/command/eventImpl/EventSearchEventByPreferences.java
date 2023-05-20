@@ -11,10 +11,8 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 import superapp.miniapps.command.MiniAppsCommand;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class EventSearchEventByPreferences implements MiniAppsCommand {
@@ -48,7 +46,7 @@ public class EventSearchEventByPreferences implements MiniAppsCommand {
         boundary.setAlias(entity.getAlias());
         boundary.setActive(entity.getActive());
         boundary.setCreationTimestamp(entity.getCreationTimestamp());
-        boundary.setLocation(ConvertHelp.strLocationEntityToBoundary(entity.getLocation()));
+        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
         boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
 
         boundary.setObjectDetails(entity.getObjectDetails());

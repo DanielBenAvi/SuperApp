@@ -1,6 +1,7 @@
 package superapp.data;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,7 +16,7 @@ public class SuperAppObjectEntity {
     private String alias;
     private boolean active;
     private Date creationTimestamp;
-    private String location;
+    private Point location;
     private String createdBy;
     private Map<String, Object> objectDetails;
 
@@ -73,11 +74,11 @@ public class SuperAppObjectEntity {
         return this;
     }
 
-    public String getLocation() {
+    public Point getLocation() {
         return location;
     }
 
-    public SuperAppObjectEntity setLocation(String location) {
+    public SuperAppObjectEntity setLocation(Point location) {
         this.location = location;
         return this;
     }

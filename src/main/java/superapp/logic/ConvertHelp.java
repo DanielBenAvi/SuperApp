@@ -1,5 +1,6 @@
 package superapp.logic;
 
+import org.springframework.data.geo.Point;
 import superapp.data.UserCrud;
 import superapp.data.UserEntity;
 import superapp.data.UserRole;
@@ -60,30 +61,28 @@ public class ConvertHelp {
      * @param locationBoundary Location
      * @return locationEntity String
      */
-    public static String locationBoundaryToStr(Location locationBoundary) {
+    public static Point locationBoundaryToEntity(Location locationBoundary) {
 
         if (locationBoundary == null)
-            return null;
+            return new Point(0,0);
 
-        String locationEntity = locationBoundary.getLat() + DELIMITER_ID + locationBoundary.getLng();
+//        String locationEntity = locationBoundary.getLat() + DELIMITER_ID + locationBoundary.getLng();
 
-        return locationEntity;
+        return new Point(locationBoundary.getLng(), locationBoundary.getLat());
     }
 
     /**
-     * This methode convert LocationEntity as String to Location boundary
+     * This methode convert LocationEntity as Point to Location boundary
      *
-     * @param locationEntity String
+     * @param locationEntity Point
      * @return locationBoundary Location
      */
-    public static Location strLocationEntityToBoundary(String locationEntity) {
+    public static Location locationEntityToBoundary(Point locationEntity) {
 
         if (locationEntity == null)
-            return null;
+            return new Location(0, 0);
 
-        String[] attr = locationEntity.split(DELIMITER_ID);
-
-        return new Location(Double.parseDouble(attr[0]), Double.parseDouble(attr[1]));
+        return new Location(locationEntity.getX(), locationEntity.getY());
 
     }
 
