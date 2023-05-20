@@ -45,11 +45,13 @@ public class ObjectTestSet {
 
     @AfterEach
     public void tearDown() {
+
         String email = "admin@gmail.com";
         String role = UserRole.ADMIN.toString();
         String username = "admin_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
+
         this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects?userSuperapp={userSuperapp}&userEmail={email}"
                 , springApplicationName,email);
         this.restTemplate.delete(this.baseUrl + "/superapp/admin/users?userSuperapp={userSuperapp}&userEmail={email}"
