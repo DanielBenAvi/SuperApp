@@ -32,10 +32,10 @@ public class ObjectBoundaryController {
 	@GetMapping(path = {"/superapp/objects/{superapp}/{internalObjectId}"},
 				produces = {MediaType.APPLICATION_JSON_VALUE})
 	public SuperAppObjectBoundary getObject(
-			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
-			@RequestParam(name = "userEmail", required = true) String userEmail,
 			@PathVariable("superapp") String superapp,
-			@PathVariable("internalObjectId") String internalObjectId) {
+			@PathVariable("internalObjectId") String internalObjectId,
+			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
+			@RequestParam(name = "userEmail", required = true) String userEmail) {
 		return objectsService
 				.getSpecificObject(superapp, internalObjectId, userSuperapp, userEmail)
 				.orElseThrow(() -> new RuntimeException("Could not find object by id: " + superapp + " " + internalObjectId));

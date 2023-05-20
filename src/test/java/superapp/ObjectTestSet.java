@@ -45,8 +45,15 @@ public class ObjectTestSet {
 
     @AfterEach
     public void tearDown() {
-        this.restTemplate.delete(this.baseUrl + "/superapp/admin/users");
-        this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects");
+        String email = "admin@gmail.com";
+        String role = UserRole.ADMIN.toString();
+        String username = "admin_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects?userSuperapp={userSuperapp}&userEmail={email}"
+                , springApplicationName,email);
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/users?userSuperapp={userSuperapp}&userEmail={email}"
+                , springApplicationName,email);
     }
 
 
@@ -59,10 +66,11 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
+
 
         // WHEN
         // A POST request is made to the path "superapp/objects" with SuperAppObjectBoundary
@@ -82,7 +90,7 @@ public class ObjectTestSet {
 
         SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
                                         postObject.getObjectId().getInternalObjectId(),
-                                        postObject.getObjectId().getSuperapp());
+                                        postObject.getObjectId().getSuperapp(),springApplicationName,email);
 
         assertThat(objectFromGet)
                 .isNotNull()
@@ -96,10 +104,10 @@ public class ObjectTestSet {
 
         // GIVEN
         // 1. the server is up and running
-        // 2. the database is up and runnin
+        // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -125,7 +133,7 @@ public class ObjectTestSet {
 
         SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
                 postObject.getObjectId().getInternalObjectId(),
-                postObject.getObjectId().getSuperapp());
+                postObject.getObjectId().getSuperapp(),springApplicationName,email);
         objectFromGet.setActive(false);
 
         assertThat(objectFromGet)
@@ -143,7 +151,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -170,7 +178,7 @@ public class ObjectTestSet {
 
         SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
                 postObject.getObjectId().getInternalObjectId(),
-                postObject.getObjectId().getSuperapp());
+                postObject.getObjectId().getSuperapp(),springApplicationName,email);
 
         assertThat(objectFromGet)
                 .isNotNull()
@@ -193,7 +201,7 @@ public class ObjectTestSet {
         // 1. the server is up and running
         // 2. the database is up and running
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -230,7 +238,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -267,7 +275,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -280,7 +288,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@@s.afeka.ac.il" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@_s.afeka.ac.il" ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -304,7 +312,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -317,7 +325,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId("2023LiorAriely", "demo@s.afeka.ac.il"));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId("2023LiorAriely", email));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -341,7 +349,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -407,7 +415,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -441,7 +449,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -459,12 +467,19 @@ public class ObjectTestSet {
         objectDetails.put("details", "String object demo");
 
         // THEN
-        // the server response with bad request status 400 code
+        // the server response with 200 ok and the new object location attributes are set to 0.0,0.0
+        SuperAppObjectBoundary postObject = help_PostObjectBoundary(null, type, alias,
+                null, active, location, createdBy, objectDetails);
 
-        assertThatThrownBy(() ->
-                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, objectDetails))
-                .isInstanceOf(HttpClientErrorException.class)
-                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
+        SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
+                postObject.getObjectId().getInternalObjectId(),
+                postObject.getObjectId().getSuperapp(),springApplicationName,email);
+
+        assertThat(objectFromGet)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(postObject.getLocation().setLat(0.0).setLng(0.0));
+
     }
 
     @Test
@@ -476,7 +491,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -508,7 +523,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -543,7 +558,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -577,7 +592,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -611,7 +626,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -644,7 +659,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -679,7 +694,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -688,17 +703,18 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName, email));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
         SuperAppObjectBoundary postObject = help_PostObjectBoundary(null, type, alias, null,
                 active,  location, createdBy,  objectDetails);
         // WHEN
-        // A GET request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
+        // A GET request is made to the path "/superapp/objects/{superapp}/
+        // {internalObjectId}?userSuperapp={userSuperapp}&userEmail={email}"
         SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
                 postObject.getObjectId().getInternalObjectId(),
-                postObject.getObjectId().getSuperapp());
+                postObject.getObjectId().getSuperapp(),springApplicationName,email);
 
 
 
@@ -715,13 +731,22 @@ public class ObjectTestSet {
     @DisplayName("unsuccessful get object it does not exists")
     public void unsuccessfulGetObject_doesNotExists() {
 
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
         // 3. db does not contain object
+        // 4. superappUser is in the db
+
+
 
         // WHEN
-        // A GET request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
+        // A GET request is made to the path "/superapp/objects/{superapp}
+        // /{internalObjectId}?userSuperapp={userSuperapp}&userEmail={email}"
 
 
 
@@ -729,7 +754,8 @@ public class ObjectTestSet {
         // the server response with not found status code 404
 
         assertThatThrownBy(() ->
-                help_GetObjectBoundary("c2759119-f06f-4f3c-a8ca-9db9b16301c1", springApplicationName))
+                help_GetObjectBoundary("c2759119-f06f-4f3c-a8ca-9db9b16301c1", springApplicationName,
+                        springApplicationName,email))
                 .isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
     }
@@ -743,7 +769,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -760,29 +786,32 @@ public class ObjectTestSet {
                 active,  location, createdBy,  objectDetails);
 
         // WHEN
-        // A GET request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
+        // A GET request is made to the path "/superapp/objects/{superapp}
+        // /{internalObjectId}?userSuperapp={userSuperapp}&userEmail={email}"
 
 
 
         // THEN
-        // the server response with not found status code 404
+        // the server response with BadRequest status code 400
 
         assertThatThrownBy(() ->
-                help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), "2021a.someGuy"))
+                help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), "2021a.someGuy"
+                ,springApplicationName,email))
                 .isInstanceOf(HttpClientErrorException.class)
-                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
+                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
     /*get all*/
     @Test
-    @DisplayName("successful get all objects")
+    @DisplayName("successful get all objects with larger paging size")
     public void successfulGetAllObjects() {
+
 
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -791,7 +820,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,email));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -799,18 +828,26 @@ public class ObjectTestSet {
         help_PostObjectBoundary(null, type, alias, null, active,  location, createdBy,  objectDetails);
 
         // WHEN
-        // A GET request is made to the path "/superapp/objects"
+        // A GET request is made to the path /superapp/objects?userSuperapp={superapp}&
+        // userEmail={email}&size={size}&page={page}"
 
-        SuperAppObjectBoundary[] objects = help_GetAllObjectsBoundary();
+        SuperAppObjectBoundary[] objects = help_GetAllObjectsBoundary(springApplicationName,email,20,0);
 
         // THEN
         // the server response with status 2xx code
         assertThat(objects).hasSize(2);
     }
 
+
     @Test
     @DisplayName("successful get all objects when there are none")
     public void successfulGetAllObjectsEmpty() {
+
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
 
         // GIVEN
         // 1. the server is up and running
@@ -818,8 +855,7 @@ public class ObjectTestSet {
 
         // WHEN
         // A GET request is made to the path "/superapp/objects"
-
-        SuperAppObjectBoundary[] objects = help_GetAllObjectsBoundary();
+        SuperAppObjectBoundary[] objects = help_GetAllObjectsBoundary(springApplicationName,email,20,0);
 
         // THEN
         // the server response with status 2xx code
@@ -832,12 +868,18 @@ public class ObjectTestSet {
     @DisplayName("successful delete all objects of none empty db")
     public void successfulDelAllObjects() {
 
+        String adminEmail = "testingAdmin@gmail.com";
+        String adminRole = UserRole.ADMIN.toString();
+        String adminUsername = "testAdmin_user";
+        String adminAvatar = "testAdmin_avatar";
+        help_PostUserBoundary(adminEmail, adminRole, adminUsername, adminAvatar);
+
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -855,12 +897,12 @@ public class ObjectTestSet {
 
         // WHEN
         // A DELETE request is made to the path "/superapp/admin/objects"
-        help_DeleteObjectsBoundary();
+        help_DeleteObjectsBoundary(springApplicationName, adminEmail);
 
 
         // THEN
         // the server response with status 2xx code
-        SuperAppObjectBoundary[] objects = help_GetAllObjectsBoundary();
+        SuperAppObjectBoundary[] objects = help_GetAllObjectsBoundary(springApplicationName,email,20,0);
         assertThat(objects).isEmpty();
     }
 
@@ -868,20 +910,33 @@ public class ObjectTestSet {
     @DisplayName("successful delete all objects in empty db")
     public void successfulDelAllObjectsEmpty() {
 
+        String adminEmail = "testingAdmin@gmail.com";
+        String adminRole = UserRole.ADMIN.toString();
+        String adminUsername = "testAdmin_user";
+        String adminAvatar = "testAdmin_avatar";
+        help_PostUserBoundary(adminEmail, adminRole, adminUsername, adminAvatar);
+
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
         // GIVEN
         // 1. the server is up and running
         // 2. the database is up and running
 
         // WHEN
         // A DELETE request is made to the path "/superapp/admin/objects"
-        help_DeleteObjectsBoundary();
+        help_DeleteObjectsBoundary(springApplicationName, adminEmail);
 
 
         // THEN
         // the server response with status 2xx code
-        SuperAppObjectBoundary[] objects = help_GetAllObjectsBoundary();
+        SuperAppObjectBoundary[] objects = help_GetAllObjectsBoundary(springApplicationName,email,20,0);
         assertThat(objects).isEmpty();
     }
+
     /*update object*/
     @Test
     @DisplayName("unsuccessful update object id does not exist")
@@ -892,7 +947,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -912,14 +967,17 @@ public class ObjectTestSet {
                 setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(null);
 
         // WHEN
-        // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/diffrent_ID_that_not in_db"
+        // A PUT request is made to the path "/superapp/objects/{superapp}/{internalObjectId}?userSuperapp={userSuperapp}&
+        // userEmail={email}"
 
         // THEN
-        // the server response with not found status code 404
+        // the server response with BadRequest status code 400
         assertThatThrownBy(() ->
                 help_PutObjectBoundary(updateObject,"diffrent_ID_that_not in_db",
-                        postObject.getObjectId().getSuperapp())).isInstanceOf(HttpClientErrorException.class)
-                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
+                        postObject.getObjectId().getSuperapp(),
+                        springApplicationName,
+                        email)).isInstanceOf(HttpClientErrorException.class)
+                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
 
 
@@ -933,7 +991,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -952,12 +1010,20 @@ public class ObjectTestSet {
         SuperAppObjectBoundary updateObject = new SuperAppObjectBoundary().setObjectId(null).setType(null).setAlias("another demo").setActive(null).
                 setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(null);
         // WHEN
-        // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
-        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
+        // A PUT request is made to the path "/superapp/objects/{superapp}/{internalObjectId}?userSuperapp={userSuperapp}&
+        // userEmail={email}"
+        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(),
+                postObject.getObjectId().getSuperapp(),
+                springApplicationName, email);
+
+        SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
+                postObject.getObjectId().getInternalObjectId(),
+                postObject.getObjectId().getSuperapp(),springApplicationName,email);
+
 
         // THEN
         // the server response with status 2xx code
-        assertThat(postObject.getAlias()).isNotNull().isEqualTo(updateObject.getAlias());
+        assertThat(objectFromGet.getAlias()).isNotNull().isEqualTo(updateObject.getAlias());
     }
 
     @Test
@@ -969,7 +1035,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -978,7 +1044,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,email));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -992,12 +1058,21 @@ public class ObjectTestSet {
         updateObject.getObjectDetails().put("details2", "something");
 
         // WHEN
-        // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
+        // A PUT request is made to the path "/superapp/objects/{superapp}/{internalObjectId}?userSuperapp={userSuperapp}&
+        // userEmail={email}"
 
-        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
+        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(),
+                postObject.getObjectId().getSuperapp(),
+                springApplicationName, email);
+
+        SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
+                postObject.getObjectId().getInternalObjectId(),
+                postObject.getObjectId().getSuperapp(),springApplicationName,email);
+
         // THEN
         // the server response with status 2xx code
-        assertThat(postObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(updateObject.getObjectDetails());
+        assertThat(objectFromGet.getObjectDetails()).isNotNull()
+                .usingRecursiveComparison().isEqualTo(updateObject.getObjectDetails());
     }
 
     @Test
@@ -1009,7 +1084,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -1032,17 +1107,24 @@ public class ObjectTestSet {
 
 
         // WHEN
-        // A PUT request is made to the path "/superapp/objects/2023b.LiorAriely/{internalObjectId}"
+        // A PUT request is made to the path "/superapp/objects/{superapp}/{internalObjectId}?userSuperapp={userSuperapp}&
+        // userEmail={email}"
 
-        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(), postObject.getObjectId().getSuperapp());
+        help_PutObjectBoundary(updateObject,postObject.getObjectId().getInternalObjectId(),
+                postObject.getObjectId().getSuperapp(),
+                springApplicationName, email);
+
+        SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
+                postObject.getObjectId().getInternalObjectId(),
+                postObject.getObjectId().getSuperapp(),springApplicationName,email);
         // THEN
         // the server response with status 2xx code
-        assertThat(postObject.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(objectDetails);
+        assertThat(objectFromGet.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(objectDetails);
     }
 
     /*Wrong Paths*/
     @Test
-    @DisplayName("UNSuccessful create object, wrong path")
+    @DisplayName("unsuccessful create object, wrong path")
     public void unsuccessfulCreateObject_WrongPath() {
 
         // GIVEN
@@ -1050,7 +1132,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -1063,7 +1145,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,email ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1077,6 +1159,8 @@ public class ObjectTestSet {
                 .isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
 
+
+
     }
 
     @Test
@@ -1088,7 +1172,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -1097,7 +1181,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,email ));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1131,7 +1215,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -1140,7 +1224,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,email));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1169,7 +1253,7 @@ public class ObjectTestSet {
         // 2. the database is up and running
 
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -1209,8 +1293,14 @@ public class ObjectTestSet {
         // 1. the server is up and running
         // 2. the database is up and running
 
+        String adminEmail = "testingAdmin@gmail.com";
+        String adminRole = UserRole.ADMIN.toString();
+        String adminUsername = "testAdmin_user";
+        String adminAvatar = "testAdmin_avatar";
+        help_PostUserBoundary(adminEmail, adminRole, adminUsername, adminAvatar);
+
         String email = "demo@gmail.com";
-        String role = UserRole.ADMIN.toString();
+        String role = UserRole.SUPERAPP_USER.toString();
         String username = "demo_user";
         String avatar = "demo_avatar";
         help_PostUserBoundary(email, role, username, avatar);
@@ -1219,7 +1309,7 @@ public class ObjectTestSet {
         String alias = "demo";
         Boolean active = true;
         Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName, email));
         Map<String, Object> objectDetails = new HashMap<>();
         objectDetails.put("details", "String object demo");
 
@@ -1233,10 +1323,12 @@ public class ObjectTestSet {
 
 
         // THEN
-        // the server response with status 404 not found
+        // the server response with status 404 NOT_FOUND
+
         assertThatThrownBy(() ->
                 this.restTemplate
-                        .delete(this.baseUrl + "superapp/amin/objects"))
+                        .delete(this.baseUrl + "/superapp/amin/objects?userSuperapp={superapp}&" +
+                                "userEmail={email}",springApplicationName, adminEmail))
                 .isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
 
@@ -1285,13 +1377,17 @@ public class ObjectTestSet {
      * @param springApplicationName
      * @return SuperAppObjectBoundary
      */
-    public SuperAppObjectBoundary help_GetObjectBoundary(String internalObjectId, String springApplicationName) {
+    public SuperAppObjectBoundary help_GetObjectBoundary(String internalObjectId, String springApplicationName, String userSuperapp, String userEmail) {
         return this.restTemplate
                 .getForObject(
-                        this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}"
+                        this.baseUrl + "/superapp/objects/{superapp}/" +
+                                "{internalObjectId}?userSuperapp={userSuperapp}&userEmail={email}"
                         , SuperAppObjectBoundary.class
                         , springApplicationName
-                        , internalObjectId);
+                        , internalObjectId
+                        , userSuperapp
+                        , userEmail);
+
     }
 
     /**
@@ -1305,11 +1401,13 @@ public class ObjectTestSet {
      */
     public void help_PutObjectBoundary(SuperAppObjectBoundary objectBoundary,
                                          String internalObjectId,
-                                         String springApplicationName) {
+                                         String springApplicationName,
+                                         String userSuperapp,
+                                         String userEmail) {
         this.restTemplate.put(
-                this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}"
-                , objectBoundary, springApplicationName
-                , internalObjectId);
+                this.baseUrl + "/superapp/objects/{superapp}/{internalObjectId}?userSuperapp={userSuperapp}&" +
+                        "userEmail={email}"
+                , objectBoundary, springApplicationName, internalObjectId, userSuperapp, userEmail);
     }
 
     /**
@@ -1318,8 +1416,9 @@ public class ObjectTestSet {
      * the path is "/superapp/admin/objects"
      *
      */
-    public void help_DeleteObjectsBoundary() {
-        this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects");
+    public void help_DeleteObjectsBoundary(String userSuperapp, String userEmail) {
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects?userSuperapp={superapp}&" +
+                                "userEmail={email}",userSuperapp, userEmail);
     }
 
     /**
@@ -1329,10 +1428,13 @@ public class ObjectTestSet {
      *
      * @return SuperAppObjectBoundary[]
      */
-    public SuperAppObjectBoundary[] help_GetAllObjectsBoundary() {
+    public SuperAppObjectBoundary[] help_GetAllObjectsBoundary(String userSuperapp, String userEmail,
+                                                               int size, int page) {
 
         return this.restTemplate
-                .getForObject(this.baseUrl + "/superapp/objects", SuperAppObjectBoundary[].class);
+                .getForObject(this.baseUrl + "/superapp/objects?userSuperapp={superapp}&" +
+                        "userEmail={email}&size={size}&page={page}", SuperAppObjectBoundary[].class,userSuperapp,
+                        userEmail, size, page);
     }
 
     public UserBoundary help_PostUserBoundary(String email, String role, String username, String avatar) {
