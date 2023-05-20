@@ -60,7 +60,7 @@ public class MiniAppCommandManagerMockup implements MiniAppCommandService {
         commandBoundary.setTargetObject(ConvertHelp.strTargetObjectToBoundary(commandEntity.getTargetObject()));
         commandBoundary.setInvocationTimestamp(commandEntity.getInvocationTimestamp());
         commandBoundary.setInvokedBy(ConvertHelp.strInvokedByToBoundary(commandEntity.getInvokedBy()));
-
+        commandBoundary.setAsyncFlag(false);
         return commandBoundary;
     }
 
@@ -109,6 +109,7 @@ public class MiniAppCommandManagerMockup implements MiniAppCommandService {
         } catch (Exception e) {
             throw new RuntimeException("cant invoke command of miniapp " + miniappName);
         }
+
 
         // TODO: for future check if targetObject existing, UserRole, and UserID.
 

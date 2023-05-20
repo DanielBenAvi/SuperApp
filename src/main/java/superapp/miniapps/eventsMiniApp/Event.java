@@ -12,7 +12,6 @@ public class Event {
 
     private String name;
     private Date date;
-    private String theme;
     private String location;
     private String description;
     private String image;
@@ -39,15 +38,6 @@ public class Event {
 
     public Event setDate(Date date) {
         this.date = date;
-        return this;
-    }
-
-    public String getTheme() {
-        return theme;
-    }
-
-    public Event setTheme(String theme) {
-        this.theme = theme;
         return this;
     }
 
@@ -107,6 +97,6 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event{" + "name='" + name + '\'' + ", date=" + date + ", theme='" + theme + '\'' + ", location='" + location + '\'' + ", description='" + description + '\'' + ", image='" + image + '\'' + ", contact='" + contact + '\'' + ", attendees=" + attendees + ", preferences=" + preferences + '}';
+        return "Event{" + "name='" + name + '\'' + ", date=" + date + '\'' + ", location='" + location + '\'' + ", description='" + description + '\'' + ", image='" + image + '\'' + ", contact='" + contact + '\'' + ", attendees=" + attendees + ", preferences=" + preferences + '}';
     }
 }
