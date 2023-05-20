@@ -1,5 +1,6 @@
 package superapp.miniapps.command.datingimpl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
@@ -41,6 +42,13 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
 
         ObjectId targetBoundaryID = command.getTargetObject().getObjectId();
         String targetEntityID = targetBoundaryID.getSuperapp() + ConvertHelp.DELIMITER_ID + targetBoundaryID.getInternalObjectId();
+
+//        /////////////////////
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        String t = objectMapper.writeValueAsString(PrivateDatingProfile);
+//        PrivateDatingProfile car = objectMapper.readValue(json, PrivateDatingProfile.class);
+//        ///////////////////
+
 
         // get my profile dating
         String myDatingProfileId = command.getCommandAttributes().get("myDatingProfileId").toString();

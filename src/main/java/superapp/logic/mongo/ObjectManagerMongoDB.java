@@ -23,13 +23,13 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     private ObjectCrud objectCrudDB;
     private String springApplicationName;
     private final UserCrud userCrud;
-    private RBAC roleBasedAccessControl;
+    private RBAC accessControl;
 
     @Autowired
-    public ObjectManagerMongoDB(ObjectCrud objectCrudDB,UserCrud userCrud, RBAC roleBasedAccessControl) {
+    public ObjectManagerMongoDB(ObjectCrud objectCrudDB,UserCrud userCrud, RBAC accessControl) {
         this.objectCrudDB = objectCrudDB;
         this.userCrud = userCrud;
-        this.roleBasedAccessControl = roleBasedAccessControl;
+        this.accessControl = accessControl;
     }
 
     // this method injects a configuration value of spring
@@ -64,7 +64,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             if(!userCrud.existsById(userId))
                 throw new NotFoundException("user " + userId + " not found in database");
 
-            if (!roleBasedAccessControl.hasPermission(userId, "createObject"))
+            if (!accessControl.hasPermission(userId, "createObject"))
                 throw new UnauthorizedRequestException("user " + userId + " has no permission to createObject");
 
             SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
@@ -88,7 +88,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         if(!userCrud.existsById(userId))
             throw new NotFoundException("user " + userId + " not found in database");
 
-        if (!roleBasedAccessControl.hasPermission(userId, "updateObject"))
+        if (!accessControl.hasPermission(userId, "updateObject"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to updateObject");
 
         validateSuperappNameAndInternalObjectId(objectSuperApp, internalObjectId);
@@ -151,7 +151,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException("user " + userId + " not found in database"));
 
-        if (!roleBasedAccessControl.hasPermission(userId, "getSpecificObject"))
+        if (!accessControl.hasPermission(userId, "getSpecificObject"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to getSpecificObject");
 
         validateSuperappNameAndInternalObjectId(objectSuperApp, internalObjectId);
@@ -182,7 +182,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                         .orElseThrow(() -> new NotFoundException("user " + userId + " not found in database"));
 
 
-        if (!roleBasedAccessControl.hasPermission(userId, "getAllObjects"))
+        if (!accessControl.hasPermission(userId, "getAllObjects"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to getAllObjects");
 
 
@@ -211,7 +211,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         if(!userCrud.existsById(userId))
             throw new NotFoundException("user " + userId + "not found in database");
 
-        if (!roleBasedAccessControl.hasPermission(userId, "addChild"))
+        if (!accessControl.hasPermission(userId, "addChild"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to addChild");
 
 
@@ -253,7 +253,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException("user " + userId + " not found in database"));
 
-        if (!roleBasedAccessControl.hasPermission(userId, "getChildren"))
+        if (!accessControl.hasPermission(userId, "getChildren"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to getChildren");
 
         validateSuperappNameAndInternalObjectId(superapp, parentInternalObjectId);
@@ -288,7 +288,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException("user " + userId + " not found in database"));
 
-        if (!roleBasedAccessControl.hasPermission(userId, "getParent"))
+        if (!accessControl.hasPermission(userId, "getParent"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to getParent");
 
         validateSuperappNameAndInternalObjectId(superapp, childInternalObjectId);
@@ -319,7 +319,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     public void deleteAllObjects(String userSuperapp,String userEmail) {
 
         String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
-        if (!roleBasedAccessControl.hasPermission(userId, "deleteAllObjects"))
+        if (!accessControl.hasPermission(userId, "deleteAllObjects"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to deleteAllObjects");
 
         this.objectCrudDB.deleteAll();
@@ -333,7 +333,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException("user " + userId + " not found in database"));
 
-        if (!roleBasedAccessControl.hasPermission(userId, "getAllObjectsByType"))
+        if (!accessControl.hasPermission(userId, "getAllObjectsByType"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to getAllObjectsByType");
 
 
@@ -365,7 +365,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException("user " + userId + " not found in database"));
 
-        if (!roleBasedAccessControl.hasPermission(userId, "getAllObjectsByAlias"))
+        if (!accessControl.hasPermission(userId, "getAllObjectsByAlias"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to getAllObjectsByAlias");
 
 
@@ -400,7 +400,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException("user " + userId + " not found in database"));
 
-        if (!roleBasedAccessControl.hasPermission(userId, "getAllObjectsByAlias"))
+        if (!accessControl.hasPermission(userId, "getAllObjectsByAlias"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to getAllObjectsByAlias");
 
 

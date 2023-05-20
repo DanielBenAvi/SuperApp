@@ -34,7 +34,11 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
     public List<SuperAppObjectEntity> findAllByAliasAndActiveIsTrue(@Param("alias") String alias, PageRequest pageRequest);
 
-    public List<SuperAppObjectEntity> findAllByLocation(Double lat, Double lng, Double distance, String distanceUnits, Pageable pageable);
+    public List<SuperAppObjectEntity> findAllByLocation(@Param("lat")Double lat,
+                                                        @Param("lng")Double lng,
+                                                        @Param("distance")Double distance,
+                                                        @Param("distanceUnits")String distanceUnits,
+                                                        Pageable pageable);
 
     @Query("{'objectDetails.attendees': {'$in':[?0] },'type' :?1, 'objectDetails.date': {'$gt': ?2 } }")
     public List<SuperAppObjectEntity> findAllByTypeAndMyEvents(String userEmail, String type, Date now, PageRequest creationTimestamp);
