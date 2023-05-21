@@ -73,4 +73,9 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     @Query("{ 'objectId' : ?0, 'objectDetails.attendees': {'$not':{'$in':[?1] }}}")
     @Update("{ $push: { 'objectDetails.attendees': ?1 } }")
     void addAttendeeToEvent(String eventObjectId, String userEmail);
+
+    // remove attendee from event
+    @Query("{ 'objectId' : ?0, 'objectDetails.attendees': {'$in':[?1] }}")
+    @Update("{ $pull: { 'objectDetails.attendees': ?1 } }")
+    void removeAttendeeFromEvent(String eventObjectId, String userEmail);
 }

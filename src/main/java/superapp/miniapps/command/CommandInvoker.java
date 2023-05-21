@@ -26,7 +26,7 @@ public class CommandInvoker {
     private EventGetMyEventsCommand eventGetMyEventsCommand;
 
     private EventJoinEventCommand eventJoinEventCommand;
-
+    private EventLeaveEventCommand eventLeaveEventCommand;
     private EventSearchEventByName eventSearchEventByName;
     private EventSearchEventByDate eventSearchEventByDate;
     private EventSearchEventByLocation eventSearchEventByLocation;
@@ -49,6 +49,7 @@ public class CommandInvoker {
                           DatingActivateProfileCommand datingActivateProfile,
                           EventGetMyEventsCommand eventGetMyEventsCommand,
                           EventJoinEventCommand eventJoinEventCommand,
+                          EventLeaveEventCommand eventLeaveEventCommand,
                           EventSearchEventByName eventSearchEventByName,
                           EventSearchEventByDate eventSearchEventByDate,
                           EventSearchEventByLocation eventSearchEventByLocation,
@@ -68,6 +69,7 @@ public class CommandInvoker {
         this.datingActivateProfile = datingActivateProfile;
         this.eventGetMyEventsCommand = eventGetMyEventsCommand;
         this.eventJoinEventCommand = eventJoinEventCommand;
+        this.eventLeaveEventCommand = eventLeaveEventCommand;
         this.eventSearchEventByName = eventSearchEventByName;
         this.eventSearchEventByDate = eventSearchEventByDate;
         this.eventSearchEventByLocation = eventSearchEventByLocation;
@@ -111,6 +113,8 @@ public class CommandInvoker {
                 return eventGetMyEventsCommand;
             case JOIN_EVENT:
                 return eventJoinEventCommand;
+            case LEAVE_EVENT:
+                return eventLeaveEventCommand;
             case SEARCH_EVENTS_BY_NAME:
                 return eventSearchEventByName;
             case SEARCH_EVENTS_BY_LOCATION:
