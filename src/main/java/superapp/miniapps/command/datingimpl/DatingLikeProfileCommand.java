@@ -1,6 +1,5 @@
 package superapp.miniapps.command.datingimpl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
@@ -10,7 +9,6 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.ObjectId;
 import superapp.miniapps.chat.objects.Chat;
 import superapp.miniapps.Gender;
-import superapp.miniapps.Address;
 import superapp.miniapps.command.MiniAppsCommand;
 import superapp.miniapps.datingMiniApp.Match;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
@@ -90,8 +88,8 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
                     .setUser2(myDatingProfile.getPublicProfile());
 
             // update 2 profile with the match
-            myDatingProfile.getMatches().add(newMatch);
-            targetDatingProfile.getMatches().add(newMatch);
+//            myDatingProfile.getMatches().add(newMatch);
+//            targetDatingProfile.getMatches().add(newMatch);
 
             // update the targetObject and save to database
             targetObject.getObjectDetails().put("key", targetDatingProfile);
@@ -123,11 +121,10 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
         PrivateDatingProfile profile = new PrivateDatingProfile();
 
         profile.setPublicProfile(createPublicDatingProfileFromMap((LinkedHashMap<String, Object>) map.get("publicProfile")));
-        profile.setAddress(createAddressFromMap((LinkedHashMap<String, Object>) map.get("address")));
         profile.setDistanceRange((int) map.get("distanceRange"));
         profile.setAgeRange((int) map.get("ageRange"));
         profile.setGenderPreferences((ArrayList<Gender>) map.get("genderPreferences"));
-        profile.setMatches((ArrayList<Match>) map.get("matches"));
+        profile.setMatches((ArrayList<String>) map.get("matches"));
         profile.setLikes((ArrayList<String>) map.get("likes"));
         return profile;
     }
@@ -141,20 +138,9 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
         publicDatingProfile.setAge((int) map.get("age"));
         publicDatingProfile.setBio((String) map.get("bio"));
         publicDatingProfile.setSexOrientation((ArrayList<Gender>) map.get("sexOrientation"));
-        publicDatingProfile.setInterests((ArrayList<String>) map.get("interests"));
         publicDatingProfile.setPictures((ArrayList<String>) map.get("pictures"));
 
         return publicDatingProfile;
     }
 
-    private Address createAddressFromMap(LinkedHashMap<String, Object> map) {
-        Address address = new Address()
-                .setStreet((String) map.get("street"))
-                .setCity((String) map.get("city"))
-                .setState((String) map.get("state"))
-                .setHomeNum((int) map.get("homeNum"))
-                .setZipCode((String) map.get("zipCode"));
-
-        return address;
-    }
 }

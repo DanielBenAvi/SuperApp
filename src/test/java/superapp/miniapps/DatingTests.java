@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import superapp.BaseTestSet;
+import superapp.data.SuperAppObjectEntity;
+import superapp.data.UserDetails;
 import superapp.data.UserRole;
 import superapp.logic.boundaries.*;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
@@ -53,8 +55,8 @@ public class DatingTests extends BaseTestSet {
 
         /////////////////////////////////
         // Create and post users
-        this.help_PostUserBoundary("A@gmail.com", UserRole.MINIAPP_USER.toString(),"B", "B");
-        this.help_PostUserBoundary("B@gmail.com", UserRole.MINIAPP_USER.toString(),"A", "A");
+        UserBoundary userA = this.help_PostUserBoundary("A@gmail.com", UserRole.SUPERAPP_USER.toString(),"A", "A");
+        UserBoundary userB = this.help_PostUserBoundary("B@gmail.com", UserRole.SUPERAPP_USER.toString(),"B", "B");
 
         // need to related profile to user?/
         // post 2 dating profile for each user
@@ -68,7 +70,6 @@ public class DatingTests extends BaseTestSet {
 
         PrivateDatingProfile profileA = new PrivateDatingProfile()
                 .setPublicProfile(publicA)
-                .setAddress(new Address().setCity("jeru").setState("isr").setHomeNum(2).setStreet("gaza").setZipCode("12"))
                 .setAgeRange(12)
                 .setDistanceRange(100)
                 .setGenderPreferences(new ArrayList<>(Arrays.asList( Gender.FEMALE, Gender.OTHER)));
@@ -83,7 +84,6 @@ public class DatingTests extends BaseTestSet {
 
         PrivateDatingProfile profileB = new PrivateDatingProfile()
                 .setPublicProfile(publicB)
-                .setAddress(new Address().setCity("jeru").setState("isr").setHomeNum(2).setStreet("gaza").setZipCode("12"))
                 .setAgeRange(12)
                 .setDistanceRange(100)
                 .setGenderPreferences(new ArrayList<>(Arrays.asList( Gender.FEMALE, Gender.OTHER)));
@@ -99,6 +99,9 @@ public class DatingTests extends BaseTestSet {
         String objectIdB = this.springApplicationName + "_" + postedObjB.getObjectId().getInternalObjectId();
 
 
+        // change role
+        help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.toString()), userA.getUserId().getEmail());
+        help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.toString()), userB.getUserId().getEmail());
 
         // create command
         InvokedBy invokedByA = new InvokedBy()
@@ -119,7 +122,6 @@ public class DatingTests extends BaseTestSet {
                 , invokedByA
                 , commandAttributeA);
 
-        System.err.println("Result A Like B : " + commandALikeBResult.toString());
 
 
         // create command B like A
@@ -133,7 +135,7 @@ public class DatingTests extends BaseTestSet {
         Map<String, Object> commandAttributeB = new HashMap<>();
         commandAttributeB.put("myDatingProfileId", objectIdB);
         // post  command B like A
-        Object commandBLikeAResult = this.help_PostCommandBoundary(
+        this.help_PostCommandBoundary(
                 MiniAppNames.DATING
                 , new CommandId()
                 , "LIKE_PROFILE"
@@ -142,6 +144,48 @@ public class DatingTests extends BaseTestSet {
                 , invokedByB
                 , commandAttributeB);
 
+        int y = 9;
+
+    }
+
+    @Test
+    @DisplayName("SuccessFull get user det")
+    public void test1() {
+        UserBoundary userA = this.help_PostUserBoundary("A@gmail.com", UserRole.SUPERAPP_USER.toString(),"A", "A");
+        UserBoundary userB = this.help_PostUserBoundary("B@gmail.com", UserRole.SUPERAPP_USER.toString(),"B", "B");
+
+        UserBoundary userC = this.help_PostUserBoundary("C@gmail.com", UserRole.MINIAPP_USER.toString(),"C", "C");
+
+        UserDetails userDetailsA = new UserDetails().setName("IDO").setPhoneNum("052-5762230");
+        UserDetails userDetailsB = new UserDetails().setName("Yosef").setPhoneNum("052-5762230");
+
+        SuperAppObjectBoundary postedA = createObjectAndPostHelper("UserDetails", "A@gmail.com", "key1", userDetailsA);
+        SuperAppObjectBoundary postedB = createObjectAndPostHelper("UserDetails", "B@gmail.com", "key1", userDetailsB);
+
+
+        UserId userIdC = new UserId(this.springApplicationName, "C@gmail.com");
+
+        InvokedBy invokedByC = new InvokedBy()
+                .setUserId(userIdC);
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId().setSuperapp(this.springApplicationName).setInternalObjectId("EMPTY_OBJECT_FOR_COMMAND_THAT_NO_TARGET"));
+
+        Map<String, Object> commandAttributeB = new HashMap<>();
+        commandAttributeB.put("createdBy", this.springApplicationName + "_" + "B@gmail.com");
+        commandAttributeB.put("type", "UserDetails");
+        // post  command B like A
+        this.help_PostCommandBoundary(
+                MiniAppNames.DATING
+                , new CommandId()
+                , "GET_USER_DETAILS_BY_EMAIL"
+                , targetObject
+                , null
+                , invokedByC
+                , commandAttributeB);
+        
+        int x = 1;
+        
 
     }
 
