@@ -70,7 +70,7 @@ public class DatingTests extends BaseTestSet {
 
         PrivateDatingProfile profileA = new PrivateDatingProfile()
                 .setPublicProfile(publicA)
-                .setAgeRange(12)
+
                 .setDistanceRange(100)
                 .setGenderPreferences(new ArrayList<>(Arrays.asList( Gender.FEMALE, Gender.OTHER)));
 
@@ -84,7 +84,6 @@ public class DatingTests extends BaseTestSet {
 
         PrivateDatingProfile profileB = new PrivateDatingProfile()
                 .setPublicProfile(publicB)
-                .setAgeRange(12)
                 .setDistanceRange(100)
                 .setGenderPreferences(new ArrayList<>(Arrays.asList( Gender.FEMALE, Gender.OTHER)));
 

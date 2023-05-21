@@ -11,7 +11,10 @@ public class PrivateDatingProfile {
     private PublicDatingProfile publicProfile;
     private Date dateOfBirthday;
     private int distanceRange;
-    private int ageRange;   // (18-120)
+    private int maxAge;
+    private int minAge;
+
+
     private List<Gender> genderPreferences;
     private List<String> matches; // list of matches id
     private List<String> likes; // list of profile dating id that I liked
@@ -51,12 +54,21 @@ public class PrivateDatingProfile {
         return this;
     }
 
-    public int getAgeRange() {
-        return ageRange;
+    public int getMaxAge() {
+        return maxAge;
     }
 
-    public PrivateDatingProfile setAgeRange(int ageRange) {
-        this.ageRange = ageRange;
+    public PrivateDatingProfile setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
+        return this;
+    }
+
+    public int getMinAge() {
+        return minAge;
+    }
+
+    public PrivateDatingProfile setMinAge(int minAge) {
+        this.minAge = minAge;
         return this;
     }
 
@@ -91,8 +103,10 @@ public class PrivateDatingProfile {
     public String toString() {
         return "PrivateDatingProfile{" +
                 "publicProfile=" + publicProfile +
+                ", dateOfBirthday=" + dateOfBirthday +
                 ", distanceRange=" + distanceRange +
-                ", ageRange=" + ageRange +
+                ", maxAge=" + maxAge +
+                ", minAge=" + minAge +
                 ", genderPreferences=" + genderPreferences +
                 ", matches=" + matches +
                 ", likes=" + likes +

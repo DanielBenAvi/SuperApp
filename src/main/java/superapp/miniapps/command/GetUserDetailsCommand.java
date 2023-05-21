@@ -22,11 +22,11 @@ public class GetUserDetailsCommand implements MiniAppsCommand{
         Map<String, Object> commandAttr = commandBoundary.getCommandAttributes();
 
         // TODO: Add validation
-        String createdBy = commandAttr.get("createdBy").toString();
+        String createdBy = commandAttr.get("createdBy").toString(); // todo : createdBy shall be as boundary
         String type = commandAttr.get("type").toString();
 
         Object result = this.objectCrudDB.findByCreatedByAndType(createdBy, type);
-        
+
         return result;
     }
 }

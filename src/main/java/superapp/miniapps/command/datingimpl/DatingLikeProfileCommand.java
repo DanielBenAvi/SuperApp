@@ -122,7 +122,6 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
 
         profile.setPublicProfile(createPublicDatingProfileFromMap((LinkedHashMap<String, Object>) map.get("publicProfile")));
         profile.setDistanceRange((int) map.get("distanceRange"));
-        profile.setAgeRange((int) map.get("ageRange"));
         profile.setGenderPreferences((ArrayList<Gender>) map.get("genderPreferences"));
         profile.setMatches((ArrayList<String>) map.get("matches"));
         profile.setLikes((ArrayList<String>) map.get("likes"));
