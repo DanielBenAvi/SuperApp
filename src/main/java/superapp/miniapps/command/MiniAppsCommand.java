@@ -26,7 +26,8 @@ public interface MiniAppsCommand {
         SEARCH_EVENTS_BY_LOCATION,
         SEARCH_EVENTS_BY_DATE,
         SEARCH_EVENTS_BY_PREFERENCES,
-        GET_USER_DETAILS_BY_EMAIL
+        GET_USER_DETAILS_BY_EMAIL,
+        GET_EVENTS_BASED_ON_PREFERENCES
     }
 
     static commands strToCommand(String command) {
