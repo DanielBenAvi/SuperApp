@@ -11,6 +11,8 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.miniapps.command.MiniAppsCommand;
 import superapp.miniapps.eventsMiniApp.Event;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,12 +29,15 @@ public class EventJoinEventCommand implements MiniAppsCommand {
     @Override
     public Object execute(MiniAppCommandBoundary commandBoundary) {
         // todo: ERROR - check if user is in the event and add the mail to the attendees list
-        String eventObjectId = commandBoundary.getCommandAttributes().get("eventId").toString();
+        String eventObjectId = commandBoundary.getTargetObject().getObjectId().getSuperapp() + "_" + commandBoundary.getTargetObject().getObjectId().getInternalObjectId();
         String userEmail = commandBoundary.getInvokedBy().getUserId().getEmail();
 
 
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.convertValue(this.objectCrudDB.findById(eventObjectId).isPresent(), Event.class);
+        this.objectCrudDB.addAttendeeToEvent(eventObjectId, userEmail);
+
+        Map<String, String> event = new HashMap<>();
+        event.put("status", "success");
+        return event;
     }
 
 

@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.mongodb.repository.Update;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
@@ -34,7 +35,7 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
     public List<SuperAppObjectEntity> findAllByAliasAndActiveIsTrue(@Param("alias") String alias, PageRequest pageRequest);
 
- //
+    //
 
 
     //@Query("{ 'location' : { 'near' : [location.x, location.y], 'maxDistance' : distance}}")
@@ -66,4 +67,10 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     public List<SuperAppObjectEntity> searchEventByLocation(String type, Date now, Double lat, Double lng, Double distance, Pageable pageable);
 
     public SuperAppObjectEntity findByCreatedByAndType(@Param("createdBy") String createdBy, @Param("type") String type);
+
+
+    // add attendee to event
+    @Query("{ 'objectId' : ?0, 'objectDetails.attendees': {'$not':{'$in':[?1] }}}")
+    @Update("{ $push: { 'objectDetails.attendees': ?1 } }")
+    void addAttendeeToEvent(String eventObjectId, String userEmail);
 }
