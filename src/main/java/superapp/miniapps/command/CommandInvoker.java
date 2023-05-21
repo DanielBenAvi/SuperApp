@@ -86,48 +86,28 @@ public class CommandInvoker {
     public MiniAppsCommand create(MiniAppsCommand.commands commandCode, Object... params) {
 
 
-        switch (commandCode) {
-            case LIKE_PROFILE:
-                return datingLikeProfile;
-            case UNLIKE_PROFILE:
-                return datingUnlikeProfile;
-            case UNMATCH_PROFILE:
-                return datingUnmatch;
-            case ACTIVATE_PROFILE:
-                return datingActivateProfile;
-            case DEACTIVATE_PROFILE:
-                return datingDeactivateProfile;
-            case CREATE_PROFILE:
-                return datingCreateProfile;
-            case EDIT_PROFILE:
-                return datingEditProfile;
-            case GET_PROFILE:
-                return datingGetProfile;
-            case GET_LIKES:
-                return datingGetLikes;
-            case GET_MATCHES:
-                return datingGetMatches;
-            case GET_POTENTIAL_DATES:
-                return datingGetPotentialDates;
-            case GET_MY_EVENTS:
-                return eventGetMyEventsCommand;
-            case JOIN_EVENT:
-                return eventJoinEventCommand;
-            case LEAVE_EVENT:
-                return eventLeaveEventCommand;
-            case SEARCH_EVENTS_BY_NAME:
-                return eventSearchEventByName;
-            case SEARCH_EVENTS_BY_LOCATION:
-                return eventSearchEventByLocation;
-            case SEARCH_EVENTS_BY_DATE:
-                return eventSearchEventByDate;
-            case SEARCH_EVENTS_BY_PREFERENCES:
-                return eventSearchEventByPreferences;
-            case GET_USER_DETAILS_BY_EMAIL:
-                return getUserDetailsCommand;
-            default:
-                return null; // create default command?
-        }
+        return switch (commandCode) {
+            case LIKE_PROFILE -> datingLikeProfile;
+            case UNLIKE_PROFILE -> datingUnlikeProfile;
+            case UNMATCH_PROFILE -> datingUnmatch;
+            case ACTIVATE_PROFILE -> datingActivateProfile;
+            case DEACTIVATE_PROFILE -> datingDeactivateProfile;
+            case CREATE_PROFILE -> datingCreateProfile;
+            case EDIT_PROFILE -> datingEditProfile;
+            case GET_PROFILE -> datingGetProfile;
+            case GET_LIKES -> datingGetLikes;
+            case GET_MATCHES -> datingGetMatches;
+            case GET_POTENTIAL_DATES -> datingGetPotentialDates;
+            case GET_MY_EVENTS -> eventGetMyEventsCommand;
+            case JOIN_EVENT -> eventJoinEventCommand;
+            case LEAVE_EVENT -> eventLeaveEventCommand;
+            case SEARCH_EVENTS_BY_NAME -> eventSearchEventByName;
+            case SEARCH_EVENTS_BY_LOCATION -> eventSearchEventByLocation;
+            case SEARCH_EVENTS_BY_DATE -> eventSearchEventByDate;
+            case SEARCH_EVENTS_BY_PREFERENCES -> eventSearchEventByPreferences;
+            case GET_USER_DETAILS_BY_EMAIL -> getUserDetailsCommand;
+            default -> null; // create default command?
+        };
 
     }
 }
