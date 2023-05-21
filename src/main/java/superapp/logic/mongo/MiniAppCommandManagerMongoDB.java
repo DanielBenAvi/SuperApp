@@ -98,13 +98,10 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
         // check if targetObject fields are null
         if (targetObject.getObjectId() == null) return false;
 
-        if (targetObject.getObjectId().getInternalObjectId() == null) return false;
-
-        return targetObject.getObjectId().getSuperapp() != null;
-
-//        AtomicBoolean objectExist = checkIfObjectExists(targetObject);
-//        if (!objectExist.get())
-//            throw new NotFoundException("object id is not valid");
+        return targetObject.getObjectId().getInternalObjectId() != null &&
+                !targetObject.getObjectId().getInternalObjectId().isEmpty() &&
+                targetObject.getObjectId().getSuperapp() != null &&
+                !targetObject.getObjectId().getSuperapp().isEmpty();
     }
 
 
@@ -122,7 +119,7 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException("user " + userId + " not found in database"));
 
-        // validate
+        // check permission
         if (!accessControl.hasPermission(userId, "invokeCommand"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to invokeCommand");
 
@@ -130,16 +127,30 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
         if (!isValidTargetObject(commandBoundary.getTargetObject()))
             throw new BadRequestException("target object is not valid");
 
-        // validate object exist
-        SuperAppObjectEntity targetObjectEntity = this.objectCrud
-                .findById(ConvertHelp.objectIdBoundaryToStr(commandBoundary.getTargetObject().getObjectId()))
-                .orElseThrow(() -> new NotFoundException("target object not exist in data base"));
+        // validate object exist or is a default object
+        // todo: create default object for all commands
+        SuperAppObjectEntity targetObjectEntity = new SuperAppObjectEntity();
+        String objectId = ConvertHelp.objectIdBoundaryToStr(commandBoundary.getTargetObject().getObjectId());
+        if (this.objectCrud.existsById(objectId)) {
 
-        if (!targetObjectEntity.getActive())
-            throw new NotFoundException(" target object id "+ targetObjectEntity.getObjectId() + "not found - active:false");
+            targetObjectEntity = this.objectCrud
+                    .findById(objectId)
+                    .orElseThrow(() -> new NotFoundException("target object not exist in data base"));
+
+            // validate object exist is not active:false
+            if (!targetObjectEntity.getActive())
+                throw new NotFoundException(" target object id " + targetObjectEntity.getObjectId() + "not found - active:false");
+
+        }
+        else if (!commandBoundary.getTargetObject().getObjectId().getInternalObjectId().equals("EMPTY_OBJECT_FOR_COMMAND_THAT_NO_TARGET")
+                || !commandBoundary.getTargetObject().getObjectId().getSuperapp().equals(this.springApplicationName)) {
+            throw new NotFoundException("target object not exist in data base");
+
+        }
+
+
 //        if (commandBoundary.getCommand() == null)
 //            throw new BadRequestException("command cant be null");
-
 
         // set command id
         commandBoundary
@@ -160,7 +171,9 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
 
         MiniAppsCommand.commands commandsToExecute = MiniAppsCommand.strToCommand(commandBoundary.getCommand());
 
+
         if (miniappName.equals(MiniAppNames.UNKNOWN)) {
+            // TODO : is align with the spec?
             resultObjectOfCommand =
                     new InvalidCommand(miniappName + " miniapp name: "
                             + commandBoundary.getCommandId().getMiniapp() + " not supported");

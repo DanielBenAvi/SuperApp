@@ -418,7 +418,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         Distance distance1 = new Distance(distance, Metrics.NEUTRAL);
         // this is return for User Role SUPERAPP_USER
             return this.objectCrudDB
-                    .findAllByLocationNear(new Point(lng, lat) , distance1, pageRequest)
+                    .findAllByLocationNear(lat, lng , distance1, pageRequest)
                     .stream()
                     .map(this::convertEntityToBoundary)
                     .toList();

@@ -68,7 +68,7 @@ public class ConvertHelp {
 
 //        String locationEntity = locationBoundary.getLat() + DELIMITER_ID + locationBoundary.getLng();
 
-        return new Point(locationBoundary.getLng(), locationBoundary.getLat());
+        return new Point(locationBoundary.getLat(), locationBoundary.getLng());
     }
 
     /**

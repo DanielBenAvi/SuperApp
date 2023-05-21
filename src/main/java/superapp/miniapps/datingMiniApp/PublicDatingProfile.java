@@ -10,10 +10,9 @@ public class PublicDatingProfile {
 
     private String nickName;
     private Gender gender;
-    private int age;
+    private int age; // calculate by dob in private dating profile
     private String bio;
     private List<Gender> sexOrientation;
-    private List<String> interests;
     private List<String> pictures;
 
     //Optional attr : Personal details(color eyes, hair… ), zodiac, education, etc.
@@ -21,7 +20,6 @@ public class PublicDatingProfile {
     public PublicDatingProfile() {
 
         this.sexOrientation = new ArrayList<>();
-        this.interests = new ArrayList<>();
         this.pictures = new ArrayList<>();
     }
 
@@ -70,14 +68,6 @@ public class PublicDatingProfile {
         return this;
     }
 
-    public List<String> getInterests() {
-        return interests;
-    }
-
-    public PublicDatingProfile setInterests(List<String> interests) {
-        this.interests = interests;
-        return this;
-    }
 
     public List<String> getPictures() {
         return pictures;
@@ -96,7 +86,6 @@ public class PublicDatingProfile {
                 ", age=" + age +
                 ", bio='" + bio + '\'' +
                 ", sexOrientation=" + sexOrientation +
-                ", interests=" + interests +
                 ", pictures=" + pictures +
                 '}';
     }

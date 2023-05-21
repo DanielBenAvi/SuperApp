@@ -346,13 +346,16 @@ public class BaseTestSet {
                 .setInvokedBy(invokedBy)
                 .setCommandAttributes(commandAttributes);
 
-        return this.restTemplate
-                .postForObject(
-                        this.baseUrl + "/superapp/miniapp/{miniAppName}"
-                        , commandBoundary
-                        , MiniAppCommandBoundary.class
-                        , miniAppName.toString()
-                );
+        Object result = this.restTemplate
+                                    .postForObject(
+                                            this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                                            , commandBoundary
+                                            , MiniAppCommandBoundary.class
+                                            , miniAppName.toString()
+                                            , null
+                                    );
+
+        return  result;
     }
 
 
@@ -375,13 +378,13 @@ public class BaseTestSet {
      * Helper method to get command history of specific miniapp
      * the path is "/superapp/admin/miniapp/{miniAppName}"
      *
-     * @param miniAppNames - MiniAppNames
+     * @param miniAppName - MiniAppNames
      * @return MiniAppCommandBoundary[]
      */
-    public MiniAppCommandBoundary[] help_GetSpecificMiniappCommands(MiniAppNames miniAppNames) {
+    public MiniAppCommandBoundary[] help_GetSpecificMiniappCommands(MiniAppNames miniAppName) {
 
         return this.restTemplate.getForObject(this.baseUrl + "/superapp/admin/miniapp/{miniAppName}"
-                , MiniAppCommandBoundary[].class, miniAppNames
+                , MiniAppCommandBoundary[].class, miniAppName
         );
 
     }

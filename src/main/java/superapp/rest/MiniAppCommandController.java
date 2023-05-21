@@ -37,17 +37,24 @@ public class MiniAppCommandController {
         return miniAppCommandService.invokeCommand(miniAppCommandBoundary);
     }
 */
-    @RequestMapping(path = {"/superapp/miniapp/{miniAppName}"}, method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Object invokeCommand(@PathVariable("miniAppName") String miniAppName, @RequestParam(name = "async", defaultValue = "false") boolean asyncFlag, @RequestBody MiniAppCommandBoundary miniAppCommandBoundary) {
+    @RequestMapping(path = {"/superapp/miniapp/{miniAppName}"},
+                    method = {RequestMethod.POST},
+                    consumes = {MediaType.APPLICATION_JSON_VALUE},
+                    produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Object invokeCommand(@PathVariable("miniAppName") String miniAppName,
+                                @RequestParam(name = "async", required = false, defaultValue = "false") Boolean asyncFlag,
+                                @RequestBody MiniAppCommandBoundary miniAppCommandBoundary) {
 
         miniAppCommandBoundary.getCommandId().setMiniapp(miniAppName);
 
         try {
             if (asyncFlag) {
                 return this.logic.asyncHandle((MiniAppCommandBoundary) logic.invokeCommand(miniAppCommandBoundary)); // todo: not aligned with the spec
-            } else return logic.invokeCommand(miniAppCommandBoundary);
+            } else {
+                return this.logic.invokeCommand(miniAppCommandBoundary);
+            }
             //TODO:need of casing because invoke returns Object
-        } catch (RuntimeException re) {
+        } catch (Exception re) {
             throw new RuntimeException("Cannot invoke command");
         }
     }

@@ -3,8 +3,6 @@ package superapp.data;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.GeoResults;
-import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String> {
 
@@ -41,9 +38,9 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
 
     //@Query("{ 'location' : { 'near' : [location.x, location.y], 'maxDistance' : distance}}")
-    @Query( "{ 'geoNear' : 'SuperAppObjectEntity', 'location' : [x, y], 'maxDistance' : distance}")
-
-    public List<SuperAppObjectEntity> findAllByLocationNear(@Param("location") Point location,
+    //@Query( "{ 'geoNear' : 'SuperAppObjectEntity', 'location' : [x, y], 'maxDistance' : distance}")
+    @Query("{'location': { $near: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 } }}")
+    public List<SuperAppObjectEntity> findAllByLocationNear(@Param("lat") double lat, @Param("lng") double lng,
                                                             @Param("distance") Distance distance,
                                                             Pageable pageable);
 
@@ -68,4 +65,5 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
             "'objectDetails.location': {'$near': {'$geometry': {'type': 'Point', 'coordinates': [?2, ?3]}, '$maxDistance': ?4}}}")
     public List<SuperAppObjectEntity> searchEventByLocation(String type, Date now, Double lat, Double lng, Double distance, Pageable pageable);
 
+    public SuperAppObjectEntity findByCreatedByAndType(@Param("createdBy") String createdBy, @Param("type") String type);
 }
