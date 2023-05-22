@@ -422,7 +422,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "objectId");
 
-        //Distance distance1 = new Distance(distance, Metrics.KILOMETERS);
+//        Distance distance1 = new Distance(distanceRange, Metrics.KILOMETERS);
 
         double distanceIncludeUnits = convertDistance(distanceRange, distanceUnits);
 
@@ -433,6 +433,11 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                     .map(this::convertEntityToBoundary)
                     .toList();
 
+//        return this.objectCrudDB
+//                .findAllByLocationNear(latitude, longitude , distanceRange, distance1, pageRequest)
+//                .stream()
+//                .map(this::convertEntityToBoundary)
+//                .toList();
         // this is return for User Role SUPERAPP_USER
         return this.objectCrudDB
                 .findAllByLocationNear(latitude, longitude , distanceIncludeUnits, pageRequest)

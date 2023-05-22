@@ -2,12 +2,15 @@ package superapp.data;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.*;
 
 @Document(collection = "OBJECTS")
+@CompoundIndexes({@CompoundIndex(name = "location_2dsphere", def = "{'location': '2dsphere'}")})
 public class SuperAppObjectEntity {
 
     @Id
