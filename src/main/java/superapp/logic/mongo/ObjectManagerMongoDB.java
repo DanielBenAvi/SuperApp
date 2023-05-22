@@ -393,11 +393,24 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     }
 
     @Override
-    public List<SuperAppObjectBoundary> getAllObjectsByLocation(Double lat, Double lng, Double distance, String distanceUnits,
+    public List<SuperAppObjectBoundary> getAllObjectsByLocation(String lat, String lng, String distance, String distanceUnits,
                                                                 String userSuperapp, String userEmail, int size, int page) {
 
 
-        // TODO complete
+        double latitude, longitude, distanceRange;
+
+        try {
+            latitude = Double.parseDouble(lat);
+            longitude = Double.parseDouble(lng);
+            distanceRange = Double.parseDouble(distance);
+        }catch (Exception e) {
+            throw new BadRequestException("lat, lng, distance values must be a numbers");
+        }
+
+        if (distanceRange < 0)
+            throw new BadRequestException("distance must be positive number");
+
+
         String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
         UserEntity user = this.userCrud
                 .findById(userId)
@@ -407,23 +420,39 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             throw new UnauthorizedRequestException("user " + userId + " has no permission to getAllObjectsByAlias");
 
 
-        // TODO : validate
-
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "objectId");
 
-        // UserRole.MINIAPP_USER has permission to retrieve parent of child object with active is true
-//        if (user.getRole().equals(UserRole.MINIAPP_USER))
+        //Distance distance1 = new Distance(distance, Metrics.KILOMETERS);
 
+        double distanceIncludeUnits = convertDistance(distanceRange, distanceUnits);
 
-        Distance distance1 = new Distance(distance, Metrics.NEUTRAL);
-        // this is return for User Role SUPERAPP_USER
+        if (user.getRole().equals(UserRole.MINIAPP_USER))
             return this.objectCrudDB
-                    .findAllByLocationNear(lat, lng , distance1, pageRequest)
+                    .findAllByLocationNearAndActiveIsTrue(latitude, longitude , distanceIncludeUnits, pageRequest)
                     .stream()
                     .map(this::convertEntityToBoundary)
                     .toList();
+
+        // this is return for User Role SUPERAPP_USER
+        return this.objectCrudDB
+                .findAllByLocationNear(latitude, longitude , distanceIncludeUnits, pageRequest)
+                .stream()
+                .map(this::convertEntityToBoundary)
+                .toList();
     }
 
+    private double convertDistance(double distance, String units) {
+        switch (units.toLowerCase()) {
+            case "kilometers":
+                return distance*1000;
+            case "miles":
+                return distance*1609.34;
+            case "neutral":
+                return distance;
+            default:
+                throw new IllegalArgumentException("Invalid units: " + units);
+        }
+    }
     private void validateSuperappNameAndInternalObjectId(String superapp, String internalObjectId) {
         if (!checkValidSuperApp(superapp))
             throw new BadRequestException("superApp must be in format: " + springApplicationName);

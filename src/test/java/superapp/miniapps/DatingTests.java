@@ -188,4 +188,86 @@ public class DatingTests extends BaseTestSet {
 
     }
 
+
+
+    @Test
+    @DisplayName("locationTEST")
+    public void locationTEST() {
+
+        // GIVEN
+        // 1. the server is up and running
+        // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
+
+        // WHEN
+        // A POST request is made to the path "superapp/objects
+
+        Map<String, Object> objectDetails = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+        SuperAppObjectBoundary postObject_1 =
+                help_PostObjectBoundary(null, "DATING", "cir", null,
+                        true, new Location(           34.78488849231121,
+                                32.06677768447233), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
+
+        SuperAppObjectBoundary postObject_5 =
+                help_PostObjectBoundary(null, "DATING", "cir", null,
+                        true, new Location(          34.76981572319056,
+                                32.08225893781888), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
+        SuperAppObjectBoundary postObject_6 =
+                help_PostObjectBoundary(null, "DATING", "cir", null,
+                        true, new Location(          34.80331076567859,
+                                32.08316193000917), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
+        SuperAppObjectBoundary postObject_7 =
+                help_PostObjectBoundary(null, "DATING", "cir", null,
+                        true, new Location(          34.784736242117106,
+                                32.095544922695225), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
+        SuperAppObjectBoundary postObject_8 =
+                help_PostObjectBoundary(null, "DATING", "demo1", null,
+                        true, new Location(          34.77727598265457,
+                                32.070519227564134), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
+        SuperAppObjectBoundary postObject_9 =
+                help_PostObjectBoundary(null, "DATING", "demo2", null,
+                        true, new Location(          34.79752525833942,
+                                32.06948709303613 ), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
+        SuperAppObjectBoundary postObject_10 =
+                help_PostObjectBoundary(null, "DATING", "demo3", null,
+                        true, new Location(          34.78595424366256,
+                                32.08316193000917 ), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
+
+        SuperAppObjectBoundary postObject_11 =
+                help_PostObjectBoundary(null, "DATING", "demo4", null,
+                        true, new Location(          34.796764007374776,
+                                32.09283628644175), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
+
+
+        SuperAppObjectBoundary postObject_12 =
+                help_PostObjectBoundary(null, "DATING", "demo5", null,
+                        true, new Location(          34.7757534807223,
+                                32.09257831689622), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
+        // THEN
+        // THEN
+
+
+        // THEN
+        // the server response with status 2xx code and return  SuperAppObjectBoundary as json
+        int y = 5;
+        System.err.println();
+//        SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
+//                postObject.getObjectId().getInternalObjectId(),
+//                postObject.getObjectId().getSuperapp(),springApplicationName,email);
+//        objectFromGet.setActive(false);
+//
+//        assertThat(objectFromGet)
+//                .isNotNull()
+//                .usingRecursiveComparison()
+//                .isEqualTo(postObject);
+    }
+
 }

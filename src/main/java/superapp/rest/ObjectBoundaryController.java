@@ -147,14 +147,14 @@ public class ObjectBoundaryController {
 			@PathVariable("lat") String lat,
 			@PathVariable("lng") String lng,
 			@PathVariable("distance") String distance,
-			@RequestParam(name = "distanceUnits", required = false, defaultValue = "NEUTRAL") String distanceUnits,
+			@RequestParam(name = "units", required = false, defaultValue = "NEUTRAL") String distanceUnits,
 			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
 			@RequestParam(name = "userEmail", required = true) String userEmail,
 			@RequestParam(name = "size", required = false, defaultValue = "15") int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
 
 		return this.objectsService
-				.getAllObjectsByLocation(Double.parseDouble(lat), Double.parseDouble(lng), Double.parseDouble(distance),
+				.getAllObjectsByLocation(lat, lng, distance,
 						distanceUnits, userSuperapp, userEmail, size, page)
 				.toArray(new SuperAppObjectBoundary[0]);
 	}

@@ -20,7 +20,7 @@ public interface ObjectsServiceWithPaging extends ObjectsServiceWithRelationship
                                                             int size, int page);
     public List<SuperAppObjectBoundary> getAllObjectsByAlias(String alias, String userSuperapp,String userEmail,
                                                             int size, int page);
-    public List<SuperAppObjectBoundary> getAllObjectsByLocation(Double lat, Double lng, Double distance, String units,
+    public List<SuperAppObjectBoundary> getAllObjectsByLocation(String lat, String lng, String distance, String units,
                                                                 String userSuperapp,String userEmail, int size, int page);
 
 

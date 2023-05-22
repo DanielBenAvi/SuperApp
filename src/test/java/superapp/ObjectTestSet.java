@@ -58,66 +58,6 @@ public class ObjectTestSet {
                 , springApplicationName,email);
     }
 
-    @Test
-    @DisplayName("locationTEST")
-    public void locationTEST() {
-
-        // GIVEN
-        // 1. the server is up and running
-        // 2. the database is up and running
-
-        String email = "demo@gmail.com";
-        String role = UserRole.SUPERAPP_USER.toString();
-        String username = "demo_user";
-        String avatar = "demo_avatar";
-        help_PostUserBoundary(email, role, username, avatar);
-
-
-        // WHEN
-        // A POST request is made to the path "superapp/objects
-
-        Map<String, Object> objectDetails = new HashMap<>();
-        objectDetails.put("details", "String object demo");
-
-        SuperAppObjectBoundary postObject_1 =
-                help_PostObjectBoundary(null, "DATING", "demo", null,
-                true, new Location(-74.07867091, 4.66455174), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
-
-        SuperAppObjectBoundary postObject_5 =
-                help_PostObjectBoundary(null, "DATING", "demo", null,
-                        true, new Location(-75.57050110, 6.24478548), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
-        SuperAppObjectBoundary postObject_6 =
-                help_PostObjectBoundary(null, "DATING", "demo", null,
-                        true, new Location(-73.84928550, 7.06125013), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
-        SuperAppObjectBoundary postObject_7 =
-                help_PostObjectBoundary(null, "DATING", "demo", null,
-                        true, new Location(-72.49432589, 7.88475514), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
-        SuperAppObjectBoundary postObject_8 =
-                help_PostObjectBoundary(null, "DATING", "demo", null,
-                        true, new Location(-76.51532198, 3.48835279), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
-        SuperAppObjectBoundary postObject_9 =
-                help_PostObjectBoundary(null, "DATING", "demo", null,
-                        true, new Location(-73.63690401, 4.13510880), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
-        SuperAppObjectBoundary postObject_10 =
-                help_PostObjectBoundary(null, "DATING", "demo", null,
-                        true, new Location(-73.13373892, 6.55526689), new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" )), objectDetails );
-        // THEN
-        // the server response with status 2xx code and return  SuperAppObjectBoundary as json
-        int y = 5;
-        System.err.println();
-//        SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
-//                postObject.getObjectId().getInternalObjectId(),
-//                postObject.getObjectId().getSuperapp(),springApplicationName,email);
-//        objectFromGet.setActive(false);
-//
-//        assertThat(objectFromGet)
-//                .isNotNull()
-//                .usingRecursiveComparison()
-//                .isEqualTo(postObject);
-    }
-
-
-
 
     @Test
     @DisplayName("Successful create object")

@@ -35,16 +35,17 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
     public List<SuperAppObjectEntity> findAllByAliasAndActiveIsTrue(@Param("alias") String alias, PageRequest pageRequest);
 
-    //
 
-
-    //@Query("{ 'location' : { 'near' : [location.x, location.y], 'maxDistance' : distance}}")
-    //@Query( "{ 'geoNear' : 'SuperAppObjectEntity', 'location' : [x, y], 'maxDistance' : distance}")
-    @Query("{'location': { $near: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 } }}")
+    @Query("{'location': { $near: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 }}}") //  spherical : true
     public List<SuperAppObjectEntity> findAllByLocationNear(@Param("lat") double lat, @Param("lng") double lng,
-                                                            @Param("distance") Distance distance,
-                                                            Pageable pageable);
+                                                            @Param("distance") double distance,
+                                                            Pageable pageable); //@Param("units")
 
+
+    @Query("{'location': { $near: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 }}}")
+    public List<SuperAppObjectEntity> findAllByLocationNearAndActiveIsTrue(@Param("lat") double lat, @Param("lng") double lng,
+                                                            @Param("distance") double distance,
+                                                            Pageable pageable); //@Param("units")
     @Query("{'type' :?1, 'objectDetails.attendees': {'$in':[?0] }, 'objectDetails.date': {'$gt': ?2 } }")
     public List<SuperAppObjectEntity> findAllByTypeAndMyEvents(String userEmail, String type, Date now, PageRequest creationTimestamp);
 
