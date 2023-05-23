@@ -5,9 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 import superapp.data.*;
 import superapp.logic.ConvertHelp;
@@ -455,7 +452,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             case "neutral":
                 return distance;
             default:
-                throw new IllegalArgumentException("Invalid units: " + units);
+                throw new BadRequestException("Invalid units: " + units);
         }
     }
     private void validateSuperappNameAndInternalObjectId(String superapp, String internalObjectId) {

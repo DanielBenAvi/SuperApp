@@ -314,19 +314,7 @@ public class BaseTestSet {
     }
 
 
-    // ###################################### Objects ######################################
-
-
-    public MiniAppCommandBoundary[] help_GetAllMiniappBoundary() {
-        return this.restTemplate.getForObject(this.baseUrl + "/superapp/admin/miniapp", MiniAppCommandBoundary[].class);
-    }
-
-    public MiniAppCommandBoundary[] help_GetSpecificMiniappBoundary(MiniAppNames miniAppNames) {
-        return this.restTemplate.getForObject(this.baseUrl + "/superapp/admin/miniapp/{miniAppName}", MiniAppCommandBoundary[].class, miniAppNames);
-
-    }
-
-    // ###################################### commands ######################################
+    // ###################################### Commands ######################################
 
     /**
      * POST
@@ -339,7 +327,7 @@ public class BaseTestSet {
      * @param invokedBy - InvokedBy
      * @param commandAttributes - Map<String, Object>
      */
-    public Object help_PostCommandBoundary(MiniAppNames miniAppName, CommandId commandId, String command,
+    public Object help_PostCommandBoundary(String miniAppName, CommandId commandId, String command,
                                          TargetObject targetObject, Date createdTimestamp, InvokedBy invokedBy,
                                          Map<String, Object> commandAttributes) {
 
@@ -364,18 +352,33 @@ public class BaseTestSet {
     }
 
 
+
+    /**
+     * DELETE
+     * Helper method to delete all commands
+     * the path is "/superapp/admin/miniapp?userSuperapp={superapp}&userEmail={email}"
+     */
+    public void help_DeleteCommands(String userSuperapp, String userEmail) {
+
+        this.restTemplate
+                .delete(this.baseUrl + "/superapp/admin/miniapp?userSuperapp={superapp}&userEmail={email}",
+                        userSuperapp, userEmail);
+
+    }
+
     /**
      * GET
      * Helper method to get all commands history of  miniapp
-     * the path is "/superapp/admin/miniapp"
+     * the path is "/superapp/admin/miniapp?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}"
      *
      * @return MiniAppCommandBoundary[]
      */
-    public MiniAppCommandBoundary[] help_GetAllMiniappCommands() {
-        return this.restTemplate.getForObject(
-                this.baseUrl + "/superapp/admin/miniapp"
-                , MiniAppCommandBoundary[].class
-        );
+    public MiniAppCommandBoundary[] help_GetAllMiniappCommands(String userSuperapp, String userEmail, String size, String page) {
+
+        return this.restTemplate.getForObject(this.baseUrl
+                        + "/superapp/admin/miniapp?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}",
+                MiniAppCommandBoundary[].class, userSuperapp, userEmail, size, page);
+
     }
 
     /**
@@ -386,11 +389,11 @@ public class BaseTestSet {
      * @param miniAppName - MiniAppNames
      * @return MiniAppCommandBoundary[]
      */
-    public MiniAppCommandBoundary[] help_GetSpecificMiniappCommands(MiniAppNames miniAppName) {
+    public MiniAppCommandBoundary[] help_GetSpecificMiniappCommands(String miniAppName, String userSuperapp, String userEmail, String size, String page) {
 
-        return this.restTemplate.getForObject(this.baseUrl + "/superapp/admin/miniapp/{miniAppName}"
-                , MiniAppCommandBoundary[].class, miniAppName
-        );
+        return this.restTemplate.getForObject(
+                this.baseUrl + "/superapp/admin/miniapp/{miniAppName}?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}",
+                MiniAppCommandBoundary[].class, miniAppName, userSuperapp, userEmail, size, page);
 
     }
 
