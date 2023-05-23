@@ -2,16 +2,19 @@ package superapp.miniapps.marketplaceMiniApp;
 
 
 public class Product {
-	
+	public enum Currency {
+		ILS,
+		USD,
+		EUR
+	}
 	private String id;
 	private String description;
+	private final int maxLengthDescription=100;
 	private String name;
 	private String category;
 	
-	
-	
 	private double price;
-	private String currency;
+	private Currency currency;
 	
 	
 	private String imageUrl;
@@ -40,8 +43,13 @@ public class Product {
 	}
 
 	public Product setDescription(String description) {
-		this.description = description;
+		if(description.length() <= maxLengthDescription)
+			this.description = description;
 		return this;
+	}
+
+	public int getMaxDescriptionLength() {
+		return maxLengthDescription;
 	}
 
 	public String getName() {
@@ -71,13 +79,26 @@ public class Product {
 		return this;
 	}
 
-	public String getCurrency() {
+	public Currency getCurrency() {
 		return currency;
 	}
 
-	public Product setCurrency(String currency) {
-		this.currency = currency;
+	public Product setCurrency(Currency currency) {
+		if (isValidCurrency(currency)) {
+			this.currency = currency;
+		} else {
+			throw new IllegalArgumentException("Invalid currency: " + currency);
+		}
 		return this;
+	}
+
+	private boolean isValidCurrency(Currency currency) {
+		for (Currency validCurrency : Currency.values()) {
+			if (validCurrency == currency) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public String getImageUrl() {
