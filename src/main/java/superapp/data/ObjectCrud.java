@@ -84,5 +84,8 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     void removeAttendeeFromEvent(String eventObjectId, String userEmail);
 
     @Query("{'createdBy': ?0,'type' :?1, 'objectDetails.date': {'$gt': ?2 } }")
-    public List<SuperAppObjectEntity> findAllByEventsCreatedByMe(String owner, String type, long now, PageRequest creationTimestamp);
+    public List<SuperAppObjectEntity> findAllByEventsCreatedByMe(String owner, String type, long now, Pageable pageable);
+
+    @Query("{'type' :?0, 'objectDetails.date': {'$gt': ?1 } }")
+    public List<SuperAppObjectEntity> findAllEventsInTheFuture(String type, long now, Pageable pageable);
 }
