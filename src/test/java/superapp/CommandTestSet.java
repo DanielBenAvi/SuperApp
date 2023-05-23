@@ -5,13 +5,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+import superapp.data.SuperAppObjectEntity;
 import superapp.data.UserDetails;
+import superapp.logic.ConvertHelp;
 import superapp.logic.boundaries.*;
+import superapp.miniapps.Gender;
 import superapp.miniapps.MiniAppNames;
+import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
+import superapp.miniapps.datingMiniApp.PublicDatingProfile;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -331,36 +334,79 @@ public class CommandTestSet extends BaseTestSet {
 
 
     @Test
-    @DisplayName("Create command by invoke func and the return object")
+    @DisplayName("Invoke command successfully")
     public void testSuccessfulPostOfCommandEntityByInvokeFunc() {
-//        UserBoundary userBoundary = createUser();
-//        SuperAppObjectBoundary superAppObjectBoundary = createObject(userBoundary.getUserId().getEmail());
-//        //GIVEN The server is up
-//        //AND
-//        //database is up
-//        //AND
-//        // user exists in database
-//        //AND
-//        // object exists in database
-//
-//        //WHEN A POST request is made to the path
-//        MiniAppNames miniAppName = MiniAppNames.EVENT;
-//        CommandId commandId = new CommandId();
-//        String command = "DO_SOMETHING";
-//        TargetObject targetObject = new TargetObject().setObjectId(superAppObjectBoundary.getObjectId());
-//        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
-//        Map<String, Object> attributes = new HashMap<>();
-//        attributes.put("demo", "demo");
-//        MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary()
-//                .setCommand(command)
-//                .setCommandId(commandId)
-//                .setTargetObject(targetObject)
-//                .setInvokedBy(invokedBy)
-//                .setCommandAttributes(attributes);
-//
-//        this.restTemplate.postForObject((this.baseUrl + "/superapp/miniapp/{miniAppName}"), miniAppCommandBoundary, MiniAppCommandBoundary.class, miniAppName);
-//        //THEN The server response with status 2xx code
+        //GIVEN The server is up
+        //database is up
+        // user exists in database
+        // object exists in database
 
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        UserDetails userDetails = new UserDetails().setName("Yosef").setPhoneNum("052-5762230");
+        Map<String, Object> objectDetails = new HashMap<>();
+        objectDetails.put("key", userDetails);
+
+        changeRole(superappRole, email);
+        SuperAppObjectBoundary postedObject = this.help_PostObjectBoundary(new ObjectId(),
+                "USER_DETAILS",
+                "alias",
+                null,
+                true,
+                new Location(0.0, 0.0),
+                new CreatedBy().setUserId(new UserId().setEmail(email).setSuperapp(this.springApplicationName)),
+                objectDetails);
+
+        //WHEN A POST request is made to the path
+
+        String command = "GET_USER_DETAILS_BY_EMAIL";
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+
+        Object commandRes = createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+
+        //THEN The server response with status 2xx code and command stored in db
+        // and return SuperAppObjectBoundary with UserDetails in object details
+
+        changeRole(admin, email);
+        assertThat(help_GetAllMiniappCommands(this.springApplicationName, email, null, null))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(1);
+
+
+        // TODO - complete - solution for extract data from map
+//        CommandId commandId = Arrays
+//                .stream(help_GetSpecificMiniappCommands("DATING", this.springApplicationName, email, null, null))
+//                .findAny()
+//                .get()
+//                .getCommandId();
+//
+//        Object boundary = ((Map<String, Object>) commandRes)
+//                .get(ConvertHelp.concatenateIds(new String[] {commandId.getSuperapp(), commandId.getMiniapp(), commandId.getInternalCommandId()}));
+//
+//        assertThat(boundary)
+//                .isNotNull()
+//                .usingRecursiveComparison()
+//                .isEqualTo(postedObject);
+
+    }
+
+    private SuperAppObjectBoundary createSuperAppObjectBoundaryFromMap(LinkedHashMap<String, Object> map) {
+
+        // TODO
+        SuperAppObjectBoundary objectBoundary = new SuperAppObjectBoundary();
+
+//        objectBoundary.setObjectId()
+//        profile.setPublicProfile(createPublicDatingProfileFromMap((LinkedHashMap<String, Object>) map.get("publicProfile")));
+//        profile.setDistanceRange((int) map.get("distanceRange"));
+//        profile.setGenderPreferences((ArrayList<Gender>) map.get("genderPreferences"));
+//        profile.setMatches((ArrayList<String>) map.get("matches"));
+//        profile.setLikes((ArrayList<String>) map.get("likes"));
+//        return profile;
+        return objectBoundary;
     }
 
     @Test
@@ -382,7 +428,7 @@ public class CommandTestSet extends BaseTestSet {
 
         changeRole(superappRole, email);
         SuperAppObjectBoundary superAppObjectBoundary = this.help_PostObjectBoundary(new ObjectId(),
-                "UserDetails",
+                "USER_DETAILS",
                 "alias",
                 null,
                 true,
@@ -452,7 +498,7 @@ public class CommandTestSet extends BaseTestSet {
     }
 
     @Test
-    @DisplayName("Create command by invoke with command=null")
+    @DisplayName("Create command by invoke with command : null")
     public void testSuccessfulPostOfCommandEntityByInvokeFuncWithCommandNullValue() {
 
         //GIVEN The server is up
@@ -490,12 +536,23 @@ public class CommandTestSet extends BaseTestSet {
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());
 
+        changeRole(admin, email);
+        assertThat(help_GetAllMiniappCommands(this.springApplicationName, email, null, null))
+                .isNotNull()
+                .isEmpty();
+
     }
 
 
     @Test
-    @DisplayName("Create command entity with no existing targetObject in database")
-    public void testSuccessfulPostOfCommandEntityByInvokeFuncTargetObjectNotExisting() {
+    @DisplayName("Invoke command on existing targetObject in database")
+    public void testSuccessfulInvokeCommandByOnExistingTargetObject() {
+
+    }
+
+    @Test
+    @DisplayName("Create command entity with non existing targetObject in database")
+    public void testSuccessfulInvokeCommandByOnNonExistingTargetObject() {
 
     }
 
