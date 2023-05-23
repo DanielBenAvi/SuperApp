@@ -48,7 +48,7 @@ public class CommandTestSet extends BaseTestSet {
         return help_PostObjectBoundary(objectId, type, alias, createdTimestamp, active, location, createdBy, attributes);
     }
 
-    private void createCommand(String email, String role, String miniAppName, String command,
+    private Object createCommand(String email, String role, String miniAppName, String command,
                                TargetObject targetObject, Map<String, Object> commandAttributes) {
 
         // control of role
@@ -58,7 +58,7 @@ public class CommandTestSet extends BaseTestSet {
                 .setUserId(new UserId().setSuperapp(this.springApplicationName).setEmail(email));
 
 
-        this.help_PostCommandBoundary(miniAppName, new CommandId(), command, targetObject, null,
+        return this.help_PostCommandBoundary(miniAppName, new CommandId(), command, targetObject, null,
                 invokedBy, commandAttributes);
     }
 
@@ -421,61 +421,74 @@ public class CommandTestSet extends BaseTestSet {
     @Test
     @DisplayName("Create command entity by invoke when command not exists")
     public void testSuccessfulPostOfCommandEntityByInvokeFuncCommandNotExists() {
-//        UserBoundary userBoundary = createUser();
-//        SuperAppObjectBoundary superAppObjectBoundary = createObject(userBoundary.getUserId().getEmail());
-//        //GIVEN The server is up
-//        //AND
-//        //database is up
-//        //AND
-//        // user exists in database
-//        //AND
-//        // object exists in database
-//
-//        //WHEN A POST request is made to the path
-//        CommandId commandId = new CommandId();
-//        String command = "NOT_EXISTS_COMMAND";
-//        TargetObject targetObject = new TargetObject().setObjectId(superAppObjectBoundary.getObjectId());
-//        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
-//        Map<String, Object> attributes = new HashMap<>();
-//        attributes.put("demo", "demo");
-//        MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary()
-//                .setCommand(command)
-//                .setCommandId(commandId)
-//                .setTargetObject(targetObject)
-//                .setInvokedBy(invokedBy)
-//                .setCommandAttributes(attributes);
-//
-//
-//        //THEN The server response with status 2xx code
-//        this.restTemplate.postForObject((this.baseUrl + "/superapp/miniapp/{miniAppName}"), miniAppCommandBoundary, MiniAppCommandBoundary.class, MiniAppNames.EVENT);
+
+        //GIVEN The server is up
+        //database is up
+        // user exists in database
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        //WHEN A POST request is made to the path
+        String command = "NOT_EXISTS_COMMAND";
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+
+        Object commandRes = createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+
+        //THEN The server response with status 2xx code and command stored in db
+
+        changeRole(admin, email);
+        assertThat(help_GetAllMiniappCommands(this.springApplicationName, email, null, null))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(1);
+
+        assertThat(commandRes)
+                .isNotNull()
+                .isInstanceOf(Map.class);
+
     }
 
     @Test
     @DisplayName("Create command by invoke with command=null")
     public void testSuccessfulPostOfCommandEntityByInvokeFuncWithCommandNullValue() {
-//        UserBoundary userBoundary = createUser();
-//        SuperAppObjectBoundary superAppObjectBoundary = createObject(userBoundary.getUserId().getEmail());
-//        //GIVEN The server is up
-//        //AND
-//        //database is up
-//        //AND
-//        // user exists in database
-//        //AND
-//        // object exists in database
-//
-//        //WHEN A POST request is made to the path
-//        CommandId commandId = new CommandId();
-//        String command = null;
-//        TargetObject targetObject = new TargetObject().setObjectId(superAppObjectBoundary.getObjectId());
-//        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
-//        Map<String, Object> attributes = new HashMap<>();
-//        attributes.put("demo", "demo");
-//        MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary()
-//                .setCommand(command)
-//                .setCommandId(commandId)
-//                .setTargetObject(targetObject)
-//                .setInvokedBy(invokedBy)
-//                .setCommandAttributes(attributes);
+
+        //GIVEN The server is up
+        //database is up
+        // user exists in database
+
+        //WHEN A POST request is made to the path
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand(null)
+                .setTargetObject(targetObject)
+                .setInvocationTimestamp(null)
+                .setInvokedBy(new InvokedBy().setUserId( new UserId(this.springApplicationName, email)))
+                .setCommandAttributes(new HashMap<>());
+
+
+        // THEN
+        // response with bad request status
+        changeRole(miniappRole, email);
+
+
+        assertThatThrownBy(() ->  this.restTemplate
+                                        .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                                                , commandBoundary
+                                                , Object.class
+                                                , "EVENT"
+                                                , null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
 

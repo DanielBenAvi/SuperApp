@@ -343,8 +343,8 @@ public class BaseTestSet {
                                     .postForObject(
                                             this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
                                             , commandBoundary
-                                            , MiniAppCommandBoundary.class
-                                            , miniAppName.toString()
+                                            , Object.class
+                                            , miniAppName
                                             , null
                                     );
 

@@ -149,8 +149,8 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
         }
 
 
-//        if (commandBoundary.getCommand() == null)
-//            throw new BadRequestException("command cant be null");
+        if (commandBoundary.getCommand() == null)
+            throw new BadRequestException("command cant be null");
 
         // set command id
         commandBoundary
