@@ -57,7 +57,7 @@ public class DatingGetPotentialDatesCommand implements MiniAppsCommand {
                 .get("PrivateDatingProfile"));
 
 
-        List<String> interests = userDetails.getInterests();
+        List<String> interests = userDetails.getPreferences();
         double distance = datingProfile.getDistanceRange();
         List<Gender> sexPreferences = datingProfile.getGenderPreferences();
         int maxAge = datingProfile.getMaxAge();

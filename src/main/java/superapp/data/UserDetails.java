@@ -5,16 +5,16 @@ import java.util.ArrayList;
 public class UserDetails {
 	private String name;
 	private String phoneNum;
-	private ArrayList<String> interests;
+	private ArrayList<String> preferences;
 
 	
 	public UserDetails() {}
 	
-	public UserDetails(String name, String phoneNum, ArrayList<String> interests) {
+	public UserDetails(String name, String phoneNum, ArrayList<String> preferences) {
 		super();
 		this.name = name;
 		this.phoneNum = phoneNum;
-		this.interests = interests;
+		this.preferences = preferences;
 
 	}
 
@@ -36,12 +36,12 @@ public class UserDetails {
 		return this;
 	}
 
-	public ArrayList<String> getInterests() {
-		return interests;
+	public ArrayList<String> getPreferences() {
+		return preferences;
 	}
 
-	public UserDetails setInterests(ArrayList<String> interests) {
-		this.interests = interests;
+	public UserDetails setPreferences(ArrayList<String> preferences) {
+		this.preferences = preferences;
 		return this;
 	}
 
@@ -51,7 +51,7 @@ public class UserDetails {
 		return "UserDetails{" +
 				"name='" + name + '\'' +
 				", phoneNum='" + phoneNum + '\'' +
-				", interests=" + interests +
+				", interests=" + preferences +
 				'}';
 	}
 }
