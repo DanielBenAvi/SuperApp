@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import superapp.logic.ASYNCSupport;
 import superapp.logic.MiniAppCommandService;
+import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 
 
@@ -40,14 +41,15 @@ public class MiniAppCommandController {
     @RequestMapping(path = {"/superapp/miniapp/{miniAppName}"}, method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public Object invokeCommand(@PathVariable("miniAppName") String miniAppName, @RequestParam(name = "async", defaultValue = "false") boolean asyncFlag, @RequestBody MiniAppCommandBoundary miniAppCommandBoundary) {
 
-        miniAppCommandBoundary.getCommandId().setMiniapp(miniAppName);
-
+       // miniAppCommandBoundary.getCommandId().setMiniapp(miniAppName);
+        miniAppCommandBoundary.setCommandId(new CommandId().setMiniapp(miniAppName));
         try {
             if (asyncFlag) {
                 return this.logic.asyncHandle((MiniAppCommandBoundary) logic.invokeCommand(miniAppCommandBoundary)); // todo: not aligned with the spec
             } else return logic.invokeCommand(miniAppCommandBoundary);
             //TODO:need of casing because invoke returns Object
         } catch (RuntimeException re) {
+            re.printStackTrace();
             throw new RuntimeException("Cannot invoke command");
         }
     }
