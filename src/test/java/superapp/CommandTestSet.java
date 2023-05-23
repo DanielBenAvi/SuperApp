@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+import superapp.data.UserDetails;
 import superapp.logic.boundaries.*;
 import superapp.miniapps.MiniAppNames;
 
@@ -278,45 +279,54 @@ public class CommandTestSet extends BaseTestSet {
     }
 
     @Test
-    @DisplayName("Get command history of  miniapps")
+    @DisplayName("Get command history of all miniapps")
     public void testSuccessfulGetCommandHistoryOfMiniapps() {
         //createCommand();
 
 //        GIVEN The server is up
-//        AND
 //        database is up
-//        AND
-//        commands objects of a chosen ""miniAppName"" does exists in database
-//        AND
-//        commands objects of any other miniapps exists in database
+//        commands objects of 2 miniapps exists in database
+        String email = "demo@gmail.com";
+        createUser(email, admin);
 
-//        WHEN A GET request is made to the path
-//        "superapp/admin/miniapp"
-//        MiniAppCommandBoundary[] command =
-//                this.restTemplate.getForObject((this.baseUrl + "/superapp/admin/miniapp/{miniAppName}?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}"),
-//                        MiniAppCommandBoundary[].class, );
-////       THEN The server response with status 2xx code
-//        assertThat(command).isNotEmpty();
+        String command = "command ";
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+
+        createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "EVENT", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "EVENT", command, targetObject, new HashMap<>());
+
+        // WHEN A GET request is made to the path "superapp/admin/miniapp"
+
+        //       THEN The server response with status 2xx code
+
+
+        changeRole(admin, email);
+        assertThat(help_GetAllMiniappCommands(this.springApplicationName, email, null, null))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(4);
     }
 
 
     @Test
-    @DisplayName("Get command history of  miniapps when db is empty")
+    @DisplayName("Get command history of all miniapps when db is empty")
     public void testSuccessfulGetCommandHistoryOfMiniappsDbEmpty() {
-        //GIVEN The server is up
-        //AND
-        //database is up
-        //AND
-        //commands objects of a chosen ""miniAppName"" does NOT exists in database
-        //AND
-        //commands objects of any other miniapps does NOT exists in database
 
-        //WHEN A GET request is made to the path
-        //"superapp/admin/miniapp"
-        MiniAppCommandBoundary[] command = this.restTemplate.getForObject((this.baseUrl + "/superapp/admin/miniapp"), MiniAppCommandBoundary[].class);
+        // GIVEN The server is up
+        // database is up
+        // Any commands objects dose NOT exists in database
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        //WHEN A GET request is made to the path "superapp/admin/miniapp"
         //THEN The server response with status 2xx code
 
-        assertThat(command).isNotNull().isEmpty();
+        assertThat(help_GetAllMiniappCommands(this.springApplicationName, email, null, null))
+                .isNotNull()
+                .isEmpty();
     }
 
 
@@ -356,36 +366,57 @@ public class CommandTestSet extends BaseTestSet {
     @Test
     @DisplayName("Create command by invoke with invalid path")
     public void testSuccessfulPostOfCommandEntityByInvokeFuncInvalidPath() {
-//        UserBoundary userBoundary = createUser();
-//        SuperAppObjectBoundary superAppObjectBoundary = createObject(userBoundary.getUserId().getEmail());
-//        //GIVEN The server is up
-//        //AND
-//        //database is up
-//        //AND
-//        // user exists in database
-//        //AND
-//        // object exists in database
-//
-//        //WHEN A POST request is made to the path
-//        CommandId commandId = new CommandId();
-//        String command = "DO_SOMETHING";
-//        TargetObject targetObject = new TargetObject().setObjectId(superAppObjectBoundary.getObjectId());
-//        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(userBoundary.getUserId().getEmail()));
-//        Map<String, Object> attributes = new HashMap<>();
-//        attributes.put("demo", "demo");
-//        MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary()
-//                .setCommand(command)
-//                .setCommandId(commandId)
-//                .setTargetObject(targetObject)
-//                .setInvokedBy(invokedBy)
-//                .setCommandAttributes(attributes);
-//
-//
-//        //THEN The server response with status 2xx code
-//        this.restTemplate.postForEntity((this.baseUrl + "/superapp/miniapp/{miniAppName}"), miniAppCommandBoundary, MiniAppCommandBoundary.class, "miniAppName");
+
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+        // object exists in database
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        UserDetails userDetails = new UserDetails().setName("name").setPhoneNum("052-5762230");
+
+
+        Map<String, Object> objectDetails = new HashMap<>();
+        objectDetails.put("key", userDetails);
+
+        changeRole(superappRole, email);
+        SuperAppObjectBoundary superAppObjectBoundary = this.help_PostObjectBoundary(new ObjectId(),
+                "UserDetails",
+                "alias",
+                null,
+                true,
+                new Location(0.0, 0.0),
+                new CreatedBy().setUserId(new UserId().setEmail(email).setSuperapp(this.springApplicationName)),
+                objectDetails);
+
+        //WHEN A POST request is made to the path "/superapp/MINIAPP/{miniAppName}?async={asyncFlag}"
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand("command")
+                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
+                .setInvocationTimestamp(null)
+                .setInvokedBy( new InvokedBy().setUserId(superAppObjectBoundary.getCreatedBy().getUserId()))
+                .setCommandAttributes(new HashMap<>());
+
+
+
+        changeRole(miniappRole, email);
+
+        //THEN The server response with status 4xx code
+        assertThatThrownBy(() ->  this.restTemplate
+                .postForObject(this.baseUrl + "/superapp/miniappp/{miniAppName}?async={asyncFlag}"
+                                , commandBoundary
+                                , MiniAppCommandBoundary.class
+                                , MiniAppNames.DATING.name()
+                                , null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.NOT_FOUND.value());
+        //this.restTemplate.postForEntity((this.baseUrl + "/superapp/miniapp/{miniAppName}"), miniAppCommandBoundary, MiniAppCommandBoundary.class, "miniAppName");
 
     }
-
 
     @Test
     @DisplayName("Create command entity by invoke when command not exists")

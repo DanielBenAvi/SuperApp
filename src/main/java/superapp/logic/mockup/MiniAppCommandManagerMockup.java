@@ -60,7 +60,7 @@ public class MiniAppCommandManagerMockup implements MiniAppCommandService {
         commandBoundary.setTargetObject(ConvertHelp.strTargetObjectToBoundary(commandEntity.getTargetObject()));
         commandBoundary.setInvocationTimestamp(commandEntity.getInvocationTimestamp());
         commandBoundary.setInvokedBy(ConvertHelp.strInvokedByToBoundary(commandEntity.getInvokedBy()));
-        commandBoundary.setAsyncFlag(false);
+
         return commandBoundary;
     }
 

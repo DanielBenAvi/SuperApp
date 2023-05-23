@@ -54,29 +54,29 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             throw new BadRequestException("object must contain all fields");
         else if (validateValue == 1)
             throw new NotFoundException("object must contain all fields");
-        else  {
 
-            String userId = ConvertHelp.concatenateIds(
-                    new String[]{objectBoundary.getCreatedBy().getUserId().getSuperapp(),
-                            objectBoundary.getCreatedBy().getUserId().getEmail()
-                    });
+        String userId = ConvertHelp.concatenateIds(
+                new String[]{ objectBoundary.getCreatedBy().getUserId().getSuperapp(),
+                              objectBoundary.getCreatedBy().getUserId().getEmail()});
 
-            if(!userCrud.existsById(userId))
-                throw new NotFoundException("user " + userId + " not found in database");
+        if(!userCrud.existsById(userId))
+            throw new NotFoundException("user " + userId + " not found in database");
 
-            if (!accessControl.hasPermission(userId, "createObject"))
-                throw new UnauthorizedRequestException("user " + userId + " has no permission to createObject");
+        if (!accessControl.hasPermission(userId, "createObject"))
+            throw new UnauthorizedRequestException("user " + userId + " has no permission to createObject");
 
-            SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
 
-            String objectId = ConvertHelp.concatenateIds(new String[]{springApplicationName, UUID.randomUUID().toString()});
-            entity.setObjectId(objectId);
-            entity.setCreationTimestamp(new Date());
+        SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
 
-            this.objectCrudDB.save(entity);
+        String objectId = ConvertHelp.concatenateIds(new String[]{springApplicationName, UUID.randomUUID().toString()});
 
-            return this.convertEntityToBoundary(entity);
-        }
+        entity
+                .setObjectId(objectId)
+                .setCreationTimestamp(new Date());
+
+        this.objectCrudDB.save(entity);
+
+        return this.convertEntityToBoundary(entity);
 
     }
 
@@ -471,8 +471,10 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         entity.setType(boundary.getType());
         entity.setAlias(boundary.getAlias());
 
-        if (boundary.getActive() != null) entity.setActive(boundary.getActive());
-        else entity.setActive(false);
+        if (boundary.getActive() != null)
+            entity.setActive(boundary.getActive());
+        else
+            entity.setActive(false);
 
         entity.setLocation(ConvertHelp.locationBoundaryToEntity(boundary.getLocation()));
         entity.setCreatedBy(ConvertHelp.createByBoundaryToStr(boundary.getCreatedBy()));
@@ -701,14 +703,13 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     }
 
     private boolean checkValidLocation(Location location) {
-        if (location == null)
-            return false;
-        if(location.getLat() == 0.0)
-            return false;
-        if(location.getLng() == 0.0)
-            return false;
 
-        return true;
+
+        if(location != null && location.getLng() != null && location.getLng() != null)
+            return true;
+
+        // TODO - validate lng, lat is numbers
+        return false;
     }
 
     private int help_object_validate(SuperAppObjectBoundary objectBoundary) {
@@ -738,9 +739,6 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
         if (!checkValidSuperApp(objectBoundary.getCreatedBy().getUserId().getSuperapp()))
             return 0;
-        /*for next sprint*/
-//        if (!userCrud.existsById(convertBoundaryToEntity(objectBoundary).getCreatedBy()))
-//            return 1;
 
         return 2;
     }
