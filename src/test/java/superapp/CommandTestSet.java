@@ -5,14 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
-import superapp.data.SuperAppObjectEntity;
 import superapp.data.UserDetails;
-import superapp.logic.ConvertHelp;
 import superapp.logic.boundaries.*;
-import superapp.miniapps.Gender;
 import superapp.miniapps.MiniAppNames;
-import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
-import superapp.miniapps.datingMiniApp.PublicDatingProfile;
 
 import java.util.*;
 
@@ -547,22 +542,123 @@ public class CommandTestSet extends BaseTestSet {
     @Test
     @DisplayName("Invoke command on existing targetObject in database")
     public void testSuccessfulInvokeCommandByOnExistingTargetObject() {
-
+        // TODO: complete
     }
 
     @Test
     @DisplayName("Create command entity with non existing targetObject in database")
     public void testSuccessfulInvokeCommandByOnNonExistingTargetObject() {
-
-    }
-
-    public void testPagination(){
-
+        // TODO: complete
     }
 
     @Test
-    @DisplayName("")
-    public void testAsyncCommand(){
+    public void basicTestPaginationSupportInGetAllCommands(){
+
+        //  GIVEN The server is up
+        // database is up
+        // 10 commands objects of any  miniapps exists in database
+
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        String command = "command ";
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+
+        createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "MARKETPLACE", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "MARKETPLACE", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "MARKETPLACE", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "EVENT", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "EVENT", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "EVENT", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+        //  WHEN A GET request is made to the path "superapp/admin/miniapp/{miniAppName}"
+
+
+        //  THEN The server response with status 2xx code
+        changeRole(admin, email);
+        assertThat(help_GetAllMiniappCommands( this.springApplicationName, email, "4", "0"))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(4);
+
+        assertThat(help_GetAllMiniappCommands( this.springApplicationName, email, "4", "1"))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(4);
+        assertThat(help_GetAllMiniappCommands( this.springApplicationName, email, "4", "2"))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(2);
+
+        assertThat(help_GetAllMiniappCommands( this.springApplicationName, email, "4", "3"))
+                .isNotNull()
+                .isEmpty();
+    }
+
+
+    @Test
+    public void basicTestPaginationSupportInGetAllCommandsForSpecificMiniapp(){
+
+        //  GIVEN The server is up
+        // database is up
+        // 10 commands objects of any  miniapps exists in database
+
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        String command = "command ";
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+
+        createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "MARKETPLACE", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "MARKETPLACE", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "MARKETPLACE", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "EVENT", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "EVENT", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "EVENT", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+        //  WHEN A GET request is made to the path "superapp/admin/miniapp/{miniAppName}"
+
+
+        //  THEN The server response with status 2xx code
+        changeRole(admin, email);
+        assertThat(help_GetSpecificMiniappCommands("DATING", this.springApplicationName, email, "1", "3"))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(1);
+
+        assertThat(help_GetSpecificMiniappCommands("DATING", this.springApplicationName, email, "100", "0"))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(4);
+
+
+        assertThat(help_GetSpecificMiniappCommands("MARKETPLACE", this.springApplicationName, email, "2", "0"))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(2);
+        assertThat(help_GetSpecificMiniappCommands("MARKETPLACE", this.springApplicationName, email, "2", "1"))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(1);
+
+        assertThat(help_GetSpecificMiniappCommands( "EVENT", this.springApplicationName, email, "3", "10"))
+                .isNotNull()
+                .isEmpty();
+    }
+
+
+    @Test
+    public void basicTestAsyncCommand(){
 
         //GIVEN The server is up
         //database is up
@@ -641,8 +737,241 @@ public class CommandTestSet extends BaseTestSet {
 
     }
 
-    public void testPermissions(){
+
+    @Test
+    public void testPermissionForInvokeWithSuperAppUserRole() {
+
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+        String email = "demo@gmail.com";
+        UserBoundary user = createUser(email, superappRole);
+
+
+        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand("command")
+                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
+                .setInvocationTimestamp(null)
+                .setInvokedBy( new InvokedBy().setUserId(user.getUserId()))
+                .setCommandAttributes(new HashMap<>());
+
+
+        //THEN The server response with status 401 code
+        assertThatThrownBy(() ->  this.restTemplate
+                .postForObject(
+                        this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                        , commandBoundary
+                        , MiniAppCommandBoundary.class
+                        , MiniAppNames.DATING.name()
+                        , null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.UNAUTHORIZED.value());
 
     }
 
+    @Test
+    public void testPermissionForInvokeWithAdminUserRole() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+        String email = "demo@gmail.com";
+        UserBoundary user = createUser(email, admin);
+
+
+        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand("command")
+                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
+                .setInvocationTimestamp(null)
+                .setInvokedBy( new InvokedBy().setUserId(user.getUserId()))
+                .setCommandAttributes(new HashMap<>());
+
+
+        //THEN The server response with status 401 code
+        assertThatThrownBy(() ->  this.restTemplate
+                .postForObject(
+                        this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                        , commandBoundary
+                        , MiniAppCommandBoundary.class
+                        , MiniAppNames.DATING.name()
+                        , null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.UNAUTHORIZED.value());
+
+    }
+
+    @Test
+    public void testPermissionForDeleteCommandsWithSuperAppUserRole() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+        String email = "demo@gmail.com";
+        UserBoundary user = createUser(email, superappRole);
+
+
+        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand("command")
+                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
+                .setInvocationTimestamp(null)
+                .setInvokedBy( new InvokedBy().setUserId(user.getUserId()))
+                .setCommandAttributes(new HashMap<>());
+
+
+        //THEN The server response with status 401 code
+        assertThatThrownBy(() ->  this.restTemplate
+                .delete(this.baseUrl + "/superapp/admin/miniapp?userSuperapp={superapp}&userEmail={email}",
+                this.springApplicationName, email))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    public void testPermissionForGetAllCommandsWithSuperAppUserRole() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+        String email = "demo@gmail.com";
+        UserBoundary user = createUser(email, superappRole);
+
+
+        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand("command")
+                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
+                .setInvocationTimestamp(null)
+                .setInvokedBy( new InvokedBy().setUserId(user.getUserId()))
+                .setCommandAttributes(new HashMap<>());
+
+
+        //THEN The server response with status 401 code
+        assertThatThrownBy(() ->  this.restTemplate
+                .getForObject(this.baseUrl
+                                + "/superapp/admin/miniapp?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}",
+                        MiniAppCommandBoundary[].class, this.springApplicationName, email, null, null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.UNAUTHORIZED.value());
+
+    }
+
+    @Test
+    public void testPermissionForGetAllSpecificMiniAppCommandWithSuperAppUserRole() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+        String email = "demo@gmail.com";
+        UserBoundary user = createUser(email, superappRole);
+
+
+        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+
+
+
+
+        //THEN The server response with status 401 code
+        assertThatThrownBy(() ->  this.restTemplate
+                .getForObject(this.baseUrl
+                                + "/superapp/admin/miniapp/{miniappName}?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}",
+                        MiniAppCommandBoundary[].class, "DATING", this.springApplicationName, email, null, null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.UNAUTHORIZED.value());
+
+    }
+
+    @Test
+    public void testPermissionForDeleteCommandsWithMiniAppUserRole() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+        String email = "demo@gmail.com";
+        UserBoundary user = createUser(email, miniappRole);
+
+
+        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand("command")
+                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
+                .setInvocationTimestamp(null)
+                .setInvokedBy( new InvokedBy().setUserId(user.getUserId()))
+                .setCommandAttributes(new HashMap<>());
+
+
+        //THEN The server response with status 401 code
+        assertThatThrownBy(() ->  this.restTemplate
+                .delete(this.baseUrl + "/superapp/admin/miniapp?userSuperapp={superapp}&userEmail={email}",
+                        this.springApplicationName, email))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    public void testPermissionForGetAllCommandsWithMiniAppUserRole() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+        String email = "demo@gmail.com";
+        UserBoundary user = createUser(email, miniappRole);
+
+
+        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand("command")
+                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
+                .setInvocationTimestamp(null)
+                .setInvokedBy( new InvokedBy().setUserId(user.getUserId()))
+                .setCommandAttributes(new HashMap<>());
+
+
+        //THEN The server response with status 401 code
+        assertThatThrownBy(() ->  this.restTemplate
+                .getForObject(this.baseUrl
+                                + "/superapp/admin/miniapp?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}",
+                        MiniAppCommandBoundary[].class, this.springApplicationName, email, null, null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    public void testPermissionForGetAllSpecificMiniAppCommandWithMiniAppUserRole() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+        String email = "demo@gmail.com";
+        UserBoundary user = createUser(email, miniappRole);
+
+
+        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+
+
+
+
+        //THEN The server response with status 401 code
+        assertThatThrownBy(() ->  this.restTemplate
+                .getForObject(this.baseUrl
+                                + "/superapp/admin/miniapp/{miniappName}?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}",
+                        MiniAppCommandBoundary[].class, "DATING", this.springApplicationName, email, null, null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
 }
