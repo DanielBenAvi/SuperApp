@@ -72,7 +72,6 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
     public SuperAppObjectEntity findByCreatedByAndType(@Param("createdBy") String createdBy, @Param("type") String type);
 
-
     // add attendee to event
     @Query("{ 'objectId' : ?0, 'objectDetails.attendees': {'$not':{'$in':[?1] }}}")
     @Update("{ $push: { 'objectDetails.attendees': ?1 } }")

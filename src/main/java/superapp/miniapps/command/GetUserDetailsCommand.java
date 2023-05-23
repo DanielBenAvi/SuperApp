@@ -22,11 +22,13 @@ public class GetUserDetailsCommand implements MiniAppsCommand {
 
     @Override
     public SuperAppObjectBoundary execute(MiniAppCommandBoundary commandBoundary) {
-        Map<String, Object> commandAttr = commandBoundary.getCommandAttributes();
 
         // TODO: Add validation
-        String createdBy = commandAttr.get("createdBy").toString(); // todo : createdBy shall be as boundary
-        String type = commandAttr.get("type").toString();
+        String email = commandBoundary.getInvokedBy().getUserId().getEmail();
+        String superapp = commandBoundary.getInvokedBy().getUserId().getSuperapp();
+
+        String createdBy = superapp + "_" + email;
+        String type = "USER_DETAILS";
 
         SuperAppObjectEntity result = this.objectCrudDB.findByCreatedByAndType(createdBy, type);
 
