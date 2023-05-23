@@ -15,26 +15,31 @@ import java.util.Date;
 import java.util.List;
 
 @Component
-public class EventSearchEventByDate implements MiniAppsCommand {
+public class EventGetCreatedByMeEventsCommand implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
 
     @Autowired
-    public EventSearchEventByDate(ObjectCrud objectCrudDB) {
+    public EventGetCreatedByMeEventsCommand(ObjectCrud objectCrudDB) {
         this.objectCrudDB = objectCrudDB;
     }
 
     @Override
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
-        long startDate = (long) commandBoundary.getCommandAttributes().get("startDate");
-        long endDate = (long) commandBoundary.getCommandAttributes().get("endDate");
+        String userEmail = commandBoundary.getInvokedBy().getUserId().getEmail();
+        String owner = "2023b.LiorAriely_" + userEmail;
         String type = "EVENT";
         long now = System.currentTimeMillis();
+        System.out.println("now: " + now);
+
         int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
         int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 
 
-        return this.objectCrudDB.searchEventByDates(type, now, startDate, endDate, PageRequest.of(page, size, Sort.by("creationTimestamp").descending())).stream().map(this::convertEntityToBoundary).toList();
+        return this.objectCrudDB.findAllByEventsCreatedByMe(owner, type, now, PageRequest.of(page, size, Sort.by("creationTimestamp").descending()))
+                .stream()
+                .map(this::convertEntityToBoundary)
+                .toList();
     }
 
 

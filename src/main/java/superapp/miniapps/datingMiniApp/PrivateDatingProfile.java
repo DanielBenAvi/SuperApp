@@ -1,19 +1,22 @@
 package superapp.miniapps.datingMiniApp;
 
-import superapp.miniapps.Address;
 import superapp.miniapps.Gender;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PrivateDatingProfile {
 
     private PublicDatingProfile publicProfile;
-    private Address address;
+    private Date dateOfBirthday;
     private int distanceRange;
-    private int ageRange;   // (18-120)
+    private int maxAge;
+    private int minAge;
+
+
     private List<Gender> genderPreferences;
-    private List<Match> matches;
+    private List<String> matches; // list of matches id
     private List<String> likes; // list of profile dating id that I liked
 
 
@@ -21,6 +24,15 @@ public class PrivateDatingProfile {
         this.genderPreferences = new ArrayList<>();
         this.matches = new ArrayList<>();
         this.likes = new ArrayList<>();
+    }
+
+    public Date getDateOfBirthday() {
+        return dateOfBirthday;
+    }
+
+    public PrivateDatingProfile setDateOfBirthday(Date dateOfBirthday) {
+        this.dateOfBirthday = dateOfBirthday;
+        return this;
     }
 
     public PublicDatingProfile getPublicProfile() {
@@ -32,14 +44,6 @@ public class PrivateDatingProfile {
         return this;
     }
 
-    public Address getAddress() {
-        return address;
-    }
-
-    public PrivateDatingProfile setAddress(Address address) {
-        this.address = address;
-        return this;
-    }
 
     public int getDistanceRange() {
         return distanceRange;
@@ -50,12 +54,21 @@ public class PrivateDatingProfile {
         return this;
     }
 
-    public int getAgeRange() {
-        return ageRange;
+    public int getMaxAge() {
+        return maxAge;
     }
 
-    public PrivateDatingProfile setAgeRange(int ageRange) {
-        this.ageRange = ageRange;
+    public PrivateDatingProfile setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
+        return this;
+    }
+
+    public int getMinAge() {
+        return minAge;
+    }
+
+    public PrivateDatingProfile setMinAge(int minAge) {
+        this.minAge = minAge;
         return this;
     }
 
@@ -68,11 +81,11 @@ public class PrivateDatingProfile {
         return this;
     }
 
-    public List<Match> getMatches() {
+    public List<String> getMatches() {
         return matches;
     }
 
-    public PrivateDatingProfile setMatches(List<Match> matches) {
+    public PrivateDatingProfile setMatches(List<String> matches) {
         this.matches = matches;
         return this;
     }
@@ -90,9 +103,10 @@ public class PrivateDatingProfile {
     public String toString() {
         return "PrivateDatingProfile{" +
                 "publicProfile=" + publicProfile +
-                ", address=" + address +
+                ", dateOfBirthday=" + dateOfBirthday +
                 ", distanceRange=" + distanceRange +
-                ", ageRange=" + ageRange +
+                ", maxAge=" + maxAge +
+                ", minAge=" + minAge +
                 ", genderPreferences=" + genderPreferences +
                 ", matches=" + matches +
                 ", likes=" + likes +

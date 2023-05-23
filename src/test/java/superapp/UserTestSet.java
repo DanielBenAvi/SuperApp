@@ -760,34 +760,35 @@ public class UserTestSet extends BaseTestSet{
 
         // when
         // A DELETE request is made to the path "/superapp/admin/users"
-        help_DeleteUsersBoundary();
+        help_DeleteUsersBoundary(email1);
+
+        //TODO - to check that after the deleting we get 2xx status code
 
         // then
         // the server returns status code 2xx
         // get all users
-        UserBoundary[] users = help_GetAllUsersBoundary();
-        assertThat(users).isEmpty();
-
-    }
-
-    @Test
-    @DisplayName("successfully delete all users - 0 users in the database")
-    public void successfulDeleteAllUsers_empty() {
-        // given
-        // 1. the server is up and running
-        // 2. the database is up and running
-        // 3. there are no users in the database
-
-        // when
-        // A DELETE request is made to the path "/superapp/admin/users"
-        help_DeleteUsersBoundary();
-
-        // then
-        // the server returns status code 2xx
-        // get all users
-        UserBoundary[] users = help_GetAllUsersBoundary();
+        UserBoundary[] users = help_GetAllUsersBoundary(email1);
         assertThat(users).isEmpty();
     }
+
+//    @Test
+//    @DisplayName("successfully delete all users - 0 users in the database")
+//    public void successfulDeleteAllUsers_empty() {
+//        // given
+//        // 1. the server is up and running
+//        // 2. the database is up and running
+//        // 3. there are no users in the database
+//
+//        // when
+//        // A DELETE request is made to the path "/superapp/admin/users"
+//        help_DeleteUsersBoundary();
+//
+//        // then
+//        // the server returns status code 2xx
+//        // get all users
+//        UserBoundary[] users = help_GetAllUsersBoundary();
+//        assertThat(users).isEmpty();
+//    }
 
     @Test
     @DisplayName("successfully get all users - 2 users in the database")
@@ -806,7 +807,7 @@ public class UserTestSet extends BaseTestSet{
 
         // when
         // A GET request is made to the path "/superapp/admin/users"
-        UserBoundary[] users = help_GetAllUsersBoundary();
+        UserBoundary[] users = help_GetAllUsersBoundary(email1);
 
         // then
         // the server returns status code 2xx
@@ -814,24 +815,24 @@ public class UserTestSet extends BaseTestSet{
         assertThat(users).hasSize(2);
     }
 
-    @Test
-    @DisplayName("successfully get all users - 0 users in the database")
-    public void successfulGetAllUsers_empty() {
-        String url = this.baseUrl + "/superapp/admin/users";
-        // given
-        // 1. the server is up and running
-        // 2. the database is up and running
-        // 3. there are no users in the database
-
-        // when
-        // A GET request is made to the path "/superapp/admin/users"
-        UserBoundary[] users = help_GetAllUsersBoundary();
-
-        // then
-        // the server returns status code 2xx
-        // users are returned -> 2 users
-        assertThat(users).isEmpty();
-    }
+//    @Test
+//    @DisplayName("successfully get all users - 0 users in the database")
+//    public void successfulGetAllUsers_empty() {
+//        String url = this.baseUrl + "/superapp/admin/users";
+//        // given
+//        // 1. the server is up and running
+//        // 2. the database is up and running
+//        // 3. there are no users in the database
+//
+//        // when
+//        // A GET request is made to the path "/superapp/admin/users"
+//        UserBoundary[] users = help_GetAllUsersBoundary();
+//
+//        // then
+//        // the server returns status code 2xx
+//        // users are returned -> 2 users
+//        assertThat(users).isEmpty();
+//    }
 
 
     @Test

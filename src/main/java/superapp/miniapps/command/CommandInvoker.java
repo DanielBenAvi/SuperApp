@@ -26,13 +26,18 @@ public class CommandInvoker {
     private EventGetMyEventsCommand eventGetMyEventsCommand;
 
     private EventJoinEventCommand eventJoinEventCommand;
-
+    private EventLeaveEventCommand eventLeaveEventCommand;
     private EventSearchEventByName eventSearchEventByName;
     private EventSearchEventByDate eventSearchEventByDate;
     private EventSearchEventByLocation eventSearchEventByLocation;
     private EventSearchEventByPreferences eventSearchEventByPreferences;
 
+    private GetUserDetailsCommand getUserDetailsCommand;
+    private EventGetEventsBaseOnPreferencesCommand eventGetEventsBaseOnPreferencesCommand;
 
+    private EventGetCreatedByMeEventsCommand eventGetCreatedByMeEventsCommand;
+
+    private EventGetAllFutureEventsCommand eventGetAllFutureEventsCommand;
     // Events command
 
     @Autowired
@@ -49,11 +54,15 @@ public class CommandInvoker {
                           DatingActivateProfileCommand datingActivateProfile,
                           EventGetMyEventsCommand eventGetMyEventsCommand,
                           EventJoinEventCommand eventJoinEventCommand,
+                          EventLeaveEventCommand eventLeaveEventCommand,
                           EventSearchEventByName eventSearchEventByName,
                           EventSearchEventByDate eventSearchEventByDate,
                           EventSearchEventByLocation eventSearchEventByLocation,
-                          EventSearchEventByPreferences eventSearchEventByPreferences
-    ) {
+                          EventSearchEventByPreferences eventSearchEventByPreferences,
+                          GetUserDetailsCommand getUserDetailsCommand,
+                          EventGetEventsBaseOnPreferencesCommand eventGetEventsBaseOnPreferencesCommand,
+                          EventGetCreatedByMeEventsCommand eventGetCreatedByMeEventsCommand,
+                          EventGetAllFutureEventsCommand eventGetAllFutureEventsCommand) {
 
         this.datingLikeProfile = datingLikeProfile;
         this.datingUnmatch = datingUnmatch;
@@ -68,10 +77,15 @@ public class CommandInvoker {
         this.datingActivateProfile = datingActivateProfile;
         this.eventGetMyEventsCommand = eventGetMyEventsCommand;
         this.eventJoinEventCommand = eventJoinEventCommand;
+        this.eventLeaveEventCommand = eventLeaveEventCommand;
         this.eventSearchEventByName = eventSearchEventByName;
         this.eventSearchEventByDate = eventSearchEventByDate;
         this.eventSearchEventByLocation = eventSearchEventByLocation;
         this.eventSearchEventByPreferences = eventSearchEventByPreferences;
+        this.getUserDetailsCommand = getUserDetailsCommand;
+        this.eventGetEventsBaseOnPreferencesCommand = eventGetEventsBaseOnPreferencesCommand;
+        this.eventGetCreatedByMeEventsCommand = eventGetCreatedByMeEventsCommand;
+        this.eventGetAllFutureEventsCommand = eventGetAllFutureEventsCommand;
     }
 
 
@@ -83,44 +97,31 @@ public class CommandInvoker {
     public MiniAppsCommand create(MiniAppsCommand.commands commandCode, Object... params) {
 
 
-        switch (commandCode) {
-            case LIKE_PROFILE:
-                return datingLikeProfile;
-            case UNLIKE_PROFILE:
-                return datingUnlikeProfile;
-            case UNMATCH_PROFILE:
-                return datingUnmatch;
-            case ACTIVATE_PROFILE:
-                return datingActivateProfile;
-            case DEACTIVATE_PROFILE:
-                return datingDeactivateProfile;
-            case CREATE_PROFILE:
-                return datingCreateProfile;
-            case EDIT_PROFILE:
-                return datingEditProfile;
-            case GET_PROFILE:
-                return datingGetProfile;
-            case GET_LIKES:
-                return datingGetLikes;
-            case GET_MATCHES:
-                return datingGetMatches;
-            case GET_POTENTIAL_DATES:
-                return datingGetPotentialDates;
-            case GET_MY_EVENTS:
-                return eventGetMyEventsCommand;
-            case JOIN_EVENT:
-                return eventJoinEventCommand;
-            case SEARCH_EVENTS_BY_NAME:
-                return eventSearchEventByName;
-            case SEARCH_EVENTS_BY_LOCATION:
-                return eventSearchEventByLocation;
-            case SEARCH_EVENTS_BY_DATE:
-                return eventSearchEventByDate;
-            case SEARCH_EVENTS_BY_PREFERENCES:
-                return eventSearchEventByPreferences;
-            default:
-                return null; // create default command?
-        }
+        return switch (commandCode) {
+            case LIKE_PROFILE -> datingLikeProfile;
+            case UNLIKE_PROFILE -> datingUnlikeProfile;
+            case UNMATCH_PROFILE -> datingUnmatch;
+            case ACTIVATE_PROFILE -> datingActivateProfile;
+            case DEACTIVATE_PROFILE -> datingDeactivateProfile;
+            case CREATE_PROFILE -> datingCreateProfile;
+            case EDIT_PROFILE -> datingEditProfile;
+            case GET_PROFILE -> datingGetProfile;
+            case GET_LIKES -> datingGetLikes;
+            case GET_MATCHES -> datingGetMatches;
+            case GET_POTENTIAL_DATES -> datingGetPotentialDates;
+            case GET_MY_EVENTS -> eventGetMyEventsCommand;
+            case JOIN_EVENT -> eventJoinEventCommand;
+            case LEAVE_EVENT -> eventLeaveEventCommand;
+            case SEARCH_EVENTS_BY_NAME -> eventSearchEventByName;
+            case SEARCH_EVENTS_BY_LOCATION -> eventSearchEventByLocation;
+            case SEARCH_EVENTS_BY_DATE -> eventSearchEventByDate;
+            case SEARCH_EVENTS_BY_PREFERENCES -> eventSearchEventByPreferences;
+            case GET_USER_DETAILS_BY_EMAIL -> getUserDetailsCommand;
+            case GET_EVENTS_BASED_ON_PREFERENCES -> eventGetEventsBaseOnPreferencesCommand;
+            case GET_EVENTS_CREATED_BY_ME -> eventGetCreatedByMeEventsCommand;
+            case GET_ALL_FUTURE_EVENTS -> eventGetAllFutureEventsCommand;
+            default -> null; // create default command?
+        };
 
     }
 }

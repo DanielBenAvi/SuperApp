@@ -28,7 +28,7 @@ public class EventSearchEventByPreferences implements MiniAppsCommand {
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
         String preference = commandBoundary.getCommandAttributes().get("preference").toString();
         String type = "EVENT";
-        Date now = new Date();
+        long now = System.currentTimeMillis();
         int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
         int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 

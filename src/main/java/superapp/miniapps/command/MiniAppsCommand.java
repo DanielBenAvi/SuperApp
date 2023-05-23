@@ -21,10 +21,15 @@ public interface MiniAppsCommand {
         GET_POTENTIAL_DATES,
         GET_MY_EVENTS, // describe each is must
         JOIN_EVENT,
+        LEAVE_EVENT,
         SEARCH_EVENTS_BY_NAME,
         SEARCH_EVENTS_BY_LOCATION,
         SEARCH_EVENTS_BY_DATE,
         SEARCH_EVENTS_BY_PREFERENCES,
+        GET_USER_DETAILS_BY_EMAIL,
+        GET_EVENTS_BASED_ON_PREFERENCES,
+        GET_EVENTS_CREATED_BY_ME,
+        GET_ALL_FUTURE_EVENTS
     }
 
     static commands strToCommand(String command) {

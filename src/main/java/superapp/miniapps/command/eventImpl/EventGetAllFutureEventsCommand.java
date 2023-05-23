@@ -11,30 +11,30 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
 import superapp.miniapps.command.MiniAppsCommand;
 
-import java.util.Date;
 import java.util.List;
 
 @Component
-public class EventSearchEventByDate implements MiniAppsCommand {
+public class EventGetAllFutureEventsCommand implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
 
     @Autowired
-    public EventSearchEventByDate(ObjectCrud objectCrudDB) {
+    public EventGetAllFutureEventsCommand(ObjectCrud objectCrudDB) {
         this.objectCrudDB = objectCrudDB;
     }
 
     @Override
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
-        long startDate = (long) commandBoundary.getCommandAttributes().get("startDate");
-        long endDate = (long) commandBoundary.getCommandAttributes().get("endDate");
         String type = "EVENT";
         long now = System.currentTimeMillis();
         int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
         int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 
 
-        return this.objectCrudDB.searchEventByDates(type, now, startDate, endDate, PageRequest.of(page, size, Sort.by("creationTimestamp").descending())).stream().map(this::convertEntityToBoundary).toList();
+        return this.objectCrudDB.findAllEventsInTheFuture(type, now, PageRequest.of(page, size, Sort.by("creationTimestamp").descending()))
+                .stream()
+                .map(this::convertEntityToBoundary)
+                .toList();
     }
 
 
