@@ -58,7 +58,7 @@ public class ObjectTestSet {
                 , springApplicationName,email);
     }
 
-
+    /*post Tests*/
     @Test
     @DisplayName("Successful create object")
     public void SuccessfulCreateObject() {
@@ -686,7 +686,7 @@ public class ObjectTestSet {
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
 
-    /*get specific*/
+    /*get Tests*/
     @Test
     @DisplayName("successful get object")
     public void SuccessfulGetObject() {
@@ -802,7 +802,7 @@ public class ObjectTestSet {
                 .isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
-    /*get all*/
+    /*get all Tests*/
     @Test
     @DisplayName("successful get all objects with larger paging size")
     public void successfulGetAllObjects() {
@@ -864,7 +864,7 @@ public class ObjectTestSet {
         assertThat(objects).isEmpty();
     }
 
-    /*delete all*/
+    /*delete all Tests*/
 
     @Test
     @DisplayName("successful delete all objects of none empty db")
@@ -939,7 +939,7 @@ public class ObjectTestSet {
         assertThat(objects).isEmpty();
     }
 
-    /*update object*/
+    /*put Tests*/
     @Test
     @DisplayName("unsuccessful update object id does not exist")
     public void unsuccessfulUpdate_objectIdDoesNotExist() {
@@ -981,7 +981,6 @@ public class ObjectTestSet {
                         email)).isInstanceOf(HttpClientErrorException.class)
                 .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
-
 
 
     @Test
@@ -1107,7 +1106,6 @@ public class ObjectTestSet {
                 setCreationTimestamp(null).setLocation(null).setCreatedBy(null).setObjectDetails(null);
 
 
-
         // WHEN
         // A PUT request is made to the path "/superapp/objects/{superapp}/{internalObjectId}?userSuperapp={userSuperapp}&
         // userEmail={email}"
@@ -1124,7 +1122,7 @@ public class ObjectTestSet {
         assertThat(objectFromGet.getObjectDetails()).isNotNull().usingRecursiveComparison().isEqualTo(objectDetails);
     }
 
-    /*Wrong Paths*/
+    /*Wrong paths Tests*/
     @Test
     @DisplayName("unsuccessful create object, wrong path")
     public void unsuccessfulCreateObject_WrongPath() {
@@ -1336,7 +1334,358 @@ public class ObjectTestSet {
 
 
     }
+    /*search objects Tests */
+    @Test
+    @DisplayName("Search object by type")
+    public void SearchObject_ByType() {
 
+        // GIVEN
+        // 1. the server is up and running
+        // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
+        String type = "EVENT";
+        String alias = "demo";
+        Boolean active = true;
+        Location location = new Location(10.200, 10.200);
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+        String type2 = "EVENT";
+        String alias2 = "demo";
+        Boolean active2 = true;
+        Location location2 = new Location(10.200, 10.200);
+        CreatedBy createdBy2 = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails2 = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+        String type3 = "DATING";
+        String alias3 = "demo";
+        Boolean active3 = true;
+        Location location3 = new Location(10.200, 10.200);
+        CreatedBy createdBy3 = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails3 = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+        SuperAppObjectBoundary postObject = help_PostObjectBoundary(null, type, alias, null,
+                active,  location, createdBy,  objectDetails);
+
+        SuperAppObjectBoundary postObject2 = help_PostObjectBoundary(null, type2, alias2, null,
+                active2,  location2, createdBy2,  objectDetails2);
+
+        SuperAppObjectBoundary postObject3 = help_PostObjectBoundary(null, type3, alias3, null,
+                active3,  location3, createdBy3,  objectDetails3);
+
+        // WHEN
+        // A GET request is made to the path "/superapp/objects/search/byType{type}?userSuperapp={superapp}&
+        // userEmail={email}&size={size}&page={page}"
+
+
+        SuperAppObjectBoundary[] objects = this.restTemplate.
+                getForObject(this.baseUrl + "/superapp/objects/search/byType/{type}?userSuperapp={superapp}&" +
+                 "userEmail={email}&size={size}&page={page}", SuperAppObjectBoundary[].class,"EVENT",springApplicationName, email, 10 , 0);
+
+
+
+        // THEN
+        // the server response with status 2xx code and return SuperAppObjectBoundary array with events only as type
+
+        assertThat(objects.length)
+                .isNotNull()
+                .isEqualTo(2);
+
+        for (SuperAppObjectBoundary object : objects){
+            assertThat(object.getType())
+                    .isNotNull()
+                    .isEqualTo("EVENT");
+        }
+
+
+    }
+
+    @Test
+    @DisplayName("Search object by alias")
+    public void SearchObject_ByAlias() {
+
+        // GIVEN
+        // 1. the server is up and running
+        // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
+        String type = "EVENT";
+        String alias = "demo";
+        Boolean active = true;
+        Location location = new Location(10.200, 10.200);
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+        String type2 = "EVENT";
+        String alias2 = "demo2";
+        Boolean active2 = true;
+        Location location2 = new Location(10.200, 10.200);
+        CreatedBy createdBy2 = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails2 = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+        String type3 = "DATING";
+        String alias3 = "demo";
+        Boolean active3 = true;
+        Location location3 = new Location(10.200, 10.200);
+        CreatedBy createdBy3 = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails3 = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+        SuperAppObjectBoundary postObject = help_PostObjectBoundary(null, type, alias, null,
+                active,  location, createdBy,  objectDetails);
+
+        SuperAppObjectBoundary postObject2 = help_PostObjectBoundary(null, type2, alias2, null,
+                active2,  location2, createdBy2,  objectDetails2);
+
+        SuperAppObjectBoundary postObject3 = help_PostObjectBoundary(null, type3, alias3, null,
+                active3,  location3, createdBy3,  objectDetails3);
+
+        // WHEN
+        // A GET request is made to the path "/superapp/objects/search/byType{type}?userSuperapp={superapp}&
+        // userEmail={email}&size={size}&page={page}"
+
+
+        SuperAppObjectBoundary[] objects = this.restTemplate.
+                getForObject(this.baseUrl + "/superapp/objects/search/byAlias/{alias}?userSuperapp={superapp}&" +
+                        "userEmail={email}&size={size}&page={page}", SuperAppObjectBoundary[].class,"demo",springApplicationName, email, 10 , 0);
+
+
+
+        // THEN
+        // the server response with status 2xx code and return  SuperAppObjectBoundary array with demo only as alias
+
+        assertThat(objects.length)
+                .isNotNull()
+                .isEqualTo(2);
+
+        for (SuperAppObjectBoundary object : objects){
+            assertThat(object.getAlias())
+                    .isNotNull()
+                    .isEqualTo("demo");
+        }
+
+
+    }
+
+    @Test
+    @DisplayName("unsuccessful Search object by type wrong permission")
+    public void unsuccessfulSearchObject_ByType() {
+
+        // GIVEN
+        // 1. the server is up and running
+        // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
+        String adminEmail = "admin0@gmail.com";
+        String adminRole = UserRole.ADMIN.toString();
+        String adminUsername = "admin_user";
+        String adminAvatar = "demo_avatar";
+        help_PostUserBoundary(adminEmail, adminRole, adminUsername, adminAvatar);
+
+        String type = "EVENT";
+        String alias = "demo";
+        Boolean active = true;
+        Location location = new Location(10.200, 10.200);
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+        String type2 = "EVENT";
+        String alias2 = "demo2";
+        Boolean active2 = true;
+        Location location2 = new Location(10.200, 10.200);
+        CreatedBy createdBy2 = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails2 = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+        String type3 = "DATING";
+        String alias3 = "demo";
+        Boolean active3 = true;
+        Location location3 = new Location(10.200, 10.200);
+        CreatedBy createdBy3 = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails3 = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+        SuperAppObjectBoundary postObject = help_PostObjectBoundary(null, type, alias, null,
+                active,  location, createdBy,  objectDetails);
+
+        SuperAppObjectBoundary postObject2 = help_PostObjectBoundary(null, type2, alias2, null,
+                active2,  location2, createdBy2,  objectDetails2);
+
+        SuperAppObjectBoundary postObject3 = help_PostObjectBoundary(null, type3, alias3, null,
+                active3,  location3, createdBy3,  objectDetails3);
+
+        // WHEN
+        // A GET request is made to the path "/superapp/objects/search/byType{type}?userSuperapp={superapp}&
+        // userEmail={email}&size={size}&page={page}"
+
+
+
+
+
+
+        // THEN
+        // the server response with status  code 401 unauthorized
+
+        assertThatThrownBy(() ->
+                this.restTemplate.
+                        getForObject(this.baseUrl + "/superapp/objects/search/byType/{type}?userSuperapp={superapp}&" +
+                                        "userEmail={email}&size={size}&page={page}",
+                                SuperAppObjectBoundary[].class,"EVENT",springApplicationName, adminEmail, 10 , 0))
+                .isInstanceOf(HttpClientErrorException.class)
+                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED));
+
+
+    }
+
+    @Test
+    @DisplayName("Search Object by radius")
+    public void SearchObject_ByLocation() {
+
+        // GIVEN
+        // 1. the server is up and running
+        // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
+        String type = "EVENT";
+        String alias = "demo";
+        Boolean active = true;
+        Location location = new Location(10.200, 10.200);
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+        String type2 = "EVENT";
+        String alias2 = "demo2";
+        Boolean active2 = true;
+        Location location2 = new Location(10.200, 10.200);
+        CreatedBy createdBy2 = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails2 = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+
+
+        SuperAppObjectBoundary postObject = help_PostObjectBoundary(null, type, alias, null,
+                active,  location, createdBy,  objectDetails);
+
+        SuperAppObjectBoundary postObject2 = help_PostObjectBoundary(null, type2, alias2, null,
+                active2,  location2, createdBy2,  objectDetails2);
+
+
+
+        // WHEN
+        // A GET request is made to the path "/superapp/objects/search/byType{type}?userSuperapp={superapp}&
+        // userEmail={email}&size={size}&page={page}"
+
+
+        SuperAppObjectBoundary[] objects = this.restTemplate.
+                getForObject(this.baseUrl + "/superapp/objects/search/byLocation/{lat}/{lng}/" +
+                        "{distance}?units={distanceUnits}&userSuperapp={superapp}&" +
+                        "userEmail={email}&size={size}&page={page}", SuperAppObjectBoundary[].class, "10.200", "10.200", "1"
+                        , "NEUTRAL", springApplicationName, email, 10 , 0);
+
+
+
+        // THEN
+        // the server response with status 2xx code and return  SuperAppObjectBoundary array
+
+        assertThat(objects.length)
+                .isNotNull()
+                .isEqualTo(2);
+
+
+
+    }
+
+    @Test
+    @DisplayName("unsuccessful Search Object by radius with small radius ")
+    public void SearchObject_ByLocation_NoObjects() {
+
+        // GIVEN
+        // 1. the server is up and running
+        // 2. the database is up and running
+
+        String email = "demo@gmail.com";
+        String role = UserRole.SUPERAPP_USER.toString();
+        String username = "demo_user";
+        String avatar = "demo_avatar";
+        help_PostUserBoundary(email, role, username, avatar);
+
+        String type = "EVENT";
+        String alias = "demo";
+        Boolean active = true;
+        Location location = new Location(75.200, 75.200);
+        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+        String type2 = "EVENT";
+        String alias2 = "demo2";
+        Boolean active2 = true;
+        Location location2 = new Location(75.200, 75.200);
+        CreatedBy createdBy2 = new CreatedBy().setUserId(new UserId(springApplicationName, email));
+        Map<String, Object> objectDetails2 = new HashMap<>();
+        objectDetails.put("details", "String object demo");
+
+
+
+        SuperAppObjectBoundary postObject = help_PostObjectBoundary(null, type, alias, null,
+                active,  location, createdBy,  objectDetails);
+
+        SuperAppObjectBoundary postObject2 = help_PostObjectBoundary(null, type2, alias2, null,
+                active2,  location2, createdBy2,  objectDetails2);
+
+
+
+        // WHEN
+        // A GET request is made to the path "/superapp/objects/search/byType{type}?userSuperapp={superapp}&
+        // userEmail={email}&size={size}&page={page}"
+
+
+        SuperAppObjectBoundary[] objects = this.restTemplate.
+                getForObject(this.baseUrl + "/superapp/objects/search/byLocation/{lat}/{lng}/" +
+                                "{distance}?units={distanceUnits}&userSuperapp={superapp}&" +
+                                "userEmail={email}&size={size}&page={page}", SuperAppObjectBoundary[].class, "0.200", "0.200", "0.1"
+                        , "NEUTRAL", springApplicationName, email, 10 , 0);
+
+
+
+        // THEN
+        // the server response with status 2xx code and return  SuperAppObjectBoundary array
+
+        assertThat(objects.length)
+                .isNotNull()
+                .isEqualTo(0);
+
+
+
+    }
     /*helper functions*/
 
 
