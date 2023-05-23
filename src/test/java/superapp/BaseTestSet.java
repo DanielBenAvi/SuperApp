@@ -293,8 +293,10 @@ public class BaseTestSet {
      * Helper method to delete a user
      * the path is "/superapp/admin/users"
      */
-    public void help_DeleteUsersBoundary() {
-        this.restTemplate.delete(this.baseUrl + "/superapp/admin/users");
+    public void help_DeleteUsersBoundary(String email) {
+        this.restTemplate.delete(this.baseUrl +
+                "/superapp/admin/users?userSuperapp={superapp}&userEmail={email}",
+                springApplicationName, email);
     }
 
     /**
@@ -304,8 +306,11 @@ public class BaseTestSet {
      *
      * @return all users - UserBoundary[]
      */
-    public UserBoundary[] help_GetAllUsersBoundary() {
-        return this.restTemplate.getForObject(this.baseUrl + "/superapp/admin/users", UserBoundary[].class);
+    public UserBoundary[] help_GetAllUsersBoundary(String email) {
+        return this.restTemplate.getForObject(this.baseUrl + "/superapp/admin/users?userSuperapp={superapp}&" +
+                        "userEmail={email}&size={size}&page={page}",
+                UserBoundary[].class,
+                springApplicationName, email, 15, 0);
     }
 
 
