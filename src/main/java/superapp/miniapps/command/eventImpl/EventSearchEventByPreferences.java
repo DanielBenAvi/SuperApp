@@ -33,7 +33,8 @@ public class EventSearchEventByPreferences implements MiniAppsCommand {
         int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 
 
-        return this.objectCrudDB.searchEventByPreferences(type, now, preference, PageRequest.of(page, size, Sort.by("creationTimestamp").descending())).stream().map(this::convertEntityToBoundary).toList();
+        return this.objectCrudDB.searchEventByPreferences(type, now, preference, PageRequest.of(page, size, Sort.by("creationTimestamp").descending()))
+                .stream().map(this::convertEntityToBoundary).toList();
     }
 
 
