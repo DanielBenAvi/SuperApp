@@ -477,10 +477,11 @@ public class ObjectTestSet {
                 postObject.getObjectId().getInternalObjectId(),
                 postObject.getObjectId().getSuperapp(),springApplicationName,email);
 
+        postObject.getLocation().setLat(0.0).setLng(0.0);
         assertThat(objectFromGet)
                 .isNotNull()
                 .usingRecursiveComparison()
-                .isEqualTo(postObject.getLocation().setLat(0.0).setLng(0.0));
+                .isEqualTo(postObject);
 
     }
 
