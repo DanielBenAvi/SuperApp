@@ -10,7 +10,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import superapp.data.*;
-import superapp.logic.ASYNCSupport;
+import superapp.logic.MiniAppCommandWithAsyncSupport;
 import superapp.logic.boundaries.InvokedBy;
 import superapp.logic.boundaries.TargetObject;
 import superapp.miniapps.MiniAppNames;
@@ -25,7 +25,8 @@ import superapp.miniapps.command.MiniAppsCommand;
 import java.util.*;
 
 @Service
-public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
+public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupport {
+    private String idForCommandWithoutTarget = "a114f4a4-2be4-43ad-90f7-9822e8867d5e";
 
     private ObjectMapper jackson;
     private JmsTemplate jmsTemplate;
@@ -121,7 +122,7 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
 
         // check permission
         if (!accessControl.hasPermission(userId, "invokeCommand"))
-            throw new UnauthorizedRequestException("user " + userId + " has no permission to invokeCommand");
+            throw new UnauthorizedRequestException("user " + userId + " with role " + user.getRole() + " has no permission to invokeCommand");
 
         // validate target object
         if (!isValidTargetObject(commandBoundary.getTargetObject()))
@@ -131,6 +132,7 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
         // todo: create default object for all commands
         SuperAppObjectEntity targetObjectEntity = new SuperAppObjectEntity();
         String objectId = ConvertHelp.objectIdBoundaryToStr(commandBoundary.getTargetObject().getObjectId());
+
         if (this.objectCrud.existsById(objectId)) {
 
             targetObjectEntity = this.objectCrud
@@ -142,10 +144,10 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
                 throw new NotFoundException(" target object id " + targetObjectEntity.getObjectId() + "not found - active:false");
 
         }
-        else if (!commandBoundary.getTargetObject().getObjectId().getInternalObjectId().equals("EMPTY_OBJECT_FOR_COMMAND_THAT_NO_TARGET")
+        else if (!commandBoundary.getTargetObject().getObjectId().getInternalObjectId().equals(idForCommandWithoutTarget)
                 || !commandBoundary.getTargetObject().getObjectId().getSuperapp().equals(this.springApplicationName)) {
-            throw new NotFoundException("target object not exist in data base");
 
+            throw new NotFoundException("target object not exist in data base");
         }
 
 
@@ -177,16 +179,19 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
             resultObjectOfCommand =
                     new InvalidCommand(miniappName + " miniapp name: "
                             + commandBoundary.getCommandId().getMiniapp() + " not supported");
+
         }
         else if (commandsToExecute.equals(MiniAppsCommand.commands.UNKNOWN_COMMAND)) {
             resultObjectOfCommand =
                     new InvalidCommand(miniappName + " miniapp command: "
                             + commandBoundary.getCommand() + " not supported");
+
         }
         else {
             resultObjectOfCommand = commandInvoker
                     .create(commandsToExecute)
                     .execute(commandBoundary);
+
         }
 
 
@@ -346,35 +351,53 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
     @Override
     @Deprecated
     public void deleteAllCommands() {
-        throw new DeprecatedRequestException("cannot enter decrecated function");
+        throw new DeprecatedRequestException("cannot enter deprecated function");
         //this.miniAppCommandCrud.deleteAll();
     }
 
     @Override
-    public MiniAppCommandBoundary asyncHandle(MiniAppCommandBoundary miniAppCommandBoundary) {
-        miniAppCommandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
+    public Object asyncHandle(MiniAppCommandBoundary miniAppCommandBoundary) {
+
+        miniAppCommandBoundary
+                .getCommandId()
+                .setInternalCommandId(UUID.randomUUID()
+                        .toString()).setSuperapp(this.springApplicationName);
+
         miniAppCommandBoundary.setInvocationTimestamp(new Date());
+
         if (miniAppCommandBoundary.getCommandAttributes() == null) {
             miniAppCommandBoundary.setCommandAttributes(new HashMap<>());
         }
+
         miniAppCommandBoundary.getCommandAttributes().put("status", "in process");
         try {
+
             String json = this.jackson.writeValueAsString(miniAppCommandBoundary);
+
             System.err.println("*** sending: " + json);
+
             this.jmsTemplate.convertAndSend("commandsQueue", json);
+
             return miniAppCommandBoundary;
+
         } catch (Exception e) {
+            System.err.println("in handler : " + e.getMessage());
+
             throw new RuntimeException(e);
         }
+
     }
 
     @JmsListener(destination = "commandsQueue")
-    public void handleMessage(String json) {
+    public void handleCommand(String json) {
+
         try {
-            System.err.println(this.convertToBoundary(this.miniAppCommandCrud.save(
-                    this.convertToEntity(
-                            this.setStatus(
-                                    this.jackson.readValue(json, MiniAppCommandBoundary.class), "remootly-accepted")))));
+            this.invokeCommand(
+                    this.convertToBoundary(
+                            this.convertToEntity(
+                                    this.setStatus(
+                                            this.jackson.readValue(json, MiniAppCommandBoundary.class), "remotely-accepted"))));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -382,6 +405,7 @@ public class MiniAppCommandManagerMongoDB implements ASYNCSupport {
     }
 
     private MiniAppCommandBoundary setStatus(MiniAppCommandBoundary miniapp, String status) {
+
         if (miniapp.getCommandAttributes() == null) {
             miniapp.setCommandAttributes(new HashMap<>());
         }

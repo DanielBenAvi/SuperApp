@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import superapp.logic.ASYNCSupport;
+import superapp.logic.MiniAppCommandWithAsyncSupport;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 
@@ -12,16 +12,16 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 @RestController
 public class MiniAppCommandController {
 
-    private ASYNCSupport logic;
+    private MiniAppCommandWithAsyncSupport commandService;
 
     @Autowired
-    public void setLogic(ASYNCSupport logic) {
-        this.logic = logic;
+    public void setCommandService(MiniAppCommandWithAsyncSupport commandService) {
+        this.commandService = commandService;
     }
 
 
     /**
-     * @param miniAppName            String
+     * @param miniAppName String
      * @param miniAppCommandBoundary MiniAppCommandBoundary
      * @return commandResult Object
      */
@@ -29,16 +29,20 @@ public class MiniAppCommandController {
                 consumes = {MediaType.APPLICATION_JSON_VALUE},
                 produces = {MediaType.APPLICATION_JSON_VALUE})
     public Object invokeCommand(@PathVariable("miniAppName") String miniAppName,
-                                @RequestParam(name = "async", defaultValue = "false") boolean asyncFlag,
+                                @RequestParam(name = "async", defaultValue = "false") Boolean asyncFlag,
                                 @RequestBody MiniAppCommandBoundary miniAppCommandBoundary) {
 
 
         miniAppCommandBoundary.setCommandId(new CommandId().setMiniapp(miniAppName));
+
         try {
-            if (asyncFlag)
-                return this.logic.asyncHandle((MiniAppCommandBoundary) logic.invokeCommand(miniAppCommandBoundary));
-            else
-                return logic.invokeCommand(miniAppCommandBoundary);
+            if (asyncFlag == null || !asyncFlag) {
+                return commandService.invokeCommand(miniAppCommandBoundary);
+            }
+            else {
+
+                return this.commandService.asyncHandle(miniAppCommandBoundary);
+            }
         } catch (Exception exception) {
             throw exception;
         }

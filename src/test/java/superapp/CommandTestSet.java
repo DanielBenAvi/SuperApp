@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CommandTestSet extends BaseTestSet {
 
-    private String idForCommandWithoutTarget = "EMPTY_OBJECT_FOR_COMMAND_THAT_NO_TARGET";
+    private String idForCommandWithoutTarget = "a114f4a4-2be4-43ad-90f7-9822e8867d5e";
 
     private String admin = "ADMIN";
     private String miniappRole = "MINIAPP_USER";
@@ -553,6 +553,95 @@ public class CommandTestSet extends BaseTestSet {
     @Test
     @DisplayName("Create command entity with non existing targetObject in database")
     public void testSuccessfulInvokeCommandByOnNonExistingTargetObject() {
+
+    }
+
+    public void testPagination(){
+
+    }
+
+    @Test
+    @DisplayName("")
+    public void testAsyncCommand(){
+
+        //GIVEN The server is up
+        //database is up
+        // user exists in database
+        // object exists in database
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        UserDetails userDetails = new UserDetails().setName("Yosef").setPhoneNum("052-5762230");
+        Map<String, Object> objectDetails = new HashMap<>();
+        objectDetails.put("key", userDetails);
+
+        changeRole(superappRole, email);
+        SuperAppObjectBoundary postedObject = this.help_PostObjectBoundary(new ObjectId(),
+                "USER_DETAILS",
+                "alias",
+                null,
+                true,
+                new Location(0.0, 0.0),
+                new CreatedBy().setUserId(new UserId().setEmail(email).setSuperapp(this.springApplicationName)),
+                objectDetails);
+
+        //WHEN A POST request is made to the path
+
+        String command = "GET_USER_DETAILS_BY_EMAIL";
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId()
+                        .setSuperapp(this.springApplicationName)
+                        .setInternalObjectId(idForCommandWithoutTarget));
+
+        System.err.println(targetObject);
+        changeRole(miniappRole, email);
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand(command)
+                .setTargetObject(targetObject)
+                .setInvocationTimestamp(null)
+                .setInvokedBy(new InvokedBy().setUserId(new UserId(this.springApplicationName, email)))
+                .setCommandAttributes(new HashMap<>());
+
+        MiniAppCommandBoundary result = (MiniAppCommandBoundary) this.restTemplate
+                                        .postForObject(
+                                            this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                                            , commandBoundary
+                                            , MiniAppCommandBoundary.class
+                                            , "DATING"
+                                            , "true");
+
+        Map<String, Object> statusJms = result.getCommandAttributes();
+
+        changeRole(admin, email);
+        assertThat(help_GetAllMiniappCommands(this.springApplicationName, email, null, null))
+                .isNotNull()
+                .isEmpty();
+
+        assertThat(statusJms.get("status")).isNotNull().isEqualTo("in process");
+
+        //THEN The server response with status 2xx code and command stored in db
+        // and return SuperAppObjectBoundary with UserDetails in object details
+        changeRole(miniappRole, email);
+        try {
+            Thread.sleep(5000);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        changeRole(admin, email);
+        assertThat(help_GetAllMiniappCommands(this.springApplicationName, email, null, null))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(1);
+
+    }
+
+    public void testPermissions(){
 
     }
 
