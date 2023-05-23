@@ -50,25 +50,25 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
                                                                            Pageable pageable); //@Param("units")
 
     @Query("{'type' :?1, 'objectDetails.attendees': {'$in':[?0] }, 'objectDetails.date': {'$gt': ?2 } }")
-    public List<SuperAppObjectEntity> findAllByTypeAndMyEvents(String userEmail, String type, Date now, PageRequest creationTimestamp);
+    public List<SuperAppObjectEntity> findAllByTypeAndMyEvents(String userEmail, String type, long now, PageRequest creationTimestamp);
 
     // search by event name
     @Query("{'type': ?0, 'objectDetails.date': {'$gt': ?1 }, 'objectDetails.name': {'$regex': ?2 }}")
-    public List<SuperAppObjectEntity> searchEventByName(String type, Date now, String name, Pageable pageable);
+    public List<SuperAppObjectEntity> searchEventByName(String type, long now, String name, Pageable pageable);
     // search by event date
 
     @Query("{'type': ?0, 'objectDetails.date': {'$gt': ?1 } ,'objectDetails.date': {'$gt': ?2, '$lt': ?3 }}")
-    public List<SuperAppObjectEntity> searchEventByDates(String type, Date now, Date startDate, Date endDate, Pageable pageable);
+    public List<SuperAppObjectEntity> searchEventByDates(String type, long now, long startDate, long endDate, Pageable pageable);
 
     // search by event contains preferences
     @Query("{'type': ?0, 'objectDetails.date': {'$gt': ?1 }, 'objectDetails.preferences': {'$in': [?2] }}")
-    public List<SuperAppObjectEntity> searchEventByPreferences(String type, Date now, String preference, Pageable pageable); //p    reference must be exact string
+    public List<SuperAppObjectEntity> searchEventByPreferences(String type, long now, String preference, Pageable pageable); //p    reference must be exact string
 
     // search by event location
     // todo : fix this query
     @Query("{'type': ?0, 'objectDetails.date': {'$gt': ?1 }, " +
             "'objectDetails.location': {'$near': {'$geometry': {'type': 'Point', 'coordinates': [?2, ?3]}, '$maxDistance': ?4}}}")
-    public List<SuperAppObjectEntity> searchEventByLocation(String type, Date now, Double lat, Double lng, Double distance, Pageable pageable);
+    public List<SuperAppObjectEntity> searchEventByLocation(String type, long now, Double lat, Double lng, Double distance, Pageable pageable);
 
     public SuperAppObjectEntity findByCreatedByAndType(@Param("createdBy") String createdBy, @Param("type") String type);
 

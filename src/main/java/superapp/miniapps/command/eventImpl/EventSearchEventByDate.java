@@ -26,10 +26,10 @@ public class EventSearchEventByDate implements MiniAppsCommand {
 
     @Override
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
-        Date startDate = commandBoundary.getCommandAttributes().get("startDate") == null ? new Date() : new Date(Long.parseLong(commandBoundary.getCommandAttributes().get("startDate").toString()));
-        Date endDate = commandBoundary.getCommandAttributes().get("endDate") == null ? new Date() : new Date(Long.parseLong(commandBoundary.getCommandAttributes().get("endDate").toString()));
+        long startDate = (long) commandBoundary.getCommandAttributes().get("startDate");
+        long endDate = (long) commandBoundary.getCommandAttributes().get("endDate");
         String type = "EVENT";
-        Date now = new Date();
+        long now = System.currentTimeMillis();
         int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
         int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 

@@ -27,7 +27,7 @@ public class EventGetCreatedByMeEventsCommand implements MiniAppsCommand {
     @Override
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
         String userEmail = commandBoundary.getInvokedBy().getUserId().getEmail();
-        String owner = "2023b.LiorAriely " + userEmail;
+        String owner = "2023b.LiorAriely_" + userEmail;
         String type = "EVENT";
         long now = System.currentTimeMillis();
         System.out.println("now: " + now);
