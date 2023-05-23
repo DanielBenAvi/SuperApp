@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.Update;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +37,8 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     public List<SuperAppObjectEntity> findAllByAliasAndActiveIsTrue(@Param("alias") String alias, PageRequest pageRequest);
 
 
-    @Query("{'location': { $near: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 }}}") //  spherical : true
+    @Query("{'location': { $near: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 }}}")
+    //  spherical : true
     public List<SuperAppObjectEntity> findAllByLocationNear(@Param("lat") double lat, @Param("lng") double lng,
                                                             @Param("distance") double distance,
                                                             Pageable pageable); //@Param("units")
@@ -44,8 +46,9 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
     @Query("{'location': { $near: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 }}}")
     public List<SuperAppObjectEntity> findAllByLocationNearAndActiveIsTrue(@Param("lat") double lat, @Param("lng") double lng,
-                                                            @Param("distance") double distance,
-                                                            Pageable pageable); //@Param("units")
+                                                                           @Param("distance") double distance,
+                                                                           Pageable pageable); //@Param("units")
+
     @Query("{'type' :?1, 'objectDetails.attendees': {'$in':[?0] }, 'objectDetails.date': {'$gt': ?2 } }")
     public List<SuperAppObjectEntity> findAllByTypeAndMyEvents(String userEmail, String type, Date now, PageRequest creationTimestamp);
 
@@ -79,4 +82,7 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     @Query("{ 'objectId' : ?0, 'objectDetails.attendees': {'$in':[?1] }}")
     @Update("{ $pull: { 'objectDetails.attendees': ?1 } }")
     void removeAttendeeFromEvent(String eventObjectId, String userEmail);
+
+    @Query("{'createdBy': ?0,'type' :?1, 'objectDetails.date': {'$gt': ?2 } }")
+    public List<SuperAppObjectEntity> findAllByEventsCreatedByMe(String owner, String type, long now, PageRequest creationTimestamp);
 }

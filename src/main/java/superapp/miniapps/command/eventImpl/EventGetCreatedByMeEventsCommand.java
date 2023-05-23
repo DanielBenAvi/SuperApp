@@ -1,11 +1,8 @@
 package superapp.miniapps.command.eventImpl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.catalina.mapper.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.expression.spel.ast.TypeReference;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
@@ -18,43 +15,31 @@ import java.util.Date;
 import java.util.List;
 
 @Component
-public class EventGetEventsBaseOnPreferencesCommand implements MiniAppsCommand {
+public class EventGetCreatedByMeEventsCommand implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
 
     @Autowired
-    public EventGetEventsBaseOnPreferencesCommand(ObjectCrud objectCrudDB) {
+    public EventGetCreatedByMeEventsCommand(ObjectCrud objectCrudDB) {
         this.objectCrudDB = objectCrudDB;
     }
 
     @Override
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
-        //todo: fix the return type
-        // get the user email and superapp from the command boundary
         String userEmail = commandBoundary.getInvokedBy().getUserId().getEmail();
-        String superApp = commandBoundary.getInvokedBy().getUserId().getSuperapp();
-        String userId = superApp + "_" + userEmail;
+        String owner = "2023b.LiorAriely " + userEmail;
+        String type = "EVENT";
+        long now = System.currentTimeMillis();
+        System.out.println("now: " + now);
 
-        // get the user preferences from the database
-        SuperAppObjectEntity superAppObjectEntity = this.objectCrudDB.findByCreatedByAndType(userId, "USER_DETAILS");
-
-// Convert the object to a string representation
-        String objString = superAppObjectEntity.getObjectDetails().get("preferences").toString();
-
-// Split the string representation into individual parts or elements
-        String[] elements = objString.split(" "); // You can use a different delimiter if needed
-
-// Store the elements in an array of strings
-        String[] array = new String[elements.length];
-        System.arraycopy(elements, 0, array, 0, elements.length);
-
-        System.out.println("The array of strings is: " + array);
-        // convert the user preferences to a boundary
+        int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
+        int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 
 
-        // get the events from the database
-
-        return null;
+        return this.objectCrudDB.findAllByEventsCreatedByMe(owner, type, now, PageRequest.of(page, size, Sort.by("creationTimestamp").descending()))
+                .stream()
+                .map(this::convertEntityToBoundary)
+                .toList();
     }
 
 

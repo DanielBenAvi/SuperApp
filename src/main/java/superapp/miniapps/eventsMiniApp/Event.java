@@ -11,7 +11,7 @@ import superapp.logic.boundaries.UserId;
 public class Event {
 
     private String name;
-    private Date date;
+    private Integer date;
     private String location;
     private String description;
     private String image;
@@ -32,14 +32,15 @@ public class Event {
         return this;
     }
 
-    public Date getDate() {
+    public Integer getDate() {
         return date;
     }
 
-    public Event setDate(Date date) {
+    public Event setDate(Integer date) {
         this.date = date;
         return this;
     }
+
 
     public String getLocation() {
         return location;

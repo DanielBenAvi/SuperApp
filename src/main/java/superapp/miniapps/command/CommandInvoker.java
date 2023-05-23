@@ -34,6 +34,8 @@ public class CommandInvoker {
 
     private GetUserDetailsCommand getUserDetailsCommand;
     private EventGetEventsBaseOnPreferencesCommand eventGetEventsBaseOnPreferencesCommand;
+
+    private EventGetCreatedByMeEventsCommand eventGetCreatedByMeEventsCommand;
     // Events command
 
     @Autowired
@@ -56,7 +58,8 @@ public class CommandInvoker {
                           EventSearchEventByLocation eventSearchEventByLocation,
                           EventSearchEventByPreferences eventSearchEventByPreferences,
                           GetUserDetailsCommand getUserDetailsCommand,
-                          EventGetEventsBaseOnPreferencesCommand eventGetEventsBaseOnPreferencesCommand) {
+                          EventGetEventsBaseOnPreferencesCommand eventGetEventsBaseOnPreferencesCommand,
+                          EventGetCreatedByMeEventsCommand eventGetCreatedByMeEventsCommand) {
 
         this.datingLikeProfile = datingLikeProfile;
         this.datingUnmatch = datingUnmatch;
@@ -78,6 +81,7 @@ public class CommandInvoker {
         this.eventSearchEventByPreferences = eventSearchEventByPreferences;
         this.getUserDetailsCommand = getUserDetailsCommand;
         this.eventGetEventsBaseOnPreferencesCommand = eventGetEventsBaseOnPreferencesCommand;
+        this.eventGetCreatedByMeEventsCommand = eventGetCreatedByMeEventsCommand;
     }
 
 
@@ -110,6 +114,7 @@ public class CommandInvoker {
             case SEARCH_EVENTS_BY_PREFERENCES -> eventSearchEventByPreferences;
             case GET_USER_DETAILS_BY_EMAIL -> getUserDetailsCommand;
             case GET_EVENTS_BASED_ON_PREFERENCES -> eventGetEventsBaseOnPreferencesCommand;
+            case GET_EVENTS_CREATED_BY_ME -> eventGetCreatedByMeEventsCommand;
             default -> null; // create default command?
         };
 
