@@ -47,13 +47,8 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     @Override
     public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objectBoundary) {
 
-        int validateValue;
-        validateValue = help_object_validate(objectBoundary);
+        validateEntireObjectBoundary(objectBoundary);
 
-        if (validateValue == 0)
-            throw new BadRequestException("object must contain all fields");
-        else if (validateValue == 1)
-            throw new NotFoundException("object must contain all fields");
 
         String userId = ConvertHelp.concatenateIds(
                 new String[]{ objectBoundary.getCreatedBy().getUserId().getSuperapp(),
@@ -693,40 +688,37 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     }
 
     private boolean checkValidLocation(Location location) {
-
-
         return location != null && location.getLng() != null && location.getLat() != null;
     }
 
-    private int help_object_validate(SuperAppObjectBoundary objectBoundary) {
-        if (objectBoundary.getType() == null || objectBoundary.getType().equals(""))
-            return 0;
+    private void validateEntireObjectBoundary(SuperAppObjectBoundary objectBoundary) {
+        if (objectBoundary.getType() == null || objectBoundary.getType().isEmpty())
+            throw new BadRequestException("object must contain all fields");
 
-        if (objectBoundary.getAlias() == null || objectBoundary.getAlias().equals(""))
-            return 0;
+        if (objectBoundary.getAlias() == null || objectBoundary.getAlias().isEmpty())
+            throw new BadRequestException("object must contain all fields");
 
         if (!checkValidLocation(objectBoundary.getLocation()))
-            return 0;
+            throw new BadRequestException("object must contain all fields");
 
         if (objectBoundary.getObjectDetails() == null)
-            return 0;
+            throw new BadRequestException("object must contain all fields");
 
         if (objectBoundary.getCreatedBy()== null)
-            return 0;
+            throw new BadRequestException("object must contain all fields");
 
         if (objectBoundary.getCreatedBy().getUserId()== null)
-            return 0;
+            throw new BadRequestException("object must contain all fields");
 
         if (!isCreateByExist(objectBoundary.getCreatedBy()))
-            return 0;
+            throw new BadRequestException("object must contain all fields");
 
         if (!isValidEmail(objectBoundary.getCreatedBy().getUserId().getEmail()))
-            return 0;
+            throw new BadRequestException("object must contain all fields");
 
         if (!checkValidSuperApp(objectBoundary.getCreatedBy().getUserId().getSuperapp()))
-            return 0;
+            throw new BadRequestException("object must contain all fields");
 
-        return 2;
     }
 
     private boolean isValidEmail(String email) {
