@@ -766,9 +766,10 @@ public class UserTestSet extends BaseTestSet{
 
         // then
         // the server returns status code 2xx
-        // get all users
+        // get all users (by creating 1 ADMIN user and see that there is only 1 user in the database)
+        help_PostUserBoundary(email1, role, username, avatar);
         UserBoundary[] users = help_GetAllUsersBoundary(email1);
-        assertThat(users).isEmpty();
+        assertThat(users).hasSize(1);
     }
 
 //    @Test
