@@ -12,8 +12,9 @@ just register and start using the app.
 ## Technologies
 ### we used the following technologies:
 - Rest API (Spring Boot)
-- Flutter (IOS, Android, and Web) client
-- Mongo Database
+- Flutter (IOS, Android, and Web) client.
+- Mongo Database.
+- Firebase Storage.
 ## The Team
 - Lior Ariely - Team leader
 - Yosef Shalom Seada - System architect, technical writer
