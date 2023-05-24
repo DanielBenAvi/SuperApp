@@ -128,11 +128,12 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
         if (!isValidTargetObject(commandBoundary.getTargetObject()))
             throw new BadRequestException("target object is not valid");
 
-        // validate object exist or is a default object
-        // todo: create default object for all commands
-        SuperAppObjectEntity targetObjectEntity = new SuperAppObjectEntity();
+
+
+        SuperAppObjectEntity targetObjectEntity;
         String objectId = ConvertHelp.objectIdBoundaryToStr(commandBoundary.getTargetObject().getObjectId());
 
+        // validate object exist or is a default object
         if (this.objectCrud.existsById(objectId)) {
 
             targetObjectEntity = this.objectCrud
@@ -146,7 +147,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
         }
         else if (!commandBoundary.getTargetObject().getObjectId().getInternalObjectId().equals(idForCommandWithoutTarget)
                 || !commandBoundary.getTargetObject().getObjectId().getSuperapp().equals(this.springApplicationName)) {
-
+            // TODO: create default object for all commands, instead idForCommandWithoutTarget
             throw new NotFoundException("target object not exist in data base");
         }
 
@@ -154,16 +155,14 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
         if (commandBoundary.getCommand() == null)
             throw new BadRequestException("command cant be null");
 
-        // set command id
-        commandBoundary
+        // set command id and invocation timestamp
+        CommandId commandId = commandBoundary
                 .getCommandId()
+                .setInternalCommandId(UUID.randomUUID().toString())
                 .setSuperapp(springApplicationName);
-        commandBoundary
-                .getCommandId()
-                .setInternalCommandId(UUID.randomUUID().toString());
 
-        // set invocation timestamp
         commandBoundary
+                .setCommandId(commandId)
                 .setInvocationTimestamp(new Date());
 
         /////////////////////// execute command ///////////////////////

@@ -1,10 +1,14 @@
 package superapp.logic.mongo;
 
+import org.springframework.data.geo.Metric;
+import org.springframework.data.geo.Point;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
 import org.springframework.stereotype.Service;
 import superapp.data.*;
 import superapp.logic.ConvertHelp;
@@ -86,50 +90,43 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         if (!accessControl.hasPermission(userId, "updateObject"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to updateObject");
 
+
+
         validateSuperappNameAndInternalObjectId(objectSuperApp, internalObjectId);
 
         String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
 
         SuperAppObjectEntity exists = this.objectCrudDB.findById(objectId).
-                orElseThrow(() -> new NotFoundException("could not update object by id: " + objectId + " because it does not exist"));
+                orElseThrow(() -> new NotFoundException("could not update object by id: " + objectId + " object not exist in database"));
         SuperAppObjectBoundary existsBoundary = convertEntityToBoundary(exists);
 
-        if (update.getType() != null && !update.getType().isEmpty()) {
+        if (update.getType() != null && !update.getType().isEmpty())
             exists.setType(update.getType());
-        }
 
-        if (update.getAlias() != null && !update.getAlias().isEmpty()) {
+        if (update.getAlias() != null && !update.getAlias().isEmpty())
             exists.setAlias(update.getAlias());
-        }
 
-        if (update.getActive() != null) {
+        if (update.getActive() != null)
             exists.setActive(update.getActive());
-        }
+
 
         // TODO - maybe to validate the lng and lat degrees (lng: -180 to 180, lat: -90 to 90)
         if (update.getLocation() != null) {
             double lng = existsBoundary.getLocation().getLng();
             double lat = existsBoundary.getLocation().getLat();
 
-            if (update.getLocation().getLng() != null) {
+            if (update.getLocation().getLng() != null)
                 lng = update.getLocation().getLng();
-            }
 
-            if (update.getLocation().getLat() != null) {
+            if (update.getLocation().getLat() != null)
                 lat = update.getLocation().getLat();
-            }
 
             exists.setLocation(ConvertHelp.locationBoundaryToEntity(new Location(lng, lat)));
         }
 
-        if (update.getObjectDetails() != null) {
-            exists.getObjectDetails().clear();
-            for (Map.Entry<String, Object> entry : update.getObjectDetails().entrySet()) {
-                if (entry.getValue() != null) {
-                    exists.getObjectDetails().put(entry.getKey(), entry.getValue());
-                }
-            }
-        }
+        if (update.getObjectDetails() != null)
+            exists.setObjectDetails(update.getObjectDetails());
+
 
         exists = this.objectCrudDB.save(exists);
 
@@ -416,30 +413,29 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "objectId");
 
-//        Distance distance1 = new Distance(distanceRange, Metrics.KILOMETERS);
 
-        double distanceIncludeUnits = convertDistance(distanceRange, distanceUnits);
-
+        Point point = new Point(latitude, longitude);
+        Distance maxDistance = new Distance(distanceRange, convertDistance(distanceUnits));
         if (user.getRole().equals(UserRole.MINIAPP_USER))
             return this.objectCrudDB
-                    .findAllByLocationNearAndActiveIsTrue(latitude, longitude , distanceIncludeUnits, pageRequest)
+                    .findAllByActiveIsTrueAndLocationNear(point ,maxDistance , pageRequest)
                     .stream()
                     .map(this::convertEntityToBoundary)
                     .toList();
 
         // this is return for User Role SUPERAPP_USER
         return this.objectCrudDB
-                .findAllByLocationNear(latitude, longitude , distanceIncludeUnits, pageRequest)
+                .findAllByLocationNear(point, maxDistance, pageRequest)
                 .stream()
                 .map(this::convertEntityToBoundary)
                 .toList();
     }
 
-    private double convertDistance(double distance, String units) {
+    private Metrics convertDistance(String units) {
         return switch (units.toLowerCase()) {
-            case "kilometers" -> distance * 1000;
-            case "miles" -> distance * 1609.34;
-            case "neutral" -> distance;
+            case "kilometers" -> Metrics.KILOMETERS;
+            case "miles" -> Metrics.MILES;
+            case "neutral" -> Metrics.NEUTRAL;
             default -> throw new BadRequestException("Invalid units: " + units);
         };
     }

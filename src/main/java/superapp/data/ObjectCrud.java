@@ -3,13 +3,12 @@ package superapp.data;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.Update;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,17 +36,13 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     public List<SuperAppObjectEntity> findAllByAliasAndActiveIsTrue(@Param("alias") String alias, PageRequest pageRequest);
 
 
-    @Query("{'location': { $near: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 }}}")
-    //  spherical : true
-    public List<SuperAppObjectEntity> findAllByLocationNear(@Param("lat") double lat, @Param("lng") double lng,
-                                                            @Param("distance") double distance,
-                                                            Pageable pageable); //@Param("units")
+    public List<SuperAppObjectEntity> findAllByLocationNear(@Param("location") Point location,
+                                                            @Param("maxDistance") Distance maxDistance,
+                                                            Pageable pageable);
 
-
-    @Query("{'location': { $near: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 }}}")
-    public List<SuperAppObjectEntity> findAllByLocationNearAndActiveIsTrue(@Param("lat") double lat, @Param("lng") double lng,
-                                                                           @Param("distance") double distance,
-                                                                           Pageable pageable); //@Param("units")
+    public List<SuperAppObjectEntity> findAllByActiveIsTrueAndLocationNear(@Param("location") Point location,
+                                                                           @Param("maxDistance") Distance maxDistance,
+                                                                           Pageable pageable);
 
     @Query("{'type' :?1, 'objectDetails.attendees': {'$in':[?0] }, 'objectDetails.date': {'$gt': ?2 } }")
     public List<SuperAppObjectEntity> findAllByTypeAndMyEvents(String userEmail, String type, long now, PageRequest creationTimestamp);
