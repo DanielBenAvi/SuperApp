@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -19,13 +20,14 @@ public class SuperAppObjectEntity {
     private String alias;
     private boolean active;
     private Date creationTimestamp;
+    @GeoSpatialIndexed
     private Point location;
     private String createdBy;
     private Map<String, Object> objectDetails;
 
-    @DBRef
+    @DBRef (lazy = true)
     private Set<SuperAppObjectEntity> children;
-    @DBRef
+    @DBRef (lazy = true)
     private SuperAppObjectEntity parent;
 
     public SuperAppObjectEntity() {
