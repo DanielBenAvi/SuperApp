@@ -229,7 +229,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         SuperAppObjectEntity child = this.objectCrudDB
                 .findById(ConvertHelp.objectIdBoundaryToStr(childId))
                 .orElseThrow(() ->
-                        new NotFoundException("could not add child to object by id: " + childId.toString() + " because it does not exist"));
+                        new NotFoundException("could not add child to object by id: " + childId + " because it does not exist"));
 
         if (child.getParent() != null)
             throw new BadRequestException("child already has a parent");
@@ -337,7 +337,8 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             throw new UnauthorizedRequestException("user " + userId + " has no permission to getAllObjectsByType");
 
 
-        // TODO : validate type
+        if (type == null || type.isEmpty())
+            throw new BadRequestException("type must include some word");
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "objectId");
 
@@ -369,7 +370,8 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             throw new UnauthorizedRequestException("user " + userId + " has no permission to getAllObjectsByAlias");
 
 
-        // TODO : validate alias
+        if (alias == null || alias.isEmpty())
+            throw new BadRequestException("alias must include some word");
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "objectId");
 
@@ -430,11 +432,6 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                     .map(this::convertEntityToBoundary)
                     .toList();
 
-//        return this.objectCrudDB
-//                .findAllByLocationNear(latitude, longitude , distanceRange, distance1, pageRequest)
-//                .stream()
-//                .map(this::convertEntityToBoundary)
-//                .toList();
         // this is return for User Role SUPERAPP_USER
         return this.objectCrudDB
                 .findAllByLocationNear(latitude, longitude , distanceIncludeUnits, pageRequest)
@@ -444,16 +441,12 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     }
 
     private double convertDistance(double distance, String units) {
-        switch (units.toLowerCase()) {
-            case "kilometers":
-                return distance*1000;
-            case "miles":
-                return distance*1609.34;
-            case "neutral":
-                return distance;
-            default:
-                throw new BadRequestException("Invalid units: " + units);
-        }
+        return switch (units.toLowerCase()) {
+            case "kilometers" -> distance * 1000;
+            case "miles" -> distance * 1609.34;
+            case "neutral" -> distance;
+            default -> throw new BadRequestException("Invalid units: " + units);
+        };
     }
     private void validateSuperappNameAndInternalObjectId(String superapp, String internalObjectId) {
         if (!checkValidSuperApp(superapp))
@@ -489,10 +482,10 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
         if (createdBy.getUserId() == null) return false;
 
-        // todo: may add check if strings is empty
-        if (createdBy.getUserId().getSuperapp() == null || createdBy.getUserId().getEmail() == null) return false;
-
-        return true;
+        return createdBy.getUserId().getSuperapp() != null
+                && !createdBy.getUserId().getSuperapp().isEmpty()
+                && createdBy.getUserId().getEmail() != null
+                && !createdBy.getUserId().getEmail().isEmpty();
     }
 
     @Override
@@ -696,20 +689,13 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         if (superApp.isEmpty())
             return false;
 
-        if (!superApp.equals(springApplicationName))
-            return false;
-
-        return true;
+        return superApp.equals(springApplicationName);
     }
 
     private boolean checkValidLocation(Location location) {
 
 
-        if(location != null && location.getLng() != null && location.getLng() != null)
-            return true;
-
-        // TODO - validate lng, lat is numbers
-        return false;
+        return location != null && location.getLng() != null && location.getLat() != null;
     }
 
     private int help_object_validate(SuperAppObjectBoundary objectBoundary) {
@@ -756,10 +742,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         Pattern emailPattern = Pattern.compile(emailRegex);
 
         // check email format
-        if (!emailPattern.matcher(email).matches())
-            return false;
-
-        return true;
+        return emailPattern.matcher(email).matches();
     }
 
 }

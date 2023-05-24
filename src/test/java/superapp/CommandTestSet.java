@@ -391,7 +391,7 @@ public class CommandTestSet extends BaseTestSet {
 
     private SuperAppObjectBoundary createSuperAppObjectBoundaryFromMap(LinkedHashMap<String, Object> map) {
 
-        // TODO
+
         SuperAppObjectBoundary objectBoundary = new SuperAppObjectBoundary();
 
 //        objectBoundary.setObjectId()

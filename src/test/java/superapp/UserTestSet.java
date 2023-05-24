@@ -762,8 +762,6 @@ public class UserTestSet extends BaseTestSet{
         // A DELETE request is made to the path "/superapp/admin/users"
         help_DeleteUsersBoundary(email1);
 
-        //TODO - to check that after the deleting we get 2xx status code
-
         // then
         // the server returns status code 2xx
         // get all users (by creating 1 ADMIN user and see that there is only 1 user in the database)

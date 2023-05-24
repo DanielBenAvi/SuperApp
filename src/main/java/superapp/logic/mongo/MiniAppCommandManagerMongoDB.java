@@ -373,9 +373,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
         try {
 
             String json = this.jackson.writeValueAsString(miniAppCommandBoundary);
-
             System.err.println("*** sending: " + json);
-
             this.jmsTemplate.convertAndSend("commandsQueue", json);
 
             return miniAppCommandBoundary;
@@ -396,7 +394,8 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
                     this.convertToBoundary(
                             this.convertToEntity(
                                     this.setStatus(
-                                            this.jackson.readValue(json, MiniAppCommandBoundary.class), "remotely-accepted"))));
+                                            this.jackson
+                                                    .readValue(json, MiniAppCommandBoundary.class), "remotely-accepted"))));
 
         } catch (Exception e) {
             e.printStackTrace();

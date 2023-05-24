@@ -52,8 +52,6 @@ public class ObjectsManagerMockup implements ObjectsService {
 
         if (help_object_validate(objectBoundary)) {
 
-            // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
-
             SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
 
             String objectId = ConvertHelp.concatenateIds(new String[]{superappName, UUID.randomUUID().toString()});
@@ -83,8 +81,6 @@ public class ObjectsManagerMockup implements ObjectsService {
                                                SuperAppObjectBoundary update) {
 
         String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId});
-
-        // TODO: for future (add to backlog in Trello as task): check user role and if user exists in database
 
         if (!objectsDatabaseMockup.containsKey(objectId))
             throw new RuntimeException("Could not find object by id: " + objectId);
@@ -226,7 +222,6 @@ public class ObjectsManagerMockup implements ObjectsService {
         if (createdBy.getUserId() == null)
             return false;
 
-        // todo: may add check if strings is empty
         if (createdBy.getUserId().getSuperapp() == null || createdBy.getUserId().getEmail() == null)
             return false;
 

@@ -111,7 +111,6 @@ public class MiniAppCommandManagerMockup implements MiniAppCommandService {
         }
 
 
-        // TODO: for future check if targetObject existing, UserRole, and UserID.
 
         // init values of commandId, timestamp
         commandBoundary.getCommandId().setSuperapp(superAppName);
@@ -135,7 +134,6 @@ public class MiniAppCommandManagerMockup implements MiniAppCommandService {
 //                this.dataBaseMockup.put(commandEntity.getCommandId(), commandEntity);
                 break;
             case "SEND_MESSAGE":
-                // TODO: for future, extract the command attr and execute on targetObject
                 commandResult.put(miniappName, "command " + cmdToExecute + " successfully executed");
 //                this.dataBaseMockup.put(commandEntity.getCommandId(), commandEntity);
                 break;
