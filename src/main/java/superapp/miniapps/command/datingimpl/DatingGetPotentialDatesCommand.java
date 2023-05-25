@@ -31,6 +31,15 @@ public class DatingGetPotentialDatesCommand implements MiniAppsCommand {
     @Override
     public Object execute(MiniAppCommandBoundary commandBoundary) {
 
+
+
+        // command attributes required : DatingProfileId, UserDetailsId, page, size
+        // command as define in MiniAppCommand.command
+        // targetObject = default object
+        // invokedBy - userId of client user
+
+        // return SuperAppObjectBoundary[] with objectDetails : public dating Profile
+
         // get according distance, intrests, sexPrefrnces, ageRange
         // active is true, not in my likes or matches list
 

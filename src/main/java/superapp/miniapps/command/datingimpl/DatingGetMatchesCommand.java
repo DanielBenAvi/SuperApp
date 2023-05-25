@@ -23,6 +23,14 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
     @Override
     public Object execute(MiniAppCommandBoundary commandBoundary) {
 
+        // command attributes required : page, size
+        // command as define in MiniAppCommand.command
+        // targetObject = private dating profile object - ObjectId
+        // invokedBy - userId of client user
+
+        // return SuperAppObjectBoundary[] with objectDetails : match,
+        // this is matches (of ObjectId) list.
+
         return null;
     }
 }

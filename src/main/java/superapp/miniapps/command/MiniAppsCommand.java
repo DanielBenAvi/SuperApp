@@ -7,19 +7,14 @@ public interface MiniAppsCommand {
     public Object execute(MiniAppCommandBoundary commandBoundary);
 
     enum commands {
+        // describe each is must
         UNKNOWN_COMMAND,
         LIKE_PROFILE,
-        UNLIKE_PROFILE,
         UNMATCH_PROFILE,
-        ACTIVATE_PROFILE,
-        DEACTIVATE_PROFILE,
-        CREATE_PROFILE,
-        EDIT_PROFILE,
-        GET_PROFILE,
         GET_LIKES,
         GET_MATCHES,
         GET_POTENTIAL_DATES,
-        GET_MY_EVENTS, // describe each is must
+        GET_MY_EVENTS,
         JOIN_EVENT,
         LEAVE_EVENT,
         SEARCH_EVENTS_BY_NAME,

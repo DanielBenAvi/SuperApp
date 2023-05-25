@@ -10,7 +10,7 @@ import superapp.logic.boundaries.ObjectId;
 import superapp.miniapps.chat.objects.Chat;
 import superapp.miniapps.Gender;
 import superapp.miniapps.command.MiniAppsCommand;
-import superapp.miniapps.datingMiniApp.Match;
+import superapp.miniapps.datingMiniApp.MatchEntity;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
 import superapp.miniapps.datingMiniApp.PublicDatingProfile;
 
@@ -29,6 +29,16 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
 
     @Override
     public Object execute(MiniAppCommandBoundary command) {
+
+        // command attributes required : myDatingProfileId
+        // command as define in MiniAppCommand.command
+        // targetObject = dating profile objectId (of other profile that my profile likes)
+        // invokedBy - userId of client user
+
+        // Note : instead  command attributes required : myDatingProfileId, we can use invokedBy.
+
+
+        // return Map<String, boolean> : like_status : true, match_status : false
 
         /**
          * * האם יש קשר בין collections שונים? למשל יוזר ואובייקט
@@ -82,10 +92,10 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
 
             // TODO - validate that match already exist
             // create new match
-            Match newMatch = new Match()
-                    .setChat(new Chat())
-                    .setUser1(targetDatingProfile.getPublicProfile())
-                    .setUser2(myDatingProfile.getPublicProfile());
+//            MatchEntity newMatchEntity = new MatchEntity()
+//                    .setChat(new Chat())
+//                    .setUser1(targetDatingProfile.getPublicProfile())
+//                    .setUser2(myDatingProfile.getPublicProfile());
 
             // update 2 profile with the match
 //            myDatingProfile.getMatches().add(newMatch);

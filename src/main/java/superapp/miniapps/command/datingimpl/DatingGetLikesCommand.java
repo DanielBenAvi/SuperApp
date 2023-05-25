@@ -24,6 +24,13 @@ public class DatingGetLikesCommand implements MiniAppsCommand {
     @Override
     public Object execute(MiniAppCommandBoundary commandBoundary) {
 
+        // command attributes required : page, size
+        // command as define in MiniAppCommand.command
+        // targetObject = private dating profile object - ObjectId
+        // invokedBy - userId of client user
+
+        // return SuperAppObjectBoundary[] with objectDetails : public dating Profile
+
         return null;
     }
 }

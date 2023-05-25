@@ -10,48 +10,33 @@ import superapp.miniapps.command.eventImpl.*;
 @Component
 public class CommandInvoker {
 
-    // Commands dating
+    /******************** Dating Commands ********************/
     private DatingLikeProfileCommand datingLikeProfile;
     private DatingUnmatchProfileCommand datingUnmatch;
-    private DatingUnlikeProfileCommand datingUnlikeProfile;
-    private DatingGetProfileCommand datingGetProfile;
     private DatingGetPotentialDatesCommand datingGetPotentialDates;
     private DatingGetMatchesCommand datingGetMatches;
     private DatingGetLikesCommand datingGetLikes;
-    private DatingEditProfileCommand datingEditProfile;
-    private DatingDeactivateProfileCommand datingDeactivateProfile;
-    private DatingCreateProfileCommand datingCreateProfile;
-    private DatingActivateProfileCommand datingActivateProfile;
 
+    /******************** Event Commands ********************/
     private EventGetMyEventsCommand eventGetMyEventsCommand;
-
     private EventJoinEventCommand eventJoinEventCommand;
     private EventLeaveEventCommand eventLeaveEventCommand;
     private EventSearchEventByName eventSearchEventByName;
     private EventSearchEventByDate eventSearchEventByDate;
     private EventSearchEventByLocation eventSearchEventByLocation;
     private EventSearchEventByPreferences eventSearchEventByPreferences;
-
-    private GetUserDetailsCommand getUserDetailsCommand;
     private EventGetEventsBaseOnPreferencesCommand eventGetEventsBaseOnPreferencesCommand;
-
     private EventGetCreatedByMeEventsCommand eventGetCreatedByMeEventsCommand;
-
     private EventGetAllFutureEventsCommand eventGetAllFutureEventsCommand;
-    // Events command
+    /******************** General Commands ********************/
+    private GetUserDetailsCommand getUserDetailsCommand;
 
     @Autowired
     public CommandInvoker(DatingLikeProfileCommand datingLikeProfile,
                           DatingUnmatchProfileCommand datingUnmatch,
-                          DatingUnlikeProfileCommand datingUnlikeProfile,
-                          DatingGetProfileCommand datingGetProfile,
                           DatingGetPotentialDatesCommand datingGetPotentialDates,
                           DatingGetMatchesCommand datingGetMatches,
                           DatingGetLikesCommand datingGetLikes,
-                          DatingEditProfileCommand datingEditProfile,
-                          DatingDeactivateProfileCommand datingDeactivateProfile,
-                          DatingCreateProfileCommand datingCreateProfile,
-                          DatingActivateProfileCommand datingActivateProfile,
                           EventGetMyEventsCommand eventGetMyEventsCommand,
                           EventJoinEventCommand eventJoinEventCommand,
                           EventLeaveEventCommand eventLeaveEventCommand,
@@ -66,15 +51,9 @@ public class CommandInvoker {
 
         this.datingLikeProfile = datingLikeProfile;
         this.datingUnmatch = datingUnmatch;
-        this.datingUnlikeProfile = datingUnlikeProfile;
-        this.datingGetProfile = datingGetProfile;
         this.datingGetPotentialDates = datingGetPotentialDates;
         this.datingGetMatches = datingGetMatches;
         this.datingGetLikes = datingGetLikes;
-        this.datingEditProfile = datingEditProfile;
-        this.datingDeactivateProfile = datingDeactivateProfile;
-        this.datingCreateProfile = datingCreateProfile;
-        this.datingActivateProfile = datingActivateProfile;
         this.eventGetMyEventsCommand = eventGetMyEventsCommand;
         this.eventJoinEventCommand = eventJoinEventCommand;
         this.eventLeaveEventCommand = eventLeaveEventCommand;
@@ -99,13 +78,7 @@ public class CommandInvoker {
 
         return switch (commandCode) {
             case LIKE_PROFILE -> datingLikeProfile;
-            case UNLIKE_PROFILE -> datingUnlikeProfile;
             case UNMATCH_PROFILE -> datingUnmatch;
-            case ACTIVATE_PROFILE -> datingActivateProfile;
-            case DEACTIVATE_PROFILE -> datingDeactivateProfile;
-            case CREATE_PROFILE -> datingCreateProfile;
-            case EDIT_PROFILE -> datingEditProfile;
-            case GET_PROFILE -> datingGetProfile;
             case GET_LIKES -> datingGetLikes;
             case GET_MATCHES -> datingGetMatches;
             case GET_POTENTIAL_DATES -> datingGetPotentialDates;
@@ -120,7 +93,7 @@ public class CommandInvoker {
             case GET_EVENTS_BASED_ON_PREFERENCES -> eventGetEventsBaseOnPreferencesCommand;
             case GET_EVENTS_CREATED_BY_ME -> eventGetCreatedByMeEventsCommand;
             case GET_ALL_FUTURE_EVENTS -> eventGetAllFutureEventsCommand;
-            default -> null; // create default command?
+            default -> null; // TODO create default command?
         };
 
     }

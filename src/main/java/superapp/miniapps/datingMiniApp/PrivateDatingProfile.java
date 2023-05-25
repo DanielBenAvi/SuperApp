@@ -10,11 +10,10 @@ public class PrivateDatingProfile {
 
     private PublicDatingProfile publicProfile;
     private Date dateOfBirthday;
+    private String phoneNumber;
     private int distanceRange;
     private int maxAge;
     private int minAge;
-
-
     private List<Gender> genderPreferences;
     private List<String> matches; // list of matches id
     private List<String> likes; // list of profile dating id that I liked
@@ -24,6 +23,17 @@ public class PrivateDatingProfile {
         this.genderPreferences = new ArrayList<>();
         this.matches = new ArrayList<>();
         this.likes = new ArrayList<>();
+    }
+
+
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public PrivateDatingProfile setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+        return this;
     }
 
     public Date getDateOfBirthday() {
@@ -104,6 +114,7 @@ public class PrivateDatingProfile {
         return "PrivateDatingProfile{" +
                 "publicProfile=" + publicProfile +
                 ", dateOfBirthday=" + dateOfBirthday +
+                ", phoneNumber='" + phoneNumber + '\'' +
                 ", distanceRange=" + distanceRange +
                 ", maxAge=" + maxAge +
                 ", minAge=" + minAge +
