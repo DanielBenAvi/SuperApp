@@ -147,7 +147,6 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
         publicDatingProfile.setGender((Gender.valueOf((String) map.get("gender"))));
         publicDatingProfile.setAge((int) map.get("age"));
         publicDatingProfile.setBio((String) map.get("bio"));
-        publicDatingProfile.setSexOrientation((ArrayList<Gender>) map.get("sexOrientation"));
         publicDatingProfile.setPictures((ArrayList<String>) map.get("pictures"));
 
         return publicDatingProfile;
