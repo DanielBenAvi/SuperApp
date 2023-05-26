@@ -1,7 +1,6 @@
 package superapp.logic.utils.convertors;
 
 import org.springframework.data.geo.Point;
-import superapp.data.MiniAppCommandEntity;
 import superapp.data.SuperAppObjectEntity;
 import superapp.logic.boundaries.*;
 

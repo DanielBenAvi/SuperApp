@@ -1,10 +1,18 @@
 package superapp.logic.boundaries;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 public class UserBoundary {
 
+	@NotNull
 	private UserId userId;
+
+	@NotNull @NotEmpty
 	private String role;
+	@NotNull @NotEmpty
 	private String username;
+	@NotNull @NotEmpty
 	private String avatar;
 
 	public UserBoundary() {}

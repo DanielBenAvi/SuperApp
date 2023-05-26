@@ -5,7 +5,6 @@ public enum MiniAppNames {
     UNKNOWN,
     DATING,
     EVENT,
-    GROUP,
     MARKETPLACE;
 
 

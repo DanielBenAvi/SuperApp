@@ -68,11 +68,11 @@ public class UserController {
 	 */
 	@PutMapping(path = {"/superapp/users/{superapp}/{userEmail}"},
 			consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public void updateUser(@PathVariable("userEmail") String userEmail,
-						   @PathVariable("superapp") String superapp,
+	public void updateUser(@PathVariable("superapp") String superapp,
+						   @PathVariable("userEmail") String userEmail,
 						   @RequestBody UserBoundary updatedUser) {
 
-		this.usersService.updateUser(userEmail, superapp, updatedUser);
+		this.usersService.updateUser(superapp, userEmail, updatedUser);
 	}
 
 }
