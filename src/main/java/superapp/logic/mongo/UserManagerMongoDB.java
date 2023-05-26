@@ -1,40 +1,54 @@
 package superapp.logic.mongo;
 
 import jakarta.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
 import superapp.data.UserCrud;
 import superapp.data.UserEntity;
-import superapp.data.UserRole;
 import superapp.logic.UserServiceWithPaging;
 import superapp.logic.boundaries.UserBoundary;
-import superapp.logic.utils.convertors.ConvertIdsHelper;
 import superapp.logic.utils.convertors.UserConvertor;
+import superapp.logic.utils.validators.BoundaryValidator;
+import superapp.logic.utils.validators.EntitiesValidator;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
+import java.util.Set;
+
 
 @Service
+@Validated
 public class UserManagerMongoDB implements UserServiceWithPaging {
 
     private String superappName;
+
     private final UserCrud usersCrudDB;
     private final UserConvertor userConvertor;
+
     private RBAC accessControl;
+    private BoundaryValidator boundaryValidator;
+    private EntitiesValidator entitiesValidator;
 
 
     @Autowired
     public UserManagerMongoDB(UserCrud usersCrudDB,
                               UserConvertor userConvertor,
-                              RBAC accessControl) {
+                              RBAC accessControl,
+                              BoundaryValidator boundaryValidator,
+                              EntitiesValidator entitiesValidator) {
 
         this.usersCrudDB = usersCrudDB;
         this.userConvertor = userConvertor;
         this.accessControl = accessControl;
+        this.boundaryValidator = boundaryValidator;
+        this.entitiesValidator = entitiesValidator;
     }
 
     /**
@@ -53,7 +67,7 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
 
 
     /**
-     * This method creates-register new user entity from user boundary
+     * This method create a new user in database
      *
      * @param userBoundary UserBoundary
      * @return UserBoundary
@@ -61,29 +75,22 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
     @Override
     public UserBoundary createUser(UserBoundary userBoundary) {
 
-        // validate UserBoundary attr
-        if (!isValidEmail(userBoundary.getUserId().getEmail()))
-            throw new BadRequestException("Email invalid");
+        // init user id
+        userBoundary.getUserId().setSuperapp(this.superappName);
 
-        if (!isValidRole(userBoundary.getRole()))
-            throw new BadRequestException("Role invalid");
+        // validation
+        this.boundaryValidator.validateUserBoundary(userBoundary, new HashSet<>());
+        this.boundaryValidator.validateUserId(userBoundary.getUserId());
 
-        if (!isValidUserName(userBoundary.getUsername()))
-            throw new BadRequestException("User name invalid");
-
-        if (!isValidAvatar(userBoundary.getAvatar()))
-            throw new BadRequestException("Avatar invalid");
-
-
-        userBoundary.getUserId().setSuperapp(superappName);
 
         UserEntity userEntity = this.userConvertor.toEntity(userBoundary);
 
-        // check if user already exist
+        // check if user already exist in database
         if (this.usersCrudDB.existsById(userEntity.getUserID()))
             throw new ConflictRequestException("User with id " + userEntity.getUserID() + " already exists");
 
-        this.usersCrudDB.save(userEntity);
+
+        userEntity = this.usersCrudDB.save(userEntity);
 
         return this.userConvertor.toBoundary(userEntity);
     }
@@ -91,93 +98,84 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
 
     /**
      * This method login with specific user
-     * @param userSuperApp app name
-     * @param userEmail user email
-     * @return Optional of UserBoundary
+     *
+     * @param userSuperapp String
+     * @param userEmail String
+     * @return Optional - UserBoundary
      */
     @Override
-    public Optional<UserBoundary> login(String userSuperApp, String userEmail) {
+    public Optional<UserBoundary> login(String userSuperapp, String userEmail) {
 
+        // validate that user exist and retrieve the user from database
+        UserEntity userEntity = entitiesValidator.validateExistingUser(userSuperapp, userEmail);
+        checkPermission(userEntity.getUserID(), "login");
 
-        String userID = ConvertIdsHelper.concatenateIds(new String[]{ userSuperApp, userEmail});
-
-        UserEntity userEntity = this.usersCrudDB
-                .findById(userID)
-                .orElseThrow(() -> new NotFoundException("Couldn't find user by id  " + userID));
-
-        if (userEntity == null) {
-            return Optional.empty();
-        }
-        else {
-            UserBoundary userBoundary = this.userConvertor.toBoundary(userEntity);
-            return Optional.of(userBoundary);
-        }
-
+        return userEntity != null ? Optional.of(this.userConvertor.toBoundary(userEntity)) : Optional.empty();
     }
 
     /**
-     * This method update user entity in DB
+     * This method update user in database
      * checks if attributes changed and update if needed
      *
-     * @param userSuperApp user app name
-     * @param userEmail user mail
-     * @param update user boundary with change attributes
-     * @return userBoundary
+     * @param userSuperapp String
+     * @param userEmail String
+     * @param update UserBoundary
+     * @return UserBoundary
      */
     @Override
-    public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update) {
+    public UserBoundary updateUser(String userSuperapp, String userEmail, UserBoundary update) {
 
-        String userID = ConvertIdsHelper.concatenateIds(new String[]{userEmail, userSuperApp});
+        // validate that user exist and retrieve the user from database
+        UserEntity existing = entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        // get user from DB and check if is null
-        UserEntity existing = this.usersCrudDB
-                .findById(userID)
-                .orElseThrow(() -> new NotFoundException("Couldn't find user by id  " + userID));
+        checkPermission(existing.getUserID(), "updateUser");
 
 
-        boolean dirtyFlag = false;
-        if (update.getUsername() != null) {
+        Set<String> ignoredProperties = new HashSet<>();
+        ignoredProperties.add("userId");
 
-            if (!isValidUserName(update.getUsername()))
-                throw new BadRequestException("User name invalid");
-
+        if (update.getUsername() != null)
             existing.setUserName(update.getUsername());
-            dirtyFlag = true;
-        }
+        else
+            ignoredProperties.add("username");
 
-        if (update.getRole()!= null) {
-
-            if (!isValidRole(update.getRole()))
-                throw new BadRequestException("Role invalid");
-
+        if (update.getRole() != null)
             existing.setRole(this.userConvertor.strToUserRole(update.getRole()));
-            dirtyFlag = true;
-        }
+        else
+            ignoredProperties.add("role");
 
-        if (update.getAvatar() != null) {
 
-            if (!isValidAvatar(update.getAvatar()))
-                throw new BadRequestException("Avatar invalid");
-
+        if (update.getAvatar() != null)
             existing.setAvatar(update.getAvatar());
-            dirtyFlag = true;
-        }
+        else
+            ignoredProperties.add("avatar");
 
+        // validation
+        this.boundaryValidator
+                .validateUserBoundary(update, ignoredProperties);
 
-        if (dirtyFlag)
-            existing = this.usersCrudDB.save(existing);
+        existing = this.usersCrudDB.save(existing);
 
         return this.userConvertor.toBoundary(existing);
     }
 
 
+    /**
+     * This method extract all users from database, only admin has permission
+     *
+     * @param userSuperapp String
+     * @param userEmail String
+     * @param size int
+     * @param page int
+     * @return List - UserBoundary
+     */
     @Override
     public List<UserBoundary> getAllUsers(String userSuperapp, String userEmail, int size, int page) {
 
-        String userId = ConvertIdsHelper.concatenateIds(new String[]{ userSuperapp, userEmail});
-        // check role permission
-        if (!accessControl.hasPermission(userId, "getAllUsers"))
-            throw new UnauthorizedRequestException("user " + userId + " has no permission to getAllUsers");
+        // validate that user exist and retrieve the user from database
+        UserEntity userEntity = entitiesValidator.validateExistingUser(userSuperapp, userEmail);
+
+        checkPermission(userEntity.getUserID(), "getAllUsers");
 
         return this.usersCrudDB
                 .findAll(PageRequest.of(page, size, Direction.ASC, "role", "userId"))
@@ -187,85 +185,28 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
     }
 
 
+    /**
+     * This method delete all user from database, only admin has permission
+     *
+     * @param userSuperapp String
+     * @param userEmail String
+     */
     @Override
     public void deleteAllUsers(String userSuperapp, String userEmail) {
 
-        String userId = ConvertIdsHelper.concatenateIds(new String[]{ userSuperapp, userEmail});
-        // check role permission
-        if (!accessControl.hasPermission(userId, "deleteAllUsers"))
-            throw new UnauthorizedRequestException("user " + userId + " has no permission to deleteAllUsers");
+        // validate that user exist and retrieve the user from database
+        UserEntity userEntity = entitiesValidator.validateExistingUser(userSuperapp, userEmail);
+
+        checkPermission(userEntity.getUserID(), "deleteAllUsers");
 
         this.usersCrudDB.deleteAll();
     }
 
-    /**
-     * This method validate the username isn`t null or empty.
-     *
-     * @param username String
-     * @return boolean
-     */
-    private boolean isValidUserName(String username) {
-
-        return username != null && !username.isEmpty();
+    private void checkPermission(String userId, String operationName) {
+        // check role permission
+        if (!accessControl.hasPermission(userId, operationName))
+            throw new UnauthorizedRequestException("User " + userId + " has no permission to " + operationName);
     }
-
-
-    /**
-     * This method validate the avatar isn`t null or empty.
-     *
-     * @param avatar String
-     * @return boolean
-     */
-    private boolean isValidAvatar(String avatar) {
-
-        return avatar != null && !avatar.isEmpty();
-    }
-
-
-    /**
-     * This method validate the user role isn`t null, empty, or invalid role.
-     *
-     * @param role String
-     * @return boolean
-     */
-    private boolean isValidRole(String role) {
-
-        if (role == null || role.isEmpty())
-            return false;
-
-        try {
-            UserRole.valueOf(role);
-        }
-        catch (Exception e) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * This method validate the email isn`t null, empty, or invalid email.
-     *
-     * @param email String
-     * @return boolean
-     */
-    private boolean isValidEmail(String email) {
-
-
-        if (email == null)
-            return false;
-
-        String emailRegex = "^[a-zA-Z0-9+&*-]+(?:\\."
-                + "[a-zA-Z0-9+&*-]+)*@"
-                + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
-                + "A-Z]{2,7}$";
-
-        Pattern emailPattern = Pattern.compile(emailRegex);
-
-        // check email format
-        return emailPattern.matcher(email).matches();
-    }
-
 
     /**** Deprecated methods *****/
     @Deprecated
@@ -285,4 +226,5 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
 //                .map(this::entityToBoundary)
 //                .toList();
     }
+
 }

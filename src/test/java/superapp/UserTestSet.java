@@ -558,8 +558,7 @@ public class UserTestSet extends BaseTestSet{
         // when
         // A PUT request is made to the path "/superapp/users/{superapp}/{email}"
         //username changed to null
-        String updatedUsername = null;
-        help_PutUserBoundary(new UserBoundary().setUsername(updatedUsername), email);
+        help_PutUserBoundary(new UserBoundary().setUsername(null), email);
 
 
         // then
