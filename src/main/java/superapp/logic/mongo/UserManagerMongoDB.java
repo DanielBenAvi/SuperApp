@@ -32,9 +32,9 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
     private final UserCrud usersCrudDB;
     private final UserConvertor userConvertor;
 
-    private RBAC accessControl;
-    private BoundaryValidator boundaryValidator;
-    private EntitiesValidator entitiesValidator;
+    private final RBAC accessControl;
+    private final BoundaryValidator boundaryValidator;
+    private final EntitiesValidator entitiesValidator;
 
 
     @Autowired

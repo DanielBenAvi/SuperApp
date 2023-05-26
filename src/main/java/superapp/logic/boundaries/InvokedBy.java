@@ -1,10 +1,12 @@
 package superapp.logic.boundaries;
 
+import jakarta.validation.constraints.NotNull;
+
 public class InvokedBy {
+	@NotNull
 	private UserId userId;
 
-	public InvokedBy() {
-	}
+	public InvokedBy() {}
 
 	public UserId getUserId() {
 		return userId;

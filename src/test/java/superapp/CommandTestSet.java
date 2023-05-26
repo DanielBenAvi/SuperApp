@@ -17,33 +17,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CommandTestSet extends BaseTestSet {
 
-    private String idForCommandWithoutTarget = "a114f4a4-2be4-43ad-90f7-9822e8867d5e";
+    private final String idForCommandWithoutTarget = "a114f4a4-2be4-43ad-90f7-9822e8867d5e";
 
-    private String admin = "ADMIN";
-    private String miniappRole = "MINIAPP_USER";
-    private String superappRole = "SUPERAPP_USER";
+    private final String admin = "ADMIN";
+    private final String miniappRole = "MINIAPP_USER";
+    private final String superappRole = "SUPERAPP_USER";
 
     private UserBoundary createUser(String email, String role) {
 
         String username = "demo";
         String avatar = "demo";
         return help_PostUserBoundary(email, role, username, avatar);
-    }
-
-    private SuperAppObjectBoundary createObject(String type, String email, Map<String, Object> attributes) {
-
-        help_PutUserBoundary(new UserBoundary().setRole(superappRole), email);
-        ObjectId objectId = new ObjectId();
-
-        String alias = "demo name";
-        boolean active = true;
-        Date createdTimestamp = new Date();
-        Location location = new Location().setLat(0.0).setLng(0.0);
-
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId().setSuperapp(springApplicationName).setEmail(email));
-
-        // post object
-        return help_PostObjectBoundary(objectId, type, alias, createdTimestamp, active, location, createdBy, attributes);
     }
 
     private Object createCommand(String email, String role, String miniAppName, String command,
@@ -71,7 +55,7 @@ public class CommandTestSet extends BaseTestSet {
 
         String email = "demo@gmail.com";
         // create users
-        UserBoundary userBoundary = createUser(email, admin);
+        createUser(email, admin);
 
         //GIVEN The server is up
         //AND db is up
@@ -344,7 +328,8 @@ public class CommandTestSet extends BaseTestSet {
         objectDetails.put("key", userDetails);
 
         changeRole(superappRole, email);
-        SuperAppObjectBoundary postedObject = this.help_PostObjectBoundary(new ObjectId(),
+
+        this.help_PostObjectBoundary(new ObjectId(),
                 "USER_DETAILS",
                 "alias",
                 null,
@@ -360,7 +345,7 @@ public class CommandTestSet extends BaseTestSet {
         TargetObject targetObject = new TargetObject()
                 .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
 
-        Object commandRes = createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
 
         //THEN The server response with status 2xx code and command stored in db
         // and return SuperAppObjectBoundary with UserDetails in object details
@@ -389,20 +374,6 @@ public class CommandTestSet extends BaseTestSet {
 
     }
 
-    private SuperAppObjectBoundary createSuperAppObjectBoundaryFromMap(LinkedHashMap<String, Object> map) {
-
-
-        SuperAppObjectBoundary objectBoundary = new SuperAppObjectBoundary();
-
-//        objectBoundary.setObjectId()
-//        profile.setPublicProfile(createPublicDatingProfileFromMap((LinkedHashMap<String, Object>) map.get("publicProfile")));
-//        profile.setDistanceRange((int) map.get("distanceRange"));
-//        profile.setGenderPreferences((ArrayList<Gender>) map.get("genderPreferences"));
-//        profile.setMatches((ArrayList<String>) map.get("matches"));
-//        profile.setLikes((ArrayList<String>) map.get("likes"));
-//        return profile;
-        return objectBoundary;
-    }
 
     @Test
     @DisplayName("Create command by invoke with invalid path")
@@ -673,7 +644,7 @@ public class CommandTestSet extends BaseTestSet {
         objectDetails.put("key", userDetails);
 
         changeRole(superappRole, email);
-        SuperAppObjectBoundary postedObject = this.help_PostObjectBoundary(new ObjectId(),
+        this.help_PostObjectBoundary(new ObjectId(),
                 "USER_DETAILS",
                 "alias",
                 null,
@@ -702,7 +673,7 @@ public class CommandTestSet extends BaseTestSet {
                 .setInvokedBy(new InvokedBy().setUserId(new UserId(this.springApplicationName, email)))
                 .setCommandAttributes(new HashMap<>());
 
-        MiniAppCommandBoundary result = (MiniAppCommandBoundary) this.restTemplate
+        MiniAppCommandBoundary result = this.restTemplate
                                         .postForObject(
                                             this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
                                             , commandBoundary
@@ -710,6 +681,7 @@ public class CommandTestSet extends BaseTestSet {
                                             , "DATING"
                                             , "true");
 
+        assert result != null;
         Map<String, Object> statusJms = result.getCommandAttributes();
 
         changeRole(admin, email);
@@ -813,21 +785,12 @@ public class CommandTestSet extends BaseTestSet {
         // database is up
         // user exists in database
         String email = "demo@gmail.com";
-        UserBoundary user = createUser(email, superappRole);
+        createUser(email, superappRole);
 
 
-        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+        // WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
 
-        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
-                .setCommandId(null)
-                .setCommand("command")
-                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
-                .setInvocationTimestamp(null)
-                .setInvokedBy( new InvokedBy().setUserId(user.getUserId()))
-                .setCommandAttributes(new HashMap<>());
-
-
-        //THEN The server response with status 401 code
+        // THEN The server response with status 401 code
         assertThatThrownBy(() ->  this.restTemplate
                 .delete(this.baseUrl + "/superapp/admin/miniapp?userSuperapp={superapp}&userEmail={email}",
                 this.springApplicationName, email))
@@ -842,21 +805,12 @@ public class CommandTestSet extends BaseTestSet {
         // database is up
         // user exists in database
         String email = "demo@gmail.com";
-        UserBoundary user = createUser(email, superappRole);
+        createUser(email, superappRole);
 
 
-        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+        // WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
 
-        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
-                .setCommandId(null)
-                .setCommand("command")
-                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
-                .setInvocationTimestamp(null)
-                .setInvokedBy( new InvokedBy().setUserId(user.getUserId()))
-                .setCommandAttributes(new HashMap<>());
-
-
-        //THEN The server response with status 401 code
+        // THEN The server response with status 401 code
         assertThatThrownBy(() ->  this.restTemplate
                 .getForObject(this.baseUrl
                                 + "/superapp/admin/miniapp?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}",
@@ -873,7 +827,7 @@ public class CommandTestSet extends BaseTestSet {
         // database is up
         // user exists in database
         String email = "demo@gmail.com";
-        UserBoundary user = createUser(email, superappRole);
+        createUser(email, superappRole);
 
 
         //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
@@ -898,21 +852,12 @@ public class CommandTestSet extends BaseTestSet {
         // database is up
         // user exists in database
         String email = "demo@gmail.com";
-        UserBoundary user = createUser(email, miniappRole);
+        createUser(email, miniappRole);
 
 
-        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+        // WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
 
-        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
-                .setCommandId(null)
-                .setCommand("command")
-                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
-                .setInvocationTimestamp(null)
-                .setInvokedBy( new InvokedBy().setUserId(user.getUserId()))
-                .setCommandAttributes(new HashMap<>());
-
-
-        //THEN The server response with status 401 code
+        // THEN The server response with status 401 code
         assertThatThrownBy(() ->  this.restTemplate
                 .delete(this.baseUrl + "/superapp/admin/miniapp?userSuperapp={superapp}&userEmail={email}",
                         this.springApplicationName, email))
@@ -927,19 +872,9 @@ public class CommandTestSet extends BaseTestSet {
         // database is up
         // user exists in database
         String email = "demo@gmail.com";
-        UserBoundary user = createUser(email, miniappRole);
+        createUser(email, miniappRole);
 
-
-        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
-
-        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
-                .setCommandId(null)
-                .setCommand("command")
-                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
-                .setInvocationTimestamp(null)
-                .setInvokedBy( new InvokedBy().setUserId(user.getUserId()))
-                .setCommandAttributes(new HashMap<>());
-
+        // WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
 
         //THEN The server response with status 401 code
         assertThatThrownBy(() ->  this.restTemplate
@@ -957,7 +892,7 @@ public class CommandTestSet extends BaseTestSet {
         // database is up
         // user exists in database
         String email = "demo@gmail.com";
-        UserBoundary user = createUser(email, miniappRole);
+        createUser(email, miniappRole);
 
 
         //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={asyncFlag}"

@@ -1,14 +1,20 @@
 package superapp.logic.boundaries;
 
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 public class CommandId {
+
+	@NotNull @NotEmpty
 	private String superapp;
+	@NotNull @NotEmpty
 	private String miniapp;
+	@NotNull @NotEmpty
 	private String internalCommandId;
 	
 	
-	public CommandId() {
-	}
+	public CommandId() {}
 
 	public CommandId(String superapp, String miniapp, String internalCommandId) {
 		this.superapp = superapp;

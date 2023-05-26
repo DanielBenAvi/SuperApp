@@ -1,6 +1,10 @@
 package superapp.logic.boundaries;
 
+import jakarta.validation.constraints.NotNull;
+
 public class TargetObject {
+
+	@NotNull
 	private ObjectId objectId;
 	
 	public TargetObject() {

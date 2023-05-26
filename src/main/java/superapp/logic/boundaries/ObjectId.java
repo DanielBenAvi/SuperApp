@@ -1,12 +1,16 @@
 package superapp.logic.boundaries;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 public class ObjectId {
-	
+
+	@NotNull @NotEmpty
 	private String superapp;
+	@NotNull @NotEmpty
 	private String internalObjectId;
 	
-	public ObjectId() {
-	}
+	public ObjectId() {}
 
 	public ObjectId(String superapp, String internalObjectId) {
 		this.superapp = superapp;

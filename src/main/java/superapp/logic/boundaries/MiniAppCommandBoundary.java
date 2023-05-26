@@ -1,20 +1,27 @@
 package superapp.logic.boundaries;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.Date;
 import java.util.Map;
 
 
 public class MiniAppCommandBoundary {
+
+	@NotNull
 	private CommandId commandId;
+	@NotNull @NotEmpty
 	private String command;
+	@NotNull
 	private TargetObject targetObject;
 	private Date invocationTimestamp;
+	@NotNull
 	private InvokedBy invokedBy;
 	private Map<String,Object> commandAttributes;
 
 
-	public MiniAppCommandBoundary() {
-	}
+	public MiniAppCommandBoundary() {}
 
 	public CommandId getCommandId() {
 		return commandId;
