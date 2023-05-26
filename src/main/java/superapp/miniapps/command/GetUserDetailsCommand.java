@@ -4,22 +4,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
-import superapp.logic.ConvertHelp;
+import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
-
-import java.util.Map;
+import superapp.logic.boundaries.UserId;
+import superapp.logic.utils.convertors.ObjectConvertor;
 
 @Component
 public class GetUserDetailsCommand implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
 
-    @Autowired
-    public GetUserDetailsCommand(ObjectCrud objectCrudDB) {
-        this.objectCrudDB = objectCrudDB;
-    }
+    private final ObjectConvertor objectConvertor;
 
+    @Autowired
+    public GetUserDetailsCommand(ObjectCrud objectCrudDB, ObjectConvertor objectConvertor) {
+        this.objectCrudDB = objectCrudDB;
+        this.objectConvertor = objectConvertor;
+    }
     @Override
     public SuperAppObjectBoundary execute(MiniAppCommandBoundary commandBoundary) {
 
@@ -27,29 +29,17 @@ public class GetUserDetailsCommand implements MiniAppsCommand {
         String email = commandBoundary.getInvokedBy().getUserId().getEmail();
         String superapp = commandBoundary.getInvokedBy().getUserId().getSuperapp();
 
-        String createdBy = superapp + "_" + email;
+        String createdBy = this.objectConvertor
+                .createByToEntity(new CreatedBy()
+                        .setUserId(new UserId(superapp, email))
+                );
+
         String type = "USER_DETAILS";
 
         SuperAppObjectEntity result = this.objectCrudDB.findByCreatedByAndType(createdBy, type);
 
 
-        return convertEntityToBoundary(result);
+        return this.objectConvertor.toBoundary(result);
     }
 
-    private SuperAppObjectBoundary convertEntityToBoundary(SuperAppObjectEntity entity) {
-
-        SuperAppObjectBoundary boundary = new SuperAppObjectBoundary();
-
-        boundary.setObjectId(ConvertHelp.strObjectIdToBoundary(entity.getObjectId()));
-        boundary.setType(entity.getType());
-        boundary.setAlias(entity.getAlias());
-        boundary.setActive(entity.getActive());
-        boundary.setCreationTimestamp(entity.getCreationTimestamp());
-        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
-        boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
-
-        boundary.setObjectDetails(entity.getObjectDetails());
-
-        return boundary;
-    }
 }

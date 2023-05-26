@@ -1,12 +1,14 @@
 package superapp.logic.mockup;
 
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import superapp.data.SuperAppObjectEntity;
-import superapp.logic.ConvertHelp;
 import superapp.logic.ObjectsService;
 import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
+import superapp.logic.utils.convertors.ConvertIdsHelper;
+import superapp.logic.utils.convertors.ObjectConvertor;
 
 import java.util.*;
 
@@ -17,7 +19,12 @@ public class ObjectsManagerMockup implements ObjectsService {
     private Map<String, SuperAppObjectEntity> objectsDatabaseMockup;
     private String superappName;
 
+    private final ObjectConvertor objectConvertor;
 
+    @Autowired
+    public ObjectsManagerMockup (ObjectConvertor objectConvertor) {
+        this.objectConvertor = objectConvertor;
+    }
     /**
      * This methode injects a configuration value of spring.
      *
@@ -52,15 +59,15 @@ public class ObjectsManagerMockup implements ObjectsService {
 
         if (help_object_validate(objectBoundary)) {
 
-            SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
+            SuperAppObjectEntity entity = this.objectConvertor.toEntity(objectBoundary);
 
-            String objectId = ConvertHelp.concatenateIds(new String[]{superappName, UUID.randomUUID().toString()});
+            String objectId = ConvertIdsHelper.concatenateIds(new String[]{superappName, UUID.randomUUID().toString()});
             entity.setObjectId(objectId);
             entity.setCreationTimestamp(new Date());
 
             this.objectsDatabaseMockup.put(objectId, entity);
 
-            return this.convertEntityToBoundary(entity);
+            return this.objectConvertor.toBoundary(entity);
         }
         else throw new RuntimeException("object must contain all fields");
     }
@@ -80,7 +87,7 @@ public class ObjectsManagerMockup implements ObjectsService {
                                                String internalObjectId,
                                                SuperAppObjectBoundary update) {
 
-        String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId});
+        String objectId = ConvertIdsHelper.concatenateIds(new String [] {objectSuperApp, internalObjectId});
 
         if (!objectsDatabaseMockup.containsKey(objectId))
             throw new RuntimeException("Could not find object by id: " + objectId);
@@ -100,14 +107,14 @@ public class ObjectsManagerMockup implements ObjectsService {
         else throw new RuntimeException("invalid activity");
 
         if (update.getLocation() != null)
-            existingEntity.setLocation(ConvertHelp.locationBoundaryToEntity(update.getLocation()));
+            existingEntity.setLocation(this.objectConvertor.locationToEntity(update.getLocation()));
         else throw new RuntimeException("invalid location");
 
         if (update.getObjectDetails() != null)
             existingEntity.setObjectDetails(update.getObjectDetails());
         else throw new RuntimeException("invalid object details");
 
-        return this.convertEntityToBoundary(existingEntity);
+        return this.objectConvertor.toBoundary(existingEntity);
     }
 
 
@@ -122,10 +129,10 @@ public class ObjectsManagerMockup implements ObjectsService {
     @Override
     public Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId) {
 
-        String objectId = ConvertHelp.concatenateIds(new String [] {objectSuperApp, internalObjectId});
+        String objectId = ConvertIdsHelper.concatenateIds(new String [] {objectSuperApp, internalObjectId});
 
         if (objectsDatabaseMockup.containsKey(objectId)) {
-            SuperAppObjectBoundary boundary = this.convertEntityToBoundary(objectsDatabaseMockup.get(objectId));
+            SuperAppObjectBoundary boundary = this.objectConvertor.toBoundary(objectsDatabaseMockup.get(objectId));
             return Optional.of(boundary);
         }
         else {
@@ -136,14 +143,14 @@ public class ObjectsManagerMockup implements ObjectsService {
 
     /**
      * This methode return all existing objects in database.
-     * @return
+     * @return List<SuperAppObjectBoundary>
      */
     @Override
     public List<SuperAppObjectBoundary> getAllObjects() {
 
         return this.objectsDatabaseMockup.values()
                                                 .stream()
-                                                .map(this::convertEntityToBoundary)
+                                                .map(this.objectConvertor::toBoundary)
                                                 .toList();
     }
 
@@ -158,60 +165,9 @@ public class ObjectsManagerMockup implements ObjectsService {
 
 
     /**
-     * This methode convert SuperAppObjectEntity to SuperAppObjectBoundary.
-     *
-     * @param entity SuperAppObjectEntity
-     * @return boundary SuperAppObjectBoundary
-     */
-    private SuperAppObjectBoundary convertEntityToBoundary(SuperAppObjectEntity entity) {
-
-        SuperAppObjectBoundary boundary = new SuperAppObjectBoundary();
-
-        boundary.setObjectId(ConvertHelp.strObjectIdToBoundary(entity.getObjectId()));
-        boundary.setType(entity.getType());
-        boundary.setAlias(entity.getAlias());
-        boundary.setActive(entity.getActive());
-        boundary.setCreationTimestamp(entity.getCreationTimestamp());
-        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
-        boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
-
-        boundary.setObjectDetails(entity.getObjectDetails());
-
-        return boundary;
-    }
-
-
-    /**
-     * This methode convert SuperAppObjectBoundary to SuperAppObjectEntity.
-     *
-     * @param boundary SuperAppObjectBoundary
-     * @return entity SuperAppObjectEntity
-     */
-    private SuperAppObjectEntity convertBoundaryToEntity(SuperAppObjectBoundary boundary) {
-
-        SuperAppObjectEntity entity = new SuperAppObjectEntity();
-
-        entity.setType(boundary.getType());
-        entity.setAlias(boundary.getAlias());
-
-        if (boundary.getActive() != null)
-            entity.setActive(boundary.getActive());
-        else
-            entity.setActive(false);
-
-        entity.setLocation(ConvertHelp.locationBoundaryToEntity(boundary.getLocation()));
-        entity.setCreatedBy(ConvertHelp.createByBoundaryToStr(boundary.getCreatedBy()));
-        entity.setObjectDetails(boundary.getObjectDetails());
-
-        return entity;
-    }
-
-
-    /**
      * This method check if attributes of CreatedBy object (boundary)
      * are not null
      *
-     * @param createdBy
      * @return boolean
      */
     private boolean isCreateByExist(CreatedBy createdBy) {
@@ -222,10 +178,7 @@ public class ObjectsManagerMockup implements ObjectsService {
         if (createdBy.getUserId() == null)
             return false;
 
-        if (createdBy.getUserId().getSuperapp() == null || createdBy.getUserId().getEmail() == null)
-            return false;
-
-        return true;
+        return createdBy.getUserId().getSuperapp() != null && createdBy.getUserId().getEmail() != null;
     }
     private  boolean help_object_validate(SuperAppObjectBoundary objectBoundary){
         if (objectBoundary.getType() == null && objectBoundary.getType().equals(""))
@@ -242,9 +195,7 @@ public class ObjectsManagerMockup implements ObjectsService {
 
         if (objectBoundary.getObjectDetails() == null)
             return false;
-        if (!this.isCreateByExist(objectBoundary.getCreatedBy()))
-            return false;
-        return true;
+        return this.isCreateByExist(objectBoundary.getCreatedBy());
     }
 
 }

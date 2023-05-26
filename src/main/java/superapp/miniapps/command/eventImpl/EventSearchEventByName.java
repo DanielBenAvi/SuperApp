@@ -5,23 +5,23 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
-import superapp.data.SuperAppObjectEntity;
-import superapp.logic.ConvertHelp;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
+import superapp.logic.utils.convertors.ObjectConvertor;
 import superapp.miniapps.command.MiniAppsCommand;
 
-import java.util.Date;
 import java.util.List;
 
 @Component
 public class EventSearchEventByName implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
+    private final ObjectConvertor objectConvertor;
 
     @Autowired
-    public EventSearchEventByName(ObjectCrud objectCrudDB) {
+    public EventSearchEventByName(ObjectCrud objectCrudDB, ObjectConvertor objectConvertor) {
         this.objectCrudDB = objectCrudDB;
+        this.objectConvertor = objectConvertor;
     }
 
     @Override
@@ -35,25 +35,8 @@ public class EventSearchEventByName implements MiniAppsCommand {
 
         return this.objectCrudDB.searchEventByName(type, now, name, PageRequest.of(page, size, Sort.by("creationTimestamp").descending()))
                 .stream()
-                .map(this::convertEntityToBoundary)
+                .map(this.objectConvertor::toBoundary)
                 .toList();
     }
 
-
-    private SuperAppObjectBoundary convertEntityToBoundary(SuperAppObjectEntity entity) {
-
-        SuperAppObjectBoundary boundary = new SuperAppObjectBoundary();
-
-        boundary.setObjectId(ConvertHelp.strObjectIdToBoundary(entity.getObjectId()));
-        boundary.setType(entity.getType());
-        boundary.setAlias(entity.getAlias());
-        boundary.setActive(entity.getActive());
-        boundary.setCreationTimestamp(entity.getCreationTimestamp());
-        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
-        boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
-
-        boundary.setObjectDetails(entity.getObjectDetails());
-
-        return boundary;
-    }
 }

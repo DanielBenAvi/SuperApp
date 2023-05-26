@@ -1,6 +1,5 @@
 package superapp.logic.mongo;
 
-import org.springframework.data.geo.Metric;
 import org.springframework.data.geo.Point;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +10,13 @@ import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.stereotype.Service;
 import superapp.data.*;
-import superapp.logic.ConvertHelp;
 import superapp.logic.ObjectsServiceWithPaging;
 import superapp.logic.boundaries.CreatedBy;
 import superapp.logic.boundaries.Location;
 import superapp.logic.boundaries.ObjectId;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
+import superapp.logic.utils.convertors.ConvertIdsHelper;
+import superapp.logic.utils.convertors.ObjectConvertor;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -24,16 +24,22 @@ import java.util.regex.Pattern;
 @Service
 public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
-    private ObjectCrud objectCrudDB;
+    private final ObjectCrud objectCrudDB;
     private String springApplicationName;
     private final UserCrud userCrud;
-    private RBAC accessControl;
+    private final RBAC accessControl;
+
+    private final ObjectConvertor objectConvertor;
+
 
     @Autowired
-    public ObjectManagerMongoDB(ObjectCrud objectCrudDB,UserCrud userCrud, RBAC accessControl) {
+    public ObjectManagerMongoDB(ObjectCrud objectCrudDB,UserCrud userCrud,
+                                RBAC accessControl, ObjectConvertor objectConvertor) {
         this.objectCrudDB = objectCrudDB;
         this.userCrud = userCrud;
         this.accessControl = accessControl;
+        this.objectConvertor = objectConvertor;
+
     }
 
     // this method injects a configuration value of spring
@@ -42,7 +48,6 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         this.springApplicationName = springApplicationName;
     }
 
-    // this method is invoked after values are injected to instance
     @PostConstruct
     public void init() {
         System.err.println("****** " + this.getClass().getName() + " service initiated");
@@ -51,10 +56,17 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     @Override
     public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objectBoundary) {
 
+
+        objectBoundary
+                .setObjectId(new ObjectId(this.springApplicationName, UUID.randomUUID().toString()));
+
+        objectBoundary.setCreationTimestamp(new Date());
         validateEntireObjectBoundary(objectBoundary);
 
+        if (objectBoundary.getLocation() == null)
+            objectBoundary.getLocation().setLat(0).setLng(0);
 
-        String userId = ConvertHelp.concatenateIds(
+        String userId = ConvertIdsHelper.concatenateIds(
                 new String[]{ objectBoundary.getCreatedBy().getUserId().getSuperapp(),
                               objectBoundary.getCreatedBy().getUserId().getEmail()});
 
@@ -65,17 +77,9 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             throw new UnauthorizedRequestException("user " + userId + " has no permission to createObject");
 
 
-        SuperAppObjectEntity entity = this.convertBoundaryToEntity(objectBoundary);
+        SuperAppObjectEntity entity = this.objectCrudDB.save(this.objectConvertor.toEntity(objectBoundary));
 
-        String objectId = ConvertHelp.concatenateIds(new String[]{springApplicationName, UUID.randomUUID().toString()});
-
-        entity
-                .setObjectId(objectId)
-                .setCreationTimestamp(new Date());
-
-        this.objectCrudDB.save(entity);
-
-        return this.convertEntityToBoundary(entity);
+        return this.objectConvertor.toBoundary(entity);
 
     }
 
@@ -83,7 +87,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId,
                                                SuperAppObjectBoundary update, String userSuperapp, String userEmail) {
 
-        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{userSuperapp, userEmail});
         if(!userCrud.existsById(userId))
             throw new NotFoundException("user " + userId + " not found in database");
 
@@ -94,11 +98,11 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
         validateSuperappNameAndInternalObjectId(objectSuperApp, internalObjectId);
 
-        String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
+        String objectId = ConvertIdsHelper.concatenateIds(new String[]{objectSuperApp, internalObjectId});
 
         SuperAppObjectEntity exists = this.objectCrudDB.findById(objectId).
                 orElseThrow(() -> new NotFoundException("could not update object by id: " + objectId + " object not exist in database"));
-        SuperAppObjectBoundary existsBoundary = convertEntityToBoundary(exists);
+        SuperAppObjectBoundary existsBoundary = this.objectConvertor.toBoundary(exists);
 
         if (update.getType() != null && !update.getType().isEmpty())
             exists.setType(update.getType());
@@ -121,7 +125,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             if (update.getLocation().getLat() != null)
                 lat = update.getLocation().getLat();
 
-            exists.setLocation(ConvertHelp.locationBoundaryToEntity(new Location(lng, lat)));
+            exists.setLocation(this.objectConvertor.locationToEntity(new Location(lng, lat)));
         }
 
         if (update.getObjectDetails() != null)
@@ -130,14 +134,14 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
         exists = this.objectCrudDB.save(exists);
 
-        return this.convertEntityToBoundary(exists);
+        return this.objectConvertor.toBoundary(exists);
     }
 
     @Override
     public Optional<SuperAppObjectBoundary> getSpecificObject(String objectSuperApp, String internalObjectId,
                                                               String userSuperapp, String userEmail) {
 
-        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{userSuperapp, userEmail});
 
         UserEntity user = this.userCrud
                 .findById(userId)
@@ -147,7 +151,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             throw new UnauthorizedRequestException("user " + userId + " has no permission to getSpecificObject");
 
         validateSuperappNameAndInternalObjectId(objectSuperApp, internalObjectId);
-        String objectId = ConvertHelp.concatenateIds(new String[]{objectSuperApp, internalObjectId});
+        String objectId = ConvertIdsHelper.concatenateIds(new String[]{objectSuperApp, internalObjectId});
         if (!this.objectCrudDB.existsById(objectId))
             throw new NotFoundException("object " + objectId + " not found in database");
 
@@ -155,19 +159,19 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         if (user.getRole().equals(UserRole.MINIAPP_USER))
             return  this.objectCrudDB
                     .findByObjectIdAndActiveIsTrue(objectId)
-                    .map(this::convertEntityToBoundary);
+                    .map(this.objectConvertor::toBoundary);
 
         // this is return for User Role SUPERAPP_USER
         return this.objectCrudDB
                     .findById(objectId)
-                    .map(this::convertEntityToBoundary);
+                    .map(this.objectConvertor::toBoundary);
     }
 
 
     @Override
     public List<SuperAppObjectBoundary> getAllObjects(String userSuperapp, String userEmail, int size, int page) {
 
-        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{userSuperapp, userEmail});
 
         UserEntity user = this.userCrud
                         .findById(userId)
@@ -185,21 +189,21 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             return this.objectCrudDB
                     .findAllByActiveIsTrue(pageRequest)
                     .stream()
-                    .map(this::convertEntityToBoundary)
+                    .map(this.objectConvertor::toBoundary)
                     .toList();
 
         // this is return for User Role SUPERAPP_USER
         return this.objectCrudDB
                 .findAll(pageRequest)
                 .stream()
-                .map(this::convertEntityToBoundary)
+                .map(this.objectConvertor::toBoundary)
                 .toList();
     }
 
     @Override
     public void addChild(String superapp, String parentId, ObjectId childId, String userSuperapp, String userEmail) {
 
-        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{userSuperapp, userEmail});
         if(!userCrud.existsById(userId))
             throw new NotFoundException("user " + userId + "not found in database");
 
@@ -214,12 +218,12 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             throw new ConflictRequestException("origin and child are the same object");
 
         SuperAppObjectEntity parent = this.objectCrudDB
-                .findById(ConvertHelp.concatenateIds(new String[]{superapp, parentId}))
+                .findById(ConvertIdsHelper.concatenateIds(new String[]{superapp, parentId}))
                 .orElseThrow(() ->
                         new NotFoundException("could not add child to object by id: " + parentId + " because it does not exist"));
 
         SuperAppObjectEntity child = this.objectCrudDB
-                .findById(ConvertHelp.objectIdBoundaryToStr(childId))
+                .findById(this.objectConvertor.objectIdToEntity(childId))
                 .orElseThrow(() ->
                         new NotFoundException("could not add child to object by id: " + childId + " because it does not exist"));
 
@@ -239,7 +243,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                                                     String userSuperapp, String userEmail, int size, int page) {
 
 
-        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{userSuperapp, userEmail});
 
         UserEntity user = this.userCrud
                 .findById(userId)
@@ -250,7 +254,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
         validateSuperappNameAndInternalObjectId(superapp, parentInternalObjectId);
 
-        String parentObjectId = ConvertHelp.concatenateIds(new String[]{superapp, parentInternalObjectId});
+        String parentObjectId = ConvertIdsHelper.concatenateIds(new String[]{superapp, parentInternalObjectId});
         if (!this.objectCrudDB.existsById(parentObjectId))
             throw new NotFoundException("object " + parentObjectId + " not found in database");
 
@@ -261,13 +265,13 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             return this.objectCrudDB
                     .findAllByParent_objectIdAndActiveIsTrue(parentObjectId, pageRequest)
                     .stream()
-                    .map(this::convertEntityToBoundary)
+                    .map(this.objectConvertor::toBoundary)
                     .toList();
 
         return this.objectCrudDB
                 .findAllByParent_objectId(parentObjectId, pageRequest)
                 .stream()
-                .map(this::convertEntityToBoundary)
+                .map(this.objectConvertor::toBoundary)
                 .toList();
     }
 
@@ -275,7 +279,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     public List<SuperAppObjectBoundary> getParent(String superapp, String childInternalObjectId,
                                                   String userSuperapp, String userEmail, int size, int page) {
 
-        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{userSuperapp, userEmail});
         UserEntity user = this.userCrud
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException("user " + userId + " not found in database"));
@@ -285,7 +289,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
         validateSuperappNameAndInternalObjectId(superapp, childInternalObjectId);
 
-        String childObjectId = ConvertHelp.concatenateIds(new String[]{superapp, childInternalObjectId});
+        String childObjectId = ConvertIdsHelper.concatenateIds(new String[]{superapp, childInternalObjectId});
 
         if (!this.objectCrudDB.existsById(childObjectId))
             throw new NotFoundException("object " + childObjectId + " not found in database");
@@ -297,20 +301,20 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             return this.objectCrudDB
                     .findAllByChildren_objectIdAndActiveIsTrue(childObjectId, pageRequest)
                     .stream()
-                    .map(this::convertEntityToBoundary)
+                    .map(this.objectConvertor::toBoundary)
                     .toList();
 
         // this is return for User Role SUPERAPP_USER
         return this.objectCrudDB
                 .findAllByChildren_objectId(childObjectId, pageRequest)
                 .stream()
-                .map(this::convertEntityToBoundary)
+                .map(this.objectConvertor::toBoundary)
                 .toList();
     }
     @Override
     public void deleteAllObjects(String userSuperapp,String userEmail) {
 
-        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{userSuperapp, userEmail});
         if (!accessControl.hasPermission(userId, "deleteAllObjects"))
             throw new UnauthorizedRequestException("user " + userId + " has no permission to deleteAllObjects");
 
@@ -320,7 +324,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
     @Override
     public List<SuperAppObjectBoundary> getAllObjectsByType(String type, String userSuperapp, String userEmail, int size, int page) {
 
-        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{userSuperapp, userEmail});
         UserEntity user = this.userCrud
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException("user " + userId + " not found in database"));
@@ -339,21 +343,21 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             return this.objectCrudDB
                     .findAllByTypeAndActiveIsTrue(type, pageRequest)
                     .stream()
-                    .map(this::convertEntityToBoundary)
+                    .map(this.objectConvertor::toBoundary)
                     .toList();
 
         // this is return for User Role SUPERAPP_USER
         return this.objectCrudDB
                 .findAllByType(type, pageRequest)
                 .stream()
-                .map(this::convertEntityToBoundary)
+                .map(this.objectConvertor::toBoundary)
                 .toList();
     }
 
     @Override
     public List<SuperAppObjectBoundary> getAllObjectsByAlias(String alias, String userSuperapp, String userEmail, int size, int page) {
 
-        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{userSuperapp, userEmail});
         UserEntity user = this.userCrud
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException("user " + userId + " not found in database"));
@@ -372,14 +376,14 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             return this.objectCrudDB
                     .findAllByAliasAndActiveIsTrue(alias, pageRequest)
                     .stream()
-                    .map(this::convertEntityToBoundary)
+                    .map(this.objectConvertor::toBoundary)
                     .toList();
 
         // this is return for User Role SUPERAPP_USER
         return this.objectCrudDB
                 .findAllByAlias(alias, pageRequest)
                 .stream()
-                .map(this::convertEntityToBoundary)
+                .map(this.objectConvertor::toBoundary)
                 .toList();
     }
 
@@ -402,7 +406,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             throw new BadRequestException("distance must be positive number");
 
 
-        String userId = ConvertHelp.concatenateIds(new String[]{userSuperapp, userEmail});
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{userSuperapp, userEmail});
         UserEntity user = this.userCrud
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException("user " + userId + " not found in database"));
@@ -420,14 +424,14 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             return this.objectCrudDB
                     .findAllByActiveIsTrueAndLocationNear(point ,maxDistance , pageRequest)
                     .stream()
-                    .map(this::convertEntityToBoundary)
+                    .map(this.objectConvertor::toBoundary)
                     .toList();
 
         // this is return for User Role SUPERAPP_USER
         return this.objectCrudDB
                 .findAllByLocationNear(point, maxDistance, pageRequest)
                 .stream()
-                .map(this::convertEntityToBoundary)
+                .map(this.objectConvertor::toBoundary)
                 .toList();
     }
 
@@ -439,6 +443,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             default -> throw new BadRequestException("Invalid units: " + units);
         };
     }
+
     private void validateSuperappNameAndInternalObjectId(String superapp, String internalObjectId) {
         if (!checkValidSuperApp(superapp))
             throw new BadRequestException("superApp must be in format: " + springApplicationName);
@@ -448,24 +453,6 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                     ("parentId must be in format: " + springApplicationName + "_" + UUID.randomUUID());
     }
 
-    private SuperAppObjectEntity convertBoundaryToEntity(SuperAppObjectBoundary boundary) {
-
-        SuperAppObjectEntity entity = new SuperAppObjectEntity();
-
-        entity.setType(boundary.getType());
-        entity.setAlias(boundary.getAlias());
-
-        if (boundary.getActive() != null)
-            entity.setActive(boundary.getActive());
-        else
-            entity.setActive(false);
-
-        entity.setLocation(ConvertHelp.locationBoundaryToEntity(boundary.getLocation()));
-        entity.setCreatedBy(ConvertHelp.createByBoundaryToStr(boundary.getCreatedBy()));
-        entity.setObjectDetails(boundary.getObjectDetails());
-
-        return entity;
-    }
 
     private boolean isCreateByExist(CreatedBy createdBy) {
 
@@ -478,7 +465,82 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                 && createdBy.getUserId().getEmail() != null
                 && !createdBy.getUserId().getEmail().isEmpty();
     }
+    private boolean checkValidInternalObjectId(String internalObjectId) {
+        if (internalObjectId == null)
+            return false;
 
+        if (internalObjectId.isEmpty())
+            return false;
+
+        try {
+            UUID.fromString(internalObjectId);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkValidSuperApp(String superApp) {
+        if (superApp == null)
+            return false;
+
+        if (superApp.isEmpty())
+            return false;
+
+        return superApp.equals(springApplicationName);
+    }
+
+    private boolean checkValidLocation(Location location) {
+        return location != null && location.getLng() != null && location.getLat() != null;
+    }
+
+    private void validateEntireObjectBoundary(SuperAppObjectBoundary objectBoundary) {
+        if (objectBoundary.getType() == null || objectBoundary.getType().isEmpty())
+            throw new BadRequestException("object must contain all fields");
+
+        if (objectBoundary.getAlias() == null || objectBoundary.getAlias().isEmpty())
+            throw new BadRequestException("object must contain all fields");
+
+        if (!checkValidLocation(objectBoundary.getLocation()))
+            throw new BadRequestException("object must contain all fields");
+
+        if (objectBoundary.getObjectDetails() == null)
+            throw new BadRequestException("object must contain all fields");
+
+        if (objectBoundary.getCreatedBy()== null)
+            throw new BadRequestException("object must contain all fields");
+
+        if (objectBoundary.getCreatedBy().getUserId()== null)
+            throw new BadRequestException("object must contain all fields");
+
+        if (!isCreateByExist(objectBoundary.getCreatedBy()))
+            throw new BadRequestException("object must contain all fields");
+
+        if (!isValidEmail(objectBoundary.getCreatedBy().getUserId().getEmail()))
+            throw new BadRequestException("object must contain all fields");
+
+        if (!checkValidSuperApp(objectBoundary.getCreatedBy().getUserId().getSuperapp()))
+            throw new BadRequestException("object must contain all fields");
+
+    }
+
+    private boolean isValidEmail(String email) {
+
+        if (email == null)
+            return false;
+
+        String emailRegex = "^[a-zA-Z0-9+&*-]+(?:\\."
+                + "[a-zA-Z0-9+&*-]+)*@"
+                + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
+                + "A-Z]{2,7}$";
+
+        Pattern emailPattern = Pattern.compile(emailRegex);
+
+        // check email format
+        return emailPattern.matcher(email).matches();
+    }
+
+    /**** Deprecated methods *****/
     @Override
     @Deprecated
     public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId, SuperAppObjectBoundary update) {
@@ -561,31 +623,12 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 //        return this.objectCrudDB.findAll().stream().map(this::convertEntityToBoundary).toList();
     }
 
-    private SuperAppObjectBoundary convertEntityToBoundary(SuperAppObjectEntity entity) {
-
-        SuperAppObjectBoundary boundary = new SuperAppObjectBoundary();
-
-        boundary.setObjectId(ConvertHelp.strObjectIdToBoundary(entity.getObjectId()));
-        boundary.setType(entity.getType());
-        boundary.setAlias(entity.getAlias());
-        boundary.setActive(entity.getActive());
-        boundary.setCreationTimestamp(entity.getCreationTimestamp());
-        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
-        boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
-
-        boundary.setObjectDetails(entity.getObjectDetails());
-
-        return boundary;
-    }
-
     @Override
     @Deprecated
     public void deleteAllObjects() {
         throw new DeprecatedRequestException("cannot enter a deprecated function");
         //this.objectCrudDB.deleteAll();
     }
-
-
 
     @Override
     @Deprecated
@@ -656,81 +699,6 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 //        }
 //
 //        return List.of();
-    }
-
-    private boolean checkValidInternalObjectId(String internalObjectId) {
-        if (internalObjectId == null)
-            return false;
-
-        if (internalObjectId.isEmpty())
-            return false;
-
-        try {
-            UUID.fromString(internalObjectId);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean checkValidSuperApp(String superApp) {
-        if (superApp == null)
-            return false;
-
-        if (superApp.isEmpty())
-            return false;
-
-        return superApp.equals(springApplicationName);
-    }
-
-    private boolean checkValidLocation(Location location) {
-        return location != null && location.getLng() != null && location.getLat() != null;
-    }
-
-    private void validateEntireObjectBoundary(SuperAppObjectBoundary objectBoundary) {
-        if (objectBoundary.getType() == null || objectBoundary.getType().isEmpty())
-            throw new BadRequestException("object must contain all fields");
-
-        if (objectBoundary.getAlias() == null || objectBoundary.getAlias().isEmpty())
-            throw new BadRequestException("object must contain all fields");
-
-        if (!checkValidLocation(objectBoundary.getLocation()))
-            throw new BadRequestException("object must contain all fields");
-
-        if (objectBoundary.getObjectDetails() == null)
-            throw new BadRequestException("object must contain all fields");
-
-        if (objectBoundary.getCreatedBy()== null)
-            throw new BadRequestException("object must contain all fields");
-
-        if (objectBoundary.getCreatedBy().getUserId()== null)
-            throw new BadRequestException("object must contain all fields");
-
-        if (!isCreateByExist(objectBoundary.getCreatedBy()))
-            throw new BadRequestException("object must contain all fields");
-
-        if (!isValidEmail(objectBoundary.getCreatedBy().getUserId().getEmail()))
-            throw new BadRequestException("object must contain all fields");
-
-        if (!checkValidSuperApp(objectBoundary.getCreatedBy().getUserId().getSuperapp()))
-            throw new BadRequestException("object must contain all fields");
-
-    }
-
-    private boolean isValidEmail(String email) {
-
-        if (email == null)
-            return false;
-
-        String emailRegex = "^[a-zA-Z0-9+&*-]+(?:\\."
-                + "[a-zA-Z0-9+&*-]+)*@"
-                + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
-                + "A-Z]{2,7}$";
-
-        Pattern emailPattern = Pattern.compile(emailRegex);
-
-        // check email format
-        return emailPattern.matcher(email).matches();
     }
 
 }

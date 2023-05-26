@@ -4,11 +4,10 @@ package superapp.miniapps.command.datingimpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
-import superapp.data.UserCrud;
 import superapp.data.UserDetails;
-import superapp.logic.ConvertHelp;
 import superapp.logic.boundaries.*;
 import superapp.logic.mongo.NotFoundException;
+import superapp.logic.utils.convertors.CommandConvertor;
 import superapp.miniapps.Gender;
 import superapp.miniapps.command.MiniAppsCommand;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
@@ -19,12 +18,12 @@ import java.util.List;
 public class DatingGetPotentialDatesCommand implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
-    private final UserCrud usersCrudDB;
+    private final CommandConvertor commandConvertor;
 
     @Autowired
-    public DatingGetPotentialDatesCommand(ObjectCrud objectCrudDB, UserCrud usersCrudDB) {
+    public DatingGetPotentialDatesCommand(ObjectCrud objectCrudDB, CommandConvertor commandConvertor) {
         this.objectCrudDB = objectCrudDB;
-        this.usersCrudDB = usersCrudDB;
+        this.commandConvertor =  commandConvertor;
     }
 
 
@@ -51,8 +50,8 @@ public class DatingGetPotentialDatesCommand implements MiniAppsCommand {
         ObjectId dpObjectId = (ObjectId) commandBoundary.getCommandAttributes().get("DatingProfileId");
         ObjectId udObjectId = (ObjectId) commandBoundary.getCommandAttributes().get("UserDetailsId");
 
-        String datingProfileId = ConvertHelp.concatenateIds(new String[]{dpObjectId.getSuperapp(), dpObjectId.getInternalObjectId()});
-        String userDetailsId = ConvertHelp.concatenateIds(new String[]{udObjectId.getSuperapp(), udObjectId.getInternalObjectId()});
+        String datingProfileId = this.commandConvertor.targetObjToEntity(new TargetObject().setObjectId(dpObjectId));
+        String userDetailsId = this.commandConvertor.targetObjToEntity(new TargetObject().setObjectId(udObjectId));
 
 
         UserDetails userDetails = ((UserDetails) this.objectCrudDB

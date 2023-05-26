@@ -4,13 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
-import superapp.logic.ConvertHelp;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.ObjectId;
-import superapp.miniapps.chat.objects.Chat;
+import superapp.logic.utils.convertors.CommandConvertor;
 import superapp.miniapps.Gender;
 import superapp.miniapps.command.MiniAppsCommand;
-import superapp.miniapps.datingMiniApp.MatchEntity;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
 import superapp.miniapps.datingMiniApp.PublicDatingProfile;
 
@@ -20,10 +18,12 @@ import java.util.*;
 public class DatingLikeProfileCommand implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
+    private final CommandConvertor commandConvertor;
 
     @Autowired
-    public DatingLikeProfileCommand(ObjectCrud objectCrudDB) {
+    public DatingLikeProfileCommand(ObjectCrud objectCrudDB, CommandConvertor commandConvertor) {
         this.objectCrudDB = objectCrudDB;
+        this.commandConvertor =  commandConvertor;
     }
 
 
@@ -49,7 +49,8 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
         //
 
         ObjectId targetBoundaryID = command.getTargetObject().getObjectId();
-        String targetEntityID = targetBoundaryID.getSuperapp() + ConvertHelp.DELIMITER_ID + targetBoundaryID.getInternalObjectId();
+
+        String targetEntityID = this.commandConvertor.targetObjToEntity(command.getTargetObject());
 
 //        /////////////////////
 //        ObjectMapper objectMapper = new ObjectMapper();

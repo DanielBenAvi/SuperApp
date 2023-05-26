@@ -7,30 +7,34 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import superapp.data.UserCrud;
-import superapp.data.UserRole;
 import superapp.data.UserEntity;
-import superapp.logic.ConvertHelp;
+import superapp.data.UserRole;
 import superapp.logic.UserServiceWithPaging;
 import superapp.logic.boundaries.UserBoundary;
-import superapp.logic.boundaries.UserId;
+import superapp.logic.utils.convertors.ConvertIdsHelper;
+import superapp.logic.utils.convertors.UserConvertor;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 public class UserManagerMongoDB implements UserServiceWithPaging {
 
     private String superappName;
-    private UserCrud usersCrudDB;
+    private final UserCrud usersCrudDB;
+    private final UserConvertor userConvertor;
+    private RBAC accessControl;
 
-    /**
-     * constructor
-     * @param usersCrudDB
-     */
+
     @Autowired
-    public UserManagerMongoDB(UserCrud usersCrudDB) {
+    public UserManagerMongoDB(UserCrud usersCrudDB,
+                              UserConvertor userConvertor,
+                              RBAC accessControl) {
+
         this.usersCrudDB = usersCrudDB;
+        this.userConvertor = userConvertor;
+        this.accessControl = accessControl;
     }
 
     /**
@@ -41,9 +45,7 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
         this.superappName = springApplicationName;
     }
 
-    /**
-     * init the database mockup
-     */
+
     @PostConstruct
     public void init(){
         System.err.println("****** " + this.getClass().getName() + " service initiated");
@@ -75,7 +77,7 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
 
         userBoundary.getUserId().setSuperapp(superappName);
 
-        UserEntity userEntity = this.boundaryToEntity(userBoundary);
+        UserEntity userEntity = this.userConvertor.toEntity(userBoundary);
 
         // check if user already exist
         if (this.usersCrudDB.existsById(userEntity.getUserID()))
@@ -83,7 +85,7 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
 
         this.usersCrudDB.save(userEntity);
 
-        return this.entityToBoundary(userEntity);
+        return this.userConvertor.toBoundary(userEntity);
     }
 
 
@@ -97,7 +99,7 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
     public Optional<UserBoundary> login(String userSuperApp, String userEmail) {
 
 
-        String userID = ConvertHelp.concatenateIds(new String[]{ userSuperApp, userEmail});
+        String userID = ConvertIdsHelper.concatenateIds(new String[]{ userSuperApp, userEmail});
 
         UserEntity userEntity = this.usersCrudDB
                 .findById(userID)
@@ -107,7 +109,7 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
             return Optional.empty();
         }
         else {
-            UserBoundary userBoundary = this.entityToBoundary(userEntity);
+            UserBoundary userBoundary = this.userConvertor.toBoundary(userEntity);
             return Optional.of(userBoundary);
         }
 
@@ -125,7 +127,7 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
     @Override
     public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update) {
 
-        String userID = ConvertHelp.concatenateIds(new String[]{userEmail, userSuperApp});
+        String userID = ConvertIdsHelper.concatenateIds(new String[]{userEmail, userSuperApp});
 
         // get user from DB and check if is null
         UserEntity existing = this.usersCrudDB
@@ -148,7 +150,7 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
             if (!isValidRole(update.getRole()))
                 throw new BadRequestException("Role invalid");
 
-            existing.setRole(ConvertHelp.strToUserRole(update.getRole()));
+            existing.setRole(this.userConvertor.strToUserRole(update.getRole()));
             dirtyFlag = true;
         }
 
@@ -165,99 +167,35 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
         if (dirtyFlag)
             existing = this.usersCrudDB.save(existing);
 
-        return this.entityToBoundary(existing);
+        return this.userConvertor.toBoundary(existing);
     }
 
-    /**
-     * This method return all users from database
-     *
-     * @return List<UserBoundary>
-     */
-    @Override
-    @Deprecated
-    public List<UserBoundary> getAllUsers() {
-        throw new DeprecatedRequestException("do not use deprecated function");
-//        return this.usersCrudDB
-//                .findAll()
-//                .stream()
-//                .map(this::entityToBoundary)
-//                .toList();
-    }
 
     @Override
     public List<UserBoundary> getAllUsers(String userSuperapp, String userEmail, int size, int page) {
 
-        ConvertHelp.checkIfUserAdmin(usersCrudDB,userSuperapp,userEmail);
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{ userSuperapp, userEmail});
+        // check role permission
+        if (!accessControl.hasPermission(userId, "getAllUsers"))
+            throw new UnauthorizedRequestException("user " + userId + " has no permission to getAllUsers");
+
         return this.usersCrudDB
                 .findAll(PageRequest.of(page, size, Direction.ASC, "role", "userId"))
                 .stream()
-                .map(this::entityToBoundary)
-                .collect(Collectors.toList());
+                .map(this.userConvertor::toBoundary)
+                .toList();
     }
 
-
-
-    /**
-     * This method delete all users from database
-     */
-    @Deprecated
-    @Override
-    public void deleteAllUsers() {
-        throw new DeprecatedRequestException("do not use deprecated function");
-       // this.usersCrudDB.deleteAll();
-    }
 
     @Override
     public void deleteAllUsers(String userSuperapp, String userEmail) {
-        ConvertHelp.checkIfUserAdmin(usersCrudDB,userSuperapp,userEmail);
+
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{ userSuperapp, userEmail});
+        // check role permission
+        if (!accessControl.hasPermission(userId, "deleteAllUsers"))
+            throw new UnauthorizedRequestException("user " + userId + " has no permission to deleteAllUsers");
+
         this.usersCrudDB.deleteAll();
-    }
-
-    /**
-     * converts user boundary to user entity
-     * @param userBoundary boundary
-     * @return userEntity
-     *
-     */
-    private UserEntity boundaryToEntity(UserBoundary userBoundary) {
-        UserEntity userEntity = new UserEntity();
-
-        String email = userBoundary.getUserId().getEmail();
-        String userID = ConvertHelp.userIdBoundaryToStr(new UserId(superappName,email));
-
-        userEntity.setUserID(userID);
-
-        userEntity.setUserName(userBoundary.getUsername());
-
-        userEntity.setAvatar(userBoundary.getAvatar());
-
-        userEntity.setRole(ConvertHelp.strToUserRole(userBoundary.getRole()));
-
-
-        return userEntity;
-    }
-
-    /**
-     * converts user entity to user boundary
-     * @param userEntity entity
-     * @return userBoundary
-     */
-    private UserBoundary entityToBoundary(UserEntity userEntity) {
-
-        UserBoundary userBoundary = new UserBoundary();
-
-        // crate a userID object
-        UserId userID = ConvertHelp.strUserIdToBoundary(userEntity.getUserID());
-
-        // set the userID object
-        userBoundary.setUserId(userID);
-
-        // set the rest of the fields
-        userBoundary.setUsername(userEntity.getUserName());
-        userBoundary.setRole(ConvertHelp.userRoleToStr(userEntity.getRole()));
-        userBoundary.setAvatar(userEntity.getAvatar());
-
-        return userBoundary;
     }
 
     /**
@@ -268,11 +206,9 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
      */
     private boolean isValidUserName(String username) {
 
-        if (username == null || username.isEmpty())
-            return false;
-
-        return true;
+        return username != null && !username.isEmpty();
     }
+
 
     /**
      * This method validate the avatar isn`t null or empty.
@@ -282,11 +218,9 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
      */
     private boolean isValidAvatar(String avatar) {
 
-        if (avatar == null || avatar.isEmpty())
-            return false;
-
-        return true;
+        return avatar != null && !avatar.isEmpty();
     }
+
 
     /**
      * This method validate the user role isn`t null, empty, or invalid role.
@@ -329,11 +263,26 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
         Pattern emailPattern = Pattern.compile(emailRegex);
 
         // check email format
-        if (!emailPattern.matcher(email).matches())
-            return false;
-
-        return true;
+        return emailPattern.matcher(email).matches();
     }
 
 
+    /**** Deprecated methods *****/
+    @Deprecated
+    @Override
+    public void deleteAllUsers() {
+        throw new DeprecatedRequestException("do not use deprecated function");
+        // this.usersCrudDB.deleteAll();
+    }
+
+    @Override
+    @Deprecated
+    public List<UserBoundary> getAllUsers() {
+        throw new DeprecatedRequestException("do not use deprecated function");
+//        return this.usersCrudDB
+//                .findAll()
+//                .stream()
+//                .map(this::entityToBoundary)
+//                .toList();
+    }
 }
