@@ -5,13 +5,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
-import superapp.data.SuperAppObjectEntity;
-import superapp.logic.ConvertHelp;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
+import superapp.logic.utils.convertors.ObjectConvertor;
 import superapp.miniapps.command.MiniAppsCommand;
 
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -19,9 +17,12 @@ public class EventSearchEventByLocation implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
 
+    private final ObjectConvertor objectConvertor;
+
     @Autowired
-    public EventSearchEventByLocation(ObjectCrud objectCrudDB) {
+    public EventSearchEventByLocation(ObjectCrud objectCrudDB, ObjectConvertor objectConvertor) {
         this.objectCrudDB = objectCrudDB;
+        this.objectConvertor = objectConvertor;
     }
 
     @Override
@@ -31,28 +32,21 @@ public class EventSearchEventByLocation implements MiniAppsCommand {
         double distance = Double.parseDouble(commandBoundary.getCommandAttributes().get("distance").toString());
         String type = "EVENT";
         long now = System.currentTimeMillis();
-        int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
-        int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
+
+        int page = commandBoundary
+                .getCommandAttributes()
+                .get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
+
+        int size = commandBoundary
+                .getCommandAttributes()
+                .get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 
 
-        return this.objectCrudDB.searchEventByLocation(type, now, lat, lng, distance, PageRequest.of(page, size, Sort.by("creationTimestamp").descending())).stream().map(this::convertEntityToBoundary).toList();
+        return this.objectCrudDB
+                .searchEventByLocation(type, now, lat, lng, distance, PageRequest.of(page, size, Sort.by("creationTimestamp").descending()))
+                .stream()
+                .map(this.objectConvertor::toBoundary)
+                .toList();
     }
 
-
-    private SuperAppObjectBoundary convertEntityToBoundary(SuperAppObjectEntity entity) {
-
-        SuperAppObjectBoundary boundary = new SuperAppObjectBoundary();
-
-        boundary.setObjectId(ConvertHelp.strObjectIdToBoundary(entity.getObjectId()));
-        boundary.setType(entity.getType());
-        boundary.setAlias(entity.getAlias());
-        boundary.setActive(entity.getActive());
-        boundary.setCreationTimestamp(entity.getCreationTimestamp());
-        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
-        boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
-
-        boundary.setObjectDetails(entity.getObjectDetails());
-
-        return boundary;
-    }
 }

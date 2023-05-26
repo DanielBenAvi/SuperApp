@@ -13,8 +13,9 @@ import superapp.data.*;
 import superapp.logic.MiniAppCommandWithAsyncSupport;
 import superapp.logic.boundaries.InvokedBy;
 import superapp.logic.boundaries.TargetObject;
+import superapp.logic.utils.convertors.CommandConvertor;
+import superapp.logic.utils.convertors.ConvertIdsHelper;
 import superapp.miniapps.MiniAppNames;
-import superapp.logic.ConvertHelp;
 import superapp.logic.boundaries.CommandId;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.miniapps.command.CommandInvoker;
@@ -26,7 +27,6 @@ import java.util.*;
 
 @Service
 public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupport {
-    private String idForCommandWithoutTarget = "a114f4a4-2be4-43ad-90f7-9822e8867d5e";
 
     private ObjectMapper jackson;
     private JmsTemplate jmsTemplate;
@@ -34,19 +34,21 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
     private final UserCrud userCrud;
     private final ObjectCrud objectCrud;
     private final CommandInvoker commandInvoker;
-    private RBAC accessControl;
-
+    private final RBAC accessControl;
     private String springApplicationName;
+
+    private final CommandConvertor commandConvertor;
 
     @Autowired
     public MiniAppCommandManagerMongoDB(MiniAppCommandCrud miniAppCommandCrud, UserCrud userCrud,
                                         ObjectCrud objectCrud, CommandInvoker commandInvoker,
-                                        RBAC accessControl) {
+                                        RBAC accessControl, CommandConvertor commandConvertor) {
         this.miniAppCommandCrud = miniAppCommandCrud;
         this.userCrud = userCrud;
         this.objectCrud = objectCrud;
         this.commandInvoker = commandInvoker;
         this.accessControl = accessControl;
+        this.commandConvertor = commandConvertor;
     }
 
     @Autowired
@@ -65,9 +67,6 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
         this.springApplicationName = springApplicationName;
     }
 
-    /**
-     * This method init the database mockup with thread safe collection
-     */
     @PostConstruct
     public void init() {
         System.err.println("****** " + this.getClass().getName() + " service initiated");
@@ -113,7 +112,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
         if (!isValidInvokedBy(invokedBy))
             throw new BadRequestException("invoked by is not valid");
 
-        String userId = ConvertHelp.concatenateIds(new String[]{
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{
                 invokedBy.getUserId().getSuperapp(), invokedBy.getUserId().getEmail()});
 
         UserEntity user = this.userCrud
@@ -131,9 +130,10 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
 
 
         SuperAppObjectEntity targetObjectEntity;
-        String objectId = ConvertHelp.objectIdBoundaryToStr(commandBoundary.getTargetObject().getObjectId());
+        String objectId = this.commandConvertor.targetObjToEntity(commandBoundary.getTargetObject());
 
         // validate object exist or is a default object
+        String idForCommandWithoutTarget = "a114f4a4-2be4-43ad-90f7-9822e8867d5e";
         if (this.objectCrud.existsById(objectId)) {
 
             targetObjectEntity = this.objectCrud
@@ -195,7 +195,8 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
 
 
         // convert to entity
-        MiniAppCommandEntity commandEntity = convertToEntity(commandBoundary);
+        //MiniAppCommandEntity commandEntity = convertToEntity(commandBoundary);
+        MiniAppCommandEntity commandEntity = commandConvertor.toEntity(commandBoundary);
 
         // save command to database
         this.miniAppCommandCrud.save(commandEntity);
@@ -213,7 +214,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
                                                               int size, int page) {
 
 
-        String userId = ConvertHelp.concatenateIds(new String[]{ userSuperapp, userEmail});
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{ userSuperapp, userEmail});
 
         // validate that user exist
         this.userCrud
@@ -234,15 +235,14 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
         return this.miniAppCommandCrud
                 .findAllByCommandIdContaining(miniAppName, pageRequest)
                 .stream()
-                .map(this::convertToBoundary)
+                .map(this.commandConvertor::toBoundary)
                 .toList();
     }
-
 
     @Override
     public List<MiniAppCommandBoundary> getAllCommands(String userSuperapp, String userEmail, int size, int page) {
 
-        String userId = ConvertHelp.concatenateIds(new String[]{ userSuperapp, userEmail});
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{ userSuperapp, userEmail});
 
         // validate that user exist
         this.userCrud
@@ -260,99 +260,22 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
         return this.miniAppCommandCrud
                 .findAll(pageRequest)
                 .stream()
-                .map(this::convertToBoundary)
+                .map(this.commandConvertor::toBoundary)
                 .toList();
     }
 
 
     @Override
     public void deleteAllCommands(String userSuperapp, String userEmail) {
-        ConvertHelp.checkIfUserAdmin(userCrud,userSuperapp,userEmail);
+
+        String userId = ConvertIdsHelper.concatenateIds(new String[]{ userSuperapp, userEmail});
+        // check role permission
+        if (!accessControl.hasPermission(userId, "deleteAllCommands"))
+            throw new UnauthorizedRequestException("user " + userId + " has no permission to deleteAllCommands");
+
         this.miniAppCommandCrud.deleteAll();
     }
 
-
-
-    /**
-     * This method convert MiniAppCommand Entity to Boundary
-     *
-     * @param commandEntity MiniAppCommandEntity
-     * @return commandBoundary MiniAppCommandBoundary
-     */
-    public MiniAppCommandBoundary convertToBoundary(MiniAppCommandEntity commandEntity) {
-        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary();
-        commandBoundary.setCommandId(ConvertHelp.strCommandIdToBoundary(commandEntity.getCommandId()));
-        commandBoundary.setCommand(commandEntity.getCommand());
-        commandBoundary.setCommandAttributes(commandEntity.getCommandAttributes());
-        commandBoundary.setTargetObject(ConvertHelp.strTargetObjectToBoundary(commandEntity.getTargetObject()));
-        commandBoundary.setInvocationTimestamp(commandEntity.getInvocationTimestamp());
-        commandBoundary.setInvokedBy(ConvertHelp.strInvokedByToBoundary(commandEntity.getInvokedBy()));
-
-        return commandBoundary;
-    }
-
-    /**
-     * This method convert MiniAppCommand Boundary to Entity.
-     *
-     * @param cmdBoundary MiniAppCommandBoundary
-     * @return cmdEntity MiniAppCommandEntity
-     */
-    public MiniAppCommandEntity convertToEntity(MiniAppCommandBoundary cmdBoundary) {
-
-        MiniAppCommandEntity cmdEntity = new MiniAppCommandEntity();
-
-        cmdEntity.setCommand(cmdBoundary.getCommand());
-
-        CommandId commandId = cmdBoundary.getCommandId();
-        String[] ids = new String[]{commandId.getSuperapp(), commandId.getMiniapp(), commandId.getInternalCommandId()};
-        cmdEntity.setCommandId(ConvertHelp.concatenateIds(ids));
-
-        cmdEntity.setCommandAttributes(cmdBoundary.getCommandAttributes());
-        cmdEntity.setInvocationTimestamp(cmdBoundary.getInvocationTimestamp());
-        cmdEntity.setTargetObject(ConvertHelp.targetObjBoundaryToStr(cmdBoundary.getTargetObject()));
-        cmdEntity.setInvokedBy(ConvertHelp.invokedByBoundaryToStr(cmdBoundary.getInvokedBy()));
-
-        return cmdEntity;
-    }
-
-
-    /**** Deprecated methods *****/
-
-
-    @Deprecated
-    @Override
-    public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
-        throw new DeprecatedRequestException("cannot enter a deprecated function");
-//
-//        // Check if the miniApp name is valid
-//        if (!validMiniAppName(miniAppName)) throw new BadRequestException("MiniApp name is not valid");
-//
-//        // Create a list of commands
-//        List<MiniAppCommandBoundary> commandBoundaryList = new ArrayList<>();
-//
-//        // Get all commands from the database and filter by miniApp name
-//        this.miniAppCommandCrud.findAll().forEach(commandEntity -> {
-//            if (commandEntity.getCommandId().contains(miniAppName)) {
-//                commandBoundaryList.add(convertToBoundary(commandEntity));
-//            }
-//        });
-//
-//        return commandBoundaryList;
-    }
-
-    @Override
-    @Deprecated
-    public List<MiniAppCommandBoundary> getAllCommands() {
-        throw new DeprecatedRequestException("cannot enter a deprecated function");
-        //return this.miniAppCommandCrud.findAll().stream().map(this::convertToBoundary).toList();
-    }
-
-    @Override
-    @Deprecated
-    public void deleteAllCommands() {
-        throw new DeprecatedRequestException("cannot enter deprecated function");
-        //this.miniAppCommandCrud.deleteAll();
-    }
 
     @Override
     public Object asyncHandle(MiniAppCommandBoundary miniAppCommandBoundary) {
@@ -389,9 +312,10 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
     public void handleCommand(String json) {
 
         try {
+
             this.invokeCommand(
-                    this.convertToBoundary(
-                            this.convertToEntity(
+                    commandConvertor.toBoundary(
+                            commandConvertor.toEntity(
                                     this.setStatus(
                                             this.jackson
                                                     .readValue(json, MiniAppCommandBoundary.class), "remotely-accepted"))));
@@ -411,4 +335,43 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
 
         return miniapp;
     }
+
+
+
+    /**** Deprecated methods *****/
+    @Deprecated
+    @Override
+    public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
+//
+//        // Check if the miniApp name is valid
+//        if (!validMiniAppName(miniAppName)) throw new BadRequestException("MiniApp name is not valid");
+//
+//        // Create a list of commands
+//        List<MiniAppCommandBoundary> commandBoundaryList = new ArrayList<>();
+//
+//        // Get all commands from the database and filter by miniApp name
+//        this.miniAppCommandCrud.findAll().forEach(commandEntity -> {
+//            if (commandEntity.getCommandId().contains(miniAppName)) {
+//                commandBoundaryList.add(convertToBoundary(commandEntity));
+//            }
+//        });
+//
+//        return commandBoundaryList;
+    }
+
+    @Override
+    @Deprecated
+    public List<MiniAppCommandBoundary> getAllCommands() {
+        throw new DeprecatedRequestException("cannot enter a deprecated function");
+        //return this.miniAppCommandCrud.findAll().stream().map(this::convertToBoundary).toList();
+    }
+
+    @Override
+    @Deprecated
+    public void deleteAllCommands() {
+        throw new DeprecatedRequestException("cannot enter deprecated function");
+        //this.miniAppCommandCrud.deleteAll();
+    }
+
 }

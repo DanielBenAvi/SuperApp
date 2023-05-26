@@ -136,7 +136,8 @@ public class ObjectTestSet {
         SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
                 postObject.getObjectId().getInternalObjectId(),
                 postObject.getObjectId().getSuperapp(),springApplicationName,email);
-        objectFromGet.setActive(false);
+
+        objectFromGet.setActive(true);
 
         assertThat(objectFromGet)
                 .isNotNull()

@@ -1,22 +1,29 @@
 package superapp.logic.mockup;
 
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.stereotype.Service;
 
 
 import superapp.data.UserEntity;
-import superapp.logic.ConvertHelp;
 import superapp.logic.UsersService;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.UserId;
+import superapp.logic.utils.convertors.ConvertIdsHelper;
+import superapp.logic.utils.convertors.UserConvertor;
 
 import java.util.*;
 //@Service
 public class UserManagerMockup implements UsersService {
     private String superappName;
     private Map<String, UserEntity> databaseMockup;
+    private final UserConvertor userConvertor;
 
+    @Autowired
+    public UserManagerMockup (UserConvertor userConvertor) {
+        this.userConvertor = userConvertor;
+    }
     /**
      * injects a configuration value of spring
      *
@@ -45,7 +52,7 @@ public class UserManagerMockup implements UsersService {
         UserEntity userEntity = new UserEntity();
 
         String email = userBoundary.getUserId().getEmail();
-        String userID = ConvertHelp.userIdBoundaryToStr(new UserId(superappName,email));
+        String userID = this.userConvertor.userIdToEntity(new UserId(superappName,email));
 
         userEntity.setUserID(userID);
 
@@ -53,7 +60,7 @@ public class UserManagerMockup implements UsersService {
 
         userEntity.setAvatar(userBoundary.getAvatar());
 
-        userEntity.setRole(ConvertHelp.strToUserRole(userBoundary.getRole()));
+        userEntity.setRole(this.userConvertor.strToUserRole(userBoundary.getRole()));
 
 
         return userEntity;
@@ -69,14 +76,14 @@ public class UserManagerMockup implements UsersService {
         UserBoundary userBoundary = new UserBoundary();
 
         // crate a userID object
-        UserId userID = ConvertHelp.strUserIdToBoundary(userEntity.getUserID());
+        UserId userID = this.userConvertor.userIdToBoundary(userEntity.getUserID());
 
         // set the userID object
         userBoundary.setUserId(userID);
 
         // set the rest of the fields
         userBoundary.setUsername(userEntity.getUserName());
-        userBoundary.setRole(ConvertHelp.userRoleToStr(userEntity.getRole()));
+        userBoundary.setRole(this.userConvertor.userRoleToStr(userEntity.getRole()));
         userBoundary.setAvatar(userEntity.getAvatar());
 
         return userBoundary;
@@ -130,7 +137,7 @@ public class UserManagerMockup implements UsersService {
      */
     @Override
     public Optional<UserBoundary> login(String userSuperApp, String userEmail) {
-        String userID = ConvertHelp.concatenateIds(new String[]{ userSuperApp,userEmail});
+        String userID = ConvertIdsHelper.concatenateIds(new String[]{ userSuperApp,userEmail});
 
         UserEntity userEntity = this.databaseMockup.get(userID);
         if (userEntity == null){
@@ -152,7 +159,7 @@ public class UserManagerMockup implements UsersService {
     @Override
     public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update) {
 
-        String userID = ConvertHelp.concatenateIds(new String[]{userEmail, userSuperApp});
+        String userID = ConvertIdsHelper.concatenateIds(new String[]{userEmail, userSuperApp});
 
 
         UserEntity existing = this.databaseMockup.get(userID);
@@ -171,7 +178,7 @@ public class UserManagerMockup implements UsersService {
 
 
         if (update.getRole()!= null){
-            existing.setRole(ConvertHelp.strToUserRole(update.getRole()));
+            existing.setRole(this.userConvertor.strToUserRole(update.getRole()));
             dirtyFlag = true;
         }
 

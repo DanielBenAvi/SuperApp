@@ -1,20 +1,14 @@
 package superapp.miniapps.command.eventImpl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.catalina.mapper.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.expression.spel.ast.TypeReference;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
-import superapp.logic.ConvertHelp;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.SuperAppObjectBoundary;
+import superapp.logic.utils.convertors.ObjectConvertor;
 import superapp.miniapps.command.MiniAppsCommand;
 
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -22,11 +16,13 @@ public class EventGetEventsBaseOnPreferencesCommand implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
 
-    @Autowired
-    public EventGetEventsBaseOnPreferencesCommand(ObjectCrud objectCrudDB) {
-        this.objectCrudDB = objectCrudDB;
-    }
+    private final ObjectConvertor objectConvertor;
 
+    @Autowired
+    public EventGetEventsBaseOnPreferencesCommand(ObjectCrud objectCrudDB, ObjectConvertor objectConvertor) {
+        this.objectCrudDB = objectCrudDB;
+        this.objectConvertor = objectConvertor;
+    }
     @Override
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
         //todo: fix the return type
@@ -57,21 +53,4 @@ public class EventGetEventsBaseOnPreferencesCommand implements MiniAppsCommand {
         return null;
     }
 
-
-    private SuperAppObjectBoundary convertEntityToBoundary(SuperAppObjectEntity entity) {
-
-        SuperAppObjectBoundary boundary = new SuperAppObjectBoundary();
-
-        boundary.setObjectId(ConvertHelp.strObjectIdToBoundary(entity.getObjectId()));
-        boundary.setType(entity.getType());
-        boundary.setAlias(entity.getAlias());
-        boundary.setActive(entity.getActive());
-        boundary.setCreationTimestamp(entity.getCreationTimestamp());
-        boundary.setLocation(ConvertHelp.locationEntityToBoundary(entity.getLocation()));
-        boundary.setCreatedBy(ConvertHelp.strCreateByToBoundary(entity.getCreatedBy()));
-
-        boundary.setObjectDetails(entity.getObjectDetails());
-
-        return boundary;
-    }
 }
