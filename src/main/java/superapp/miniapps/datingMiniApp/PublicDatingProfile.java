@@ -12,14 +12,13 @@ public class PublicDatingProfile {
     private Gender gender;
     private int age; // calculate by dob in private dating profile
     private String bio;
-    private List<Gender> sexOrientation;
+
     private List<String> pictures;
 
     //Optional attr : Personal details(color eyes, hair… ), zodiac, education, etc.
 
     public PublicDatingProfile() {
 
-        this.sexOrientation = new ArrayList<>();
         this.pictures = new ArrayList<>();
     }
 
@@ -59,15 +58,6 @@ public class PublicDatingProfile {
         return this;
     }
 
-    public List<Gender> getSexOrientation() {
-        return sexOrientation;
-    }
-
-    public PublicDatingProfile setSexOrientation(List<Gender> sexOrientation) {
-        this.sexOrientation = sexOrientation;
-        return this;
-    }
-
 
     public List<String> getPictures() {
         return pictures;
@@ -85,7 +75,6 @@ public class PublicDatingProfile {
                 ", gender=" + gender +
                 ", age=" + age +
                 ", bio='" + bio + '\'' +
-                ", sexOrientation=" + sexOrientation +
                 ", pictures=" + pictures +
                 '}';
     }
