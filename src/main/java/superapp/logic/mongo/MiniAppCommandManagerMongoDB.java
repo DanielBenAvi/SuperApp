@@ -85,6 +85,16 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
     @Override
     public Object invokeCommand(MiniAppCommandBoundary commandBoundary) {
 
+        // set command id and invocation timestamp
+        CommandId commandId = commandBoundary
+                .getCommandId()
+                .setInternalCommandId(UUID.randomUUID().toString())
+                .setSuperapp(this.springApplicationName);
+
+        commandBoundary
+                .setCommandId(commandId)
+                .setInvocationTimestamp(new Date());
+
         // validation
         this.boundaryValidator.validateCommandBoundary(commandBoundary);
         this.boundaryValidator.validateInvokedBy(commandBoundary.getInvokedBy());
@@ -105,16 +115,6 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
             throw new NotFoundException(" target object id " + targetObject + "not found - active:false");
 
         checkPermission(userEntity.getUserID(), "invokeCommand");
-
-        // set command id and invocation timestamp
-        CommandId commandId = commandBoundary
-                                        .getCommandId()
-                                        .setInternalCommandId(UUID.randomUUID().toString())
-                                        .setSuperapp(this.springApplicationName);
-
-        commandBoundary
-                .setCommandId(commandId)
-                .setInvocationTimestamp(new Date());
 
         /////////////////////// execute command ///////////////////////
         Object resultObjectOfCommand;

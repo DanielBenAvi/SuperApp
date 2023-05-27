@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import superapp.data.UserDetails;
 import superapp.logic.boundaries.*;
 import superapp.miniapps.MiniAppNames;
@@ -535,7 +534,7 @@ public class CommandTestSet extends BaseTestSet {
 
         //THEN The server response with status 4xx code
         assertThatThrownBy(() ->  this.restTemplate
-                .postForObject(this.baseUrl + "/superapp/miniappp/{miniAppName}?async={asyncFlag}"
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
                         , commandBoundary
                         , MiniAppCommandBoundary.class
                         , MiniAppNames.DATING.name()
@@ -568,14 +567,14 @@ public class CommandTestSet extends BaseTestSet {
 
         //THEN The server response with status 4xx code
         assertThatThrownBy(() ->  this.restTemplate
-                .postForObject(this.baseUrl + "/superapp/miniappp/{miniAppName}?async={asyncFlag}"
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
                         , commandBoundary
                         , MiniAppCommandBoundary.class
                         , MiniAppNames.DATING.name()
                         , null))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.NOT_FOUND.value());
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -604,14 +603,14 @@ public class CommandTestSet extends BaseTestSet {
 
         //THEN The server response with status 4xx code
         assertThatThrownBy(() ->  this.restTemplate
-                .postForObject(this.baseUrl + "/superapp/miniappp/{miniAppName}?async={asyncFlag}"
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
                         , commandBoundary
                         , MiniAppCommandBoundary.class
                         , MiniAppNames.DATING.name()
                         , null))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.NOT_FOUND.value());
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -640,14 +639,14 @@ public class CommandTestSet extends BaseTestSet {
 
         //THEN The server response with status 4xx code
         assertThatThrownBy(() ->  this.restTemplate
-                .postForObject(this.baseUrl + "/superapp/miniappp/{miniAppName}?async={asyncFlag}"
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
                         , commandBoundary
                         , MiniAppCommandBoundary.class
                         , MiniAppNames.DATING.name()
                         , null))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.NOT_FOUND.value());
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -676,14 +675,14 @@ public class CommandTestSet extends BaseTestSet {
 
         //THEN The server response with status 4xx code
         assertThatThrownBy(() ->  this.restTemplate
-                .postForObject(this.baseUrl + "/superapp/miniappp/{miniAppName}?async={asyncFlag}"
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
                         , commandBoundary
                         , MiniAppCommandBoundary.class
                         , MiniAppNames.DATING.name()
                         , null))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.NOT_FOUND.value());
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -712,14 +711,14 @@ public class CommandTestSet extends BaseTestSet {
 
         //THEN The server response with status 4xx code
         assertThatThrownBy(() ->  this.restTemplate
-                .postForObject(this.baseUrl + "/superapp/miniappp/{miniAppName}?async={asyncFlag}"
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
                         , commandBoundary
                         , MiniAppCommandBoundary.class
                         , MiniAppNames.DATING.name()
                         , null))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.NOT_FOUND.value());
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -748,7 +747,292 @@ public class CommandTestSet extends BaseTestSet {
 
         //THEN The server response with status 4xx code
         assertThatThrownBy(() ->  this.restTemplate
-                .postForObject(this.baseUrl + "/superapp/miniappp/{miniAppName}?async={asyncFlag}"
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                        , commandBoundary
+                        , MiniAppCommandBoundary.class
+                        , MiniAppNames.DATING.name()
+                        , null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("Invoke command with invoke by with null spring application name")
+    public void testSuccessfulInvokeCommandWithInvokeByNullWithNullSpringApplicationName() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        //WHEN A POST request is made to the path
+        String existingCommand = "LIKE_PROFILE";
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand(existingCommand)
+                .setTargetObject(targetObject)
+                .setInvocationTimestamp(null)
+                .setInvokedBy(new InvokedBy().setUserId( new UserId(null, email)))
+                .setCommandAttributes(new HashMap<>());
+
+        //THEN The server response with status 4xx code
+        assertThatThrownBy(() ->  this.restTemplate
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                        , commandBoundary
+                        , MiniAppCommandBoundary.class
+                        , MiniAppNames.DATING.name()
+                        , null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("Invoke command with invoke by with empty spring application name")
+    public void testSuccessfulInvokeCommandWithInvokeByWithEmptySpringApplicationName() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        //WHEN A POST request is made to the path
+        String existingCommand = "LIKE_PROFILE";
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand(existingCommand)
+                .setTargetObject(targetObject)
+                .setInvocationTimestamp(null)
+                .setInvokedBy(new InvokedBy().setUserId( new UserId("", email)))
+                .setCommandAttributes(new HashMap<>());
+
+        //THEN The server response with status 4xx code
+        assertThatThrownBy(() ->  this.restTemplate
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                        , commandBoundary
+                        , MiniAppCommandBoundary.class
+                        , MiniAppNames.DATING.name()
+                        , null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("Invoke command with invoke by with null email")
+    public void testSuccessfulInvokeCommandWithInvokeByWithNullEmail() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        //WHEN A POST request is made to the path
+        String existingCommand = "LIKE_PROFILE";
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand(existingCommand)
+                .setTargetObject(targetObject)
+                .setInvocationTimestamp(null)
+                .setInvokedBy(new InvokedBy().setUserId( new UserId(this.springApplicationName, null)))
+                .setCommandAttributes(new HashMap<>());
+
+        //THEN The server response with status 4xx code
+        assertThatThrownBy(() ->  this.restTemplate
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                        , commandBoundary
+                        , MiniAppCommandBoundary.class
+                        , MiniAppNames.DATING.name()
+                        , null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("Invoke command with invoke by with empty email")
+    public void testSuccessfulInvokeCommandWithInvokeByWithEmptyEmail() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        //WHEN A POST request is made to the path
+        String existingCommand = "LIKE_PROFILE";
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand(existingCommand)
+                .setTargetObject(targetObject)
+                .setInvocationTimestamp(null)
+                .setInvokedBy(new InvokedBy().setUserId( new UserId(this.springApplicationName, "")))
+                .setCommandAttributes(new HashMap<>());
+
+        //THEN The server response with status 4xx code
+        assertThatThrownBy(() ->  this.restTemplate
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                        , commandBoundary
+                        , MiniAppCommandBoundary.class
+                        , MiniAppNames.DATING.name()
+                        , null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("Invoke command with MiniAppName null")
+    public void testSuccessfulInvokeCommandWithNullMiniAppName() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        //WHEN A POST request is made to the path
+        String existingCommand = "LIKE_PROFILE";
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand(existingCommand)
+                .setTargetObject(targetObject)
+                .setInvocationTimestamp(null)
+                .setInvokedBy(new InvokedBy().setUserId( new UserId(this.springApplicationName, email)))
+                .setCommandAttributes(new HashMap<>());
+
+        //THEN The server response with status 4xx code
+        assertThatThrownBy(() ->  this.restTemplate
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                        , commandBoundary
+                        , MiniAppCommandBoundary.class
+                        , null
+                        , null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    @DisplayName("Invoke command with MiniAppName empty")
+    public void testSuccessfulInvokeCommandWithEmptyMiniAppName() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        //WHEN A POST request is made to the path
+        String existingCommand = "LIKE_PROFILE";
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand(existingCommand)
+                .setTargetObject(targetObject)
+                .setInvocationTimestamp(null)
+                .setInvokedBy(new InvokedBy().setUserId( new UserId(this.springApplicationName, email)))
+                .setCommandAttributes(new HashMap<>());
+
+        //THEN The server response with status 4xx code
+        assertThatThrownBy(() ->  this.restTemplate
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                        , commandBoundary
+                        , MiniAppCommandBoundary.class
+                        , ""
+                        , null))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
+                .isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    @DisplayName("Invoke command with MiniAppName not exist")
+    public void testSuccessfulInvokeCommandWitNotExistMiniAppName() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        //WHEN A POST request is made to the path
+        String existingCommand = "LIKE_PROFILE";
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
+
+        Object commandRes = createCommand(email, miniappRole, "AAAA", existingCommand, targetObject, new HashMap<>());
+
+        //THEN The server response with status 2xx code
+        changeRole(admin, email);
+        assertThat(help_GetAllMiniappCommands(this.springApplicationName, email, null, null))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(1);
+
+        assertThat(commandRes)
+                .isNotNull()
+                .isInstanceOf(Map.class);
+    }
+
+    @Test
+    @DisplayName("Invoke command on object with active is false")
+    public void testSuccessfulInvokeCommandWithObjectWithActiveIsFalse() {
+        // GIVEN The server is up
+        // database is up
+        // user exists in database
+
+        String email = "demo@gmail.com";
+        createUser(email, superappRole);
+
+        SuperAppObjectBoundary object =  help_PostObjectBoundary(null, "type", "alias", null, false, null,
+                new CreatedBy().setUserId( new UserId(this.springApplicationName, email)), null);
+
+        //WHEN A POST request is made to the path
+        String existingCommand = "LIKE_PROFILE";
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, object.getObjectId().getInternalObjectId()));
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand(existingCommand)
+                .setTargetObject(targetObject)
+                .setInvocationTimestamp(null)
+                .setInvokedBy(new InvokedBy().setUserId( new UserId(this.springApplicationName, email)))
+                .setCommandAttributes(new HashMap<>());
+
+        //THEN The server response with status 4xx code
+        assertThatThrownBy(() ->  this.restTemplate
+                .postForObject(this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
                         , commandBoundary
                         , MiniAppCommandBoundary.class
                         , MiniAppNames.DATING.name()
@@ -757,42 +1041,6 @@ public class CommandTestSet extends BaseTestSet {
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
                 .isEqualTo(HttpStatus.NOT_FOUND.value());
     }
-
-//    @Test
-//    @DisplayName("Invoke command with invoke by null")
-//    public void testSuccessfulInvokeCommandWithInvokeByNull() {
-//        // GIVEN The server is up
-//        // database is up
-//        // user exists in database
-//
-//        String email = "demo@gmail.com";
-//        createUser(email, admin);
-//
-//        //WHEN A POST request is made to the path
-//        String existingCommand = "LIKE_PROFILE";
-//
-//        TargetObject targetObject = new TargetObject()
-//                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
-//
-//        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
-//                .setCommandId(null)
-//                .setCommand(existingCommand)
-//                .setTargetObject(targetObject)
-//                .setInvocationTimestamp(null)
-//                .setInvokedBy(new InvokedBy().setUserId( new UserId(this.springApplicationName, email)))
-//                .setCommandAttributes(new HashMap<>());
-//
-//        //THEN The server response with status 4xx code
-//        assertThatThrownBy(() ->  this.restTemplate
-//                .postForObject(this.baseUrl + "/superapp/miniappp/{miniAppName}?async={asyncFlag}"
-//                        , commandBoundary
-//                        , MiniAppCommandBoundary.class
-//                        , MiniAppNames.DATING.name()
-//                        , null))
-//                .isInstanceOf(HttpClientErrorException.class)
-//                .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-//                .isEqualTo(HttpStatus.NOT_FOUND.value());
-//    }
 
     @Test
     @DisplayName("Get all commands with valid and invalid pagination values")

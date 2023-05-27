@@ -32,7 +32,7 @@ public class BoundaryValidator {
      *
      * @param userId UserId
      */
-    public void validateUserId(UserId userId){
+    public void validateUserId(UserId userId) {
 
         Set<ConstraintViolation<UserId>> violations = validator.validate(userId);
 
@@ -48,7 +48,7 @@ public class BoundaryValidator {
      *
      * @param objectId ObjectId
      */
-    public void validateObjectId(ObjectId objectId){
+    public void validateObjectId(ObjectId objectId) {
 
         Set<ConstraintViolation<ObjectId>> violations = validator.validate(objectId);
 
@@ -62,7 +62,7 @@ public class BoundaryValidator {
      *
      * @param commandId CommandId
      */
-    public void validateCommandId(CommandId commandId){
+    public void validateCommandId(CommandId commandId) {
 
         Set<ConstraintViolation<CommandId>> violations = validator.validate(commandId);
 
@@ -75,7 +75,7 @@ public class BoundaryValidator {
      * This method validate UserBoundary object
      * NOTE : not validate nested Objects Attributes
      *
-     * @param userBoundary UserBoundary
+     * @param userBoundary      UserBoundary
      * @param ignoredProperties Set<String>
      */
     public void validateUserBoundary(UserBoundary userBoundary, Set<String> ignoredProperties) {
@@ -86,10 +86,10 @@ public class BoundaryValidator {
         Set<ConstraintViolation<UserBoundary>> filteredViolations;
 
         filteredViolations = validator
-                                .validate(userBoundary)
-                                .stream()
-                                .filter(violation -> !ignoredProperties.contains(violation.getPropertyPath().toString()))
-                                .collect(Collectors.toSet());
+                .validate(userBoundary)
+                .stream()
+                .filter(violation -> !ignoredProperties.contains(violation.getPropertyPath().toString()))
+                .collect(Collectors.toSet());
 
         if (!filteredViolations.isEmpty())
             throw new BadRequestException(buildErrorMessage(filteredViolations));
@@ -103,7 +103,7 @@ public class BoundaryValidator {
      * @param commandBoundary MiniAppCommandBoundary
      */
     public void validateCommandBoundary(MiniAppCommandBoundary commandBoundary) {
-
+        this.validateCommandId(commandBoundary.getCommandId());
         Set<ConstraintViolation<MiniAppCommandBoundary>> violations = validator.validate(commandBoundary);
 
         if (!violations.isEmpty())
@@ -116,7 +116,7 @@ public class BoundaryValidator {
      *
      * @param invokedBy InvokedBy
      */
-    public void validateInvokedBy(InvokedBy invokedBy){
+    public void validateInvokedBy(InvokedBy invokedBy) {
 
         Set<ConstraintViolation<InvokedBy>> violations = validator.validate(invokedBy);
 
@@ -131,7 +131,7 @@ public class BoundaryValidator {
      *
      * @param targetObject TargetObject
      */
-    public void validateTargetObject(TargetObject targetObject){
+    public void validateTargetObject(TargetObject targetObject) {
 
         Set<ConstraintViolation<TargetObject>> violations = validator.validate(targetObject);
 
