@@ -3,99 +3,100 @@ package superapp.miniapps.marketplaceMiniApp;
 
 import java.util.List;
 
-public class Supplier {
-	
-	private List<Product> products;
-	private String businessName;
+public class Supplier { // todo: unnecessary
 
-	private String phoneNumber;
+    private List<Product> products;
+    private String businessName;
 
-	public Supplier() {
-	}
+    private String phoneNumber;
 
-	public List<Product> getProducts() {
-		return products;
-	}
+    public Supplier() {
+    }
 
-	public Supplier setProducts(List<Product> products) {
-		this.products = products;
-		return this;
-	}
+    public List<Product> getProducts() {
+        return products;
+    }
 
-	public Supplier addProduct(Product product) {
-		if (productIsValid(product)) {
-			products.add(product);
-		}
-		return this;
-	}
+    public Supplier setProducts(List<Product> products) {
+        this.products = products;
+        return this;
+    }
 
-	private boolean productIsValid(Product product) {
-		if (product == null) {
-			System.out.println("Invalid product. Product object is null.");
-			return false;
-		}
+    public Supplier addProduct(Product product) {
+        if (productIsValid(product)) {
+            products.add(product);
+        }
+        return this;
+    }
 
-		if (products.contains(product)) {
-			System.out.println("Invalid product. Product already exists.");
-			return false;
-		}
+    private boolean productIsValid(Product product) {
+        if (product == null) {
+            System.out.println("Invalid product. Product object is null.");
+            return false;
+        }
 
-		if (product.getName() == null || product.getName().isEmpty()) {
-			System.out.println("Invalid product. Name is required.");
-			return false;
-		}
+        if (products.contains(product)) {
+            System.out.println("Invalid product. Product already exists.");
+            return false;
+        }
 
-		if (product.getPrice() <= 0) {
-			System.out.println("Invalid product. Price must be a positive value.");
-			return false;
-		}
+        if (product.getName() == null || product.getName().isEmpty()) {
+            System.out.println("Invalid product. Name is required.");
+            return false;
+        }
 
-		if (product.getCategory() == null || product.getCategory().isEmpty()) {
-			System.out.println("Invalid product. Category is required.");
-			return false;
-		}
+        if (product.getPrice() <= 0) {
+            System.out.println("Invalid product. Price must be a positive value.");
+            return false;
+        }
 
-		if (!isValidCurrency(product.getCurrency())) {
-			System.out.println("Invalid product. Currency is not valid.");
-			return false;
-		}
+        if (product.getCategory() == null || product.getCategory().isEmpty()) {
+            System.out.println("Invalid product. Category is required.");
+            return false;
+        }
 
-		return true;
-	}
+        if (!isValidCurrency(product.getCurrency())) {
+            System.out.println("Invalid product. Currency is not valid.");
+            return false;
+        }
 
-	private boolean isValidCurrency(Product.Currency currency) {
-		for (Product.Currency validCurrency : Product.Currency.values()) {
-			if (validCurrency == currency) {
-				return true;
-			}
-		}
-		return false;
-	}
+        return true;
+    }
 
-	public Supplier removeProduct(Product product) {
-		products.remove(product);
-		return this;
-	}
-	public String getBusinessName() {
-		return businessName;
-	}
+    private boolean isValidCurrency(Product.Currency currency) {
+        for (Product.Currency validCurrency : Product.Currency.values()) {
+            if (validCurrency == currency) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public Supplier setBusinessName(String businessName) {
-		this.businessName = businessName;
-		return this;
-	}
+    public Supplier removeProduct(Product product) {
+        products.remove(product);
+        return this;
+    }
 
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
+    public String getBusinessName() {
+        return businessName;
+    }
 
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
+    public Supplier setBusinessName(String businessName) {
+        this.businessName = businessName;
+        return this;
+    }
 
-	@Override
-	public String toString() {
-		return "Supplier [products=" + products + ", businessName=" + businessName + "]";
-	}
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "Supplier [products=" + products + ", businessName=" + businessName + "]";
+    }
 
 }
