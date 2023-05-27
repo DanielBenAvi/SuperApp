@@ -1,7 +1,10 @@
 package superapp.logic.boundaries;
 
+import jakarta.validation.constraints.NotNull;
+
 public class CreatedBy {
-	
+
+	@NotNull
 	private UserId userId;
 
 	public CreatedBy() {

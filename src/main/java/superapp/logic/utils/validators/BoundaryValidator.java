@@ -60,9 +60,9 @@ public class BoundaryValidator {
     /**
      * This method validate CommandId object
      *
-     * @param commandId ObjectId
+     * @param commandId CommandId
      */
-    public void validateObjectId(CommandId commandId){
+    public void validateCommandId(CommandId commandId){
 
         Set<ConstraintViolation<CommandId>> violations = validator.validate(commandId);
 
@@ -141,7 +141,57 @@ public class BoundaryValidator {
         this.validateObjectId(targetObject.getObjectId());
     }
 
+    /**
+     * This method validate SuperAppObjectBoundary object
+     *
+     * @param objectBoundary SuperAppObjectBoundary
+     */
+    public void validateObjectBoundary(SuperAppObjectBoundary objectBoundary) {
 
+        Set<ConstraintViolation<SuperAppObjectBoundary>> violations = validator.validate(objectBoundary);
+
+        if (!violations.isEmpty())
+            throw new BadRequestException(buildErrorMessage(violations));
+    }
+
+    /**
+     * This method validate CreatedBy object
+     *
+     * @param createdBy CreatedBy
+     */
+    public void validateCreatedBy(CreatedBy createdBy) {
+        Set<ConstraintViolation<CreatedBy>> violations = validator.validate(createdBy);
+
+        if (!violations.isEmpty())
+            throw new BadRequestException(buildErrorMessage(violations));
+        this.validateUserId(createdBy.getUserId());
+    }
+
+    /**
+     * This method validate Location object
+     * and init values of lat lng to (0.0, 0.0) if it is null
+     *
+     * @param location Location
+     * @return Location
+     */
+    public Location validateLocation(Location location) {
+
+        if (location == null)
+            return new Location().setLat(0).setLng(0);
+
+        if (location.getLng() == null)
+            location.setLng(0);
+
+        if (location.getLat() == null)
+            location.setLat(0);
+
+        Set<ConstraintViolation<Location>> violations = validator.validate(location);
+
+        if (!violations.isEmpty())
+            throw new BadRequestException(buildErrorMessage(violations));
+
+        return location;
+    }
 
 
     /**

@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CommandTestSet extends BaseTestSet {
 
-    private final String idForCommandWithoutTarget = "a114f4a4-2be4-43ad-90f7-9822e8867d5e";
 
     private final String admin = "ADMIN";
     private final String miniappRole = "MINIAPP_USER";
@@ -64,7 +63,7 @@ public class CommandTestSet extends BaseTestSet {
         String miniAppName = "MARKETPLACE";
         String command = "command ";
         TargetObject targetObject = new TargetObject()
-                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
 
         createCommand(email, miniappRole, miniAppName, command, targetObject, new HashMap<>());
 
@@ -132,7 +131,7 @@ public class CommandTestSet extends BaseTestSet {
         String miniAppName = "MARKETPLACE";
         String command = "command ";
         TargetObject targetObject = new TargetObject()
-                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
 
         createCommand(email, miniappRole, miniAppName, command, targetObject, new HashMap<>());
 
@@ -169,7 +168,7 @@ public class CommandTestSet extends BaseTestSet {
 
         String command = "command ";
         TargetObject targetObject = new TargetObject()
-                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
 
         createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
         createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
@@ -202,7 +201,7 @@ public class CommandTestSet extends BaseTestSet {
 
         String command = "command ";
         TargetObject targetObject = new TargetObject()
-                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
 
         createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
         createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
@@ -242,7 +241,7 @@ public class CommandTestSet extends BaseTestSet {
 
         String command = "command ";
         TargetObject targetObject = new TargetObject()
-                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
 
         createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
 
@@ -273,7 +272,7 @@ public class CommandTestSet extends BaseTestSet {
 
         String command = "command ";
         TargetObject targetObject = new TargetObject()
-                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
 
         createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
         createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
@@ -343,7 +342,7 @@ public class CommandTestSet extends BaseTestSet {
         String command = "GET_USER_DETAILS_BY_EMAIL";
 
         TargetObject targetObject = new TargetObject()
-                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
 
         createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
 
@@ -407,7 +406,7 @@ public class CommandTestSet extends BaseTestSet {
         MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
                 .setCommandId(null)
                 .setCommand("command")
-                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
+                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand)))
                 .setInvocationTimestamp(null)
                 .setInvokedBy( new InvokedBy().setUserId(superAppObjectBoundary.getCreatedBy().getUserId()))
                 .setCommandAttributes(new HashMap<>());
@@ -445,7 +444,7 @@ public class CommandTestSet extends BaseTestSet {
         String command = "NOT_EXISTS_COMMAND";
 
         TargetObject targetObject = new TargetObject()
-                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
 
         Object commandRes = createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
 
@@ -476,7 +475,7 @@ public class CommandTestSet extends BaseTestSet {
         createUser(email, admin);
 
         TargetObject targetObject = new TargetObject()
-                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
 
         MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
                 .setCommandId(null)
@@ -535,7 +534,7 @@ public class CommandTestSet extends BaseTestSet {
 
         String command = "command ";
         TargetObject targetObject = new TargetObject()
-                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
 
         createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
         createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
@@ -585,7 +584,7 @@ public class CommandTestSet extends BaseTestSet {
 
         String command = "command ";
         TargetObject targetObject = new TargetObject()
-                .setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget));
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
 
         createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
         createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
@@ -660,7 +659,7 @@ public class CommandTestSet extends BaseTestSet {
         TargetObject targetObject = new TargetObject()
                 .setObjectId(new ObjectId()
                         .setSuperapp(this.springApplicationName)
-                        .setInternalObjectId(idForCommandWithoutTarget));
+                        .setInternalObjectId(this.internalObjectIdForCommand));
 
         System.err.println(targetObject);
         changeRole(miniappRole, email);
@@ -725,7 +724,7 @@ public class CommandTestSet extends BaseTestSet {
         MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
                 .setCommandId(null)
                 .setCommand("command")
-                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
+                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand)))
                 .setInvocationTimestamp(null)
                 .setInvokedBy( new InvokedBy().setUserId(user.getUserId()))
                 .setCommandAttributes(new HashMap<>());
@@ -759,7 +758,7 @@ public class CommandTestSet extends BaseTestSet {
         MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
                 .setCommandId(null)
                 .setCommand("command")
-                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, idForCommandWithoutTarget)))
+                .setTargetObject(new TargetObject().setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand)))
                 .setInvocationTimestamp(null)
                 .setInvokedBy( new InvokedBy().setUserId(user.getUserId()))
                 .setCommandAttributes(new HashMap<>());

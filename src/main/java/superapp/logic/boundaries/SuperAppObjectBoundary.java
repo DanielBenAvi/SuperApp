@@ -1,16 +1,23 @@
 package superapp.logic.boundaries;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.Date;
 import java.util.Map;
 
 public class SuperAppObjectBoundary {
 
     private ObjectId objectId;
+    @NotNull @NotEmpty
     private String type;
+    @NotNull @NotEmpty
     private String alias;
     private Boolean active;
     private Date creationTimestamp;
+    @NotNull
     private Location location;
+    @NotNull
     private CreatedBy createdBy;
     private Map<String, Object> objectDetails;
 

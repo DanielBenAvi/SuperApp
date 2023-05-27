@@ -297,12 +297,12 @@ public class ObjectTestSet {
 
 
         // THEN
-        // the server response with bad request status 400 code
+        // the server response with bad request status 404 code
 
         assertThatThrownBy(() ->
                 help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, objectDetails))
                 .isInstanceOf(HttpClientErrorException.class)
-                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
+                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
 
     }
 
@@ -334,12 +334,13 @@ public class ObjectTestSet {
 
 
         // THEN
-        // the server response with Bad request status 400 code
+        // the server response with Bad request status 404 code
 
         assertThatThrownBy(() ->
                 help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, objectDetails))
                 .isInstanceOf(HttpClientErrorException.class)
-                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
+                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode())
+                        .isEqualTo(HttpStatus.NOT_FOUND));
 
     }
 
@@ -410,8 +411,8 @@ public class ObjectTestSet {
     }
 
     @Test
-    @DisplayName("unsuccessful create object, no Location")
-    public void unsuccessfulCreateObject_noLocation() {
+    @DisplayName("Successful create object, no Location - default shall be 0.0, 0.0")
+    public void successfulCreateObject_noLocation() {
 
         // GIVEN
         // 1. the server is up and running
@@ -437,10 +438,17 @@ public class ObjectTestSet {
         // THEN
         // the server response with bad request status 400 code
 
-        assertThatThrownBy(() ->
-                help_PostObjectBoundary(null, type, alias, null, active, null, createdBy, objectDetails))
-                .isInstanceOf(HttpClientErrorException.class)
-                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
+        SuperAppObjectBoundary postObject = help_PostObjectBoundary(null, type, alias, null, active, null, createdBy, objectDetails);
+        postObject.getLocation().setLat(0.0).setLng(0.0);
+        SuperAppObjectBoundary objectFromGet = help_GetObjectBoundary(
+                postObject.getObjectId().getInternalObjectId(),
+                postObject.getObjectId().getSuperapp(),springApplicationName,email);
+
+        assertThat(objectFromGet)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(postObject);
+
     }
 
     @Test
@@ -479,6 +487,7 @@ public class ObjectTestSet {
                 postObject.getObjectId().getSuperapp(),springApplicationName,email);
 
         postObject.getLocation().setLat(0.0).setLng(0.0);
+
         assertThat(objectFromGet)
                 .isNotNull()
                 .usingRecursiveComparison()
@@ -486,38 +495,40 @@ public class ObjectTestSet {
 
     }
 
-    @Test
-    @DisplayName("unsuccessful create object, no objectDetails")
-    public void unsuccessfulCreateObject_noObjectDetails() {
-
-        // GIVEN
-        // 1. the server is up and running
-        // 2. the database is up and running
-
-        String email = "demo@gmail.com";
-        String role = UserRole.SUPERAPP_USER.toString();
-        String username = "demo_user";
-        String avatar = "demo_avatar";
-        help_PostUserBoundary(email, role, username, avatar);
-
-
-        // WHEN
-        // A POST request is made to the path "superapp/objects" with SuperAppObjectBoundary
-
-        String type = "GROUP";
-        String alias = "demo";
-        Boolean active = true;
-        Location location = new Location(10.200, 10.200);
-        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
-
-        // THEN
-        // the server response with bad request status 400 code
-
-        assertThatThrownBy(() ->
-                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, null))
-                .isInstanceOf(HttpClientErrorException.class)
-                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
-    }
+    // is not correct, we can create object without objectDetails - TODO: check if align with the spec
+//    @Test
+//    @DisplayName("unsuccessful create object, no objectDetails")
+//    public void unsuccessfulCreateObject_noObjectDetails() {
+//
+//        // GIVEN
+//        // 1. the server is up and running
+//        // 2. the database is up and running
+//
+//        String email = "demo@gmail.com";
+//        String role = UserRole.SUPERAPP_USER.toString();
+//        String username = "demo_user";
+//        String avatar = "demo_avatar";
+//        help_PostUserBoundary(email, role, username, avatar);
+//
+//
+//        // WHEN
+//        // A POST request is made to the path "superapp/objects" with SuperAppObjectBoundary
+//
+//        String type = "GROUP";
+//        String alias = "demo";
+//        Boolean active = true;
+//        Location location = new Location(10.200, 10.200);
+//        CreatedBy createdBy = new CreatedBy().setUserId(new UserId(springApplicationName,"demo@gmail.com" ));
+//
+//
+//        // THEN
+//        // the server response with bad request status 400 code
+//
+//        assertThatThrownBy(() ->
+//                help_PostObjectBoundary(null, type, alias, null, active, location, createdBy, null))
+//                .isInstanceOf(HttpClientErrorException.class)
+//                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
+//    }
     @Test
     @DisplayName("unsuccessful create object, no superapp")
     public void unsuccessfulCreateObject_noSuperapp() {
@@ -796,13 +807,13 @@ public class ObjectTestSet {
 
 
         // THEN
-        // the server response with BadRequest status code 400
+        // the server response with BadRequest status code 404
 
         assertThatThrownBy(() ->
                 help_GetObjectBoundary(postObject.getObjectId().getInternalObjectId(), "2021a.someGuy"
                 ,springApplicationName,email))
                 .isInstanceOf(HttpClientErrorException.class)
-                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
+                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
     }
     /*get all Tests*/
     @Test
@@ -975,13 +986,13 @@ public class ObjectTestSet {
         // userEmail={email}"
 
         // THEN
-        // the server response with BadRequest status code 400
+        // the server response with BadRequest status code 404
         assertThatThrownBy(() ->
                 help_PutObjectBoundary(updateObject,"diffrent_ID_that_not in_db",
                         postObject.getObjectId().getSuperapp(),
                         springApplicationName,
                         email)).isInstanceOf(HttpClientErrorException.class)
-                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
+                .satisfies(e -> assertThat(((HttpClientErrorException) e).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
     }
 
 

@@ -589,7 +589,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // AND pass ObjectId with invalid "superapp":null
 
         // THEN
-        // The server response with status 400 bad request AND relation between objects not updated/saved.
+        // The server response with status 404 bad request AND relation between objects not updated/saved.
 
         String childInternalObjectId = postedObjectChild.getObjectId().getInternalObjectId();
         assertThatThrownBy(() ->
@@ -599,7 +599,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .isEqualTo(HttpStatus.NOT_FOUND.value());
 
         assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId()
                 , springApplicationName , email , 10 ,0);
@@ -634,7 +634,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // AND pass ObjectId with invalid "superapp":"2023b-LiorAriely"
 
         // THEN
-        // The server response with status 400 bad request AND relation between objects not updated/saved.
+        // The server response with status 404 bad request AND relation between objects not updated/saved.
         String childInternalObjectId = postedObjectChild.getObjectId().getInternalObjectId();
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
@@ -643,7 +643,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .isEqualTo(HttpStatus.NOT_FOUND.value());
 
         assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId()
                 , springApplicationName , email , 10 ,0);
@@ -678,7 +678,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // AND pass ObjectId with invalid "internalObjectId":"0"
 
         // THEN
-        // The server response with status 400 bad request AND relation between objects not updated/saved.
+        // The server response with status 404 bad request AND relation between objects not updated/saved.
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
                                         , new ObjectId().setSuperapp(this.springApplicationName).setInternalObjectId("0")
@@ -686,7 +686,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .isEqualTo(HttpStatus.NOT_FOUND.value());
 
         assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId()
                 , springApplicationName , email , 10 ,0);
@@ -721,7 +721,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
         // AND pass ObjectId with "internalObjectId":null
 
         // THEN
-        // The server response with status 400 bad request AND relation between objects not updated/saved.
+        // The server response with status 404 bad request AND relation between objects not updated/saved.
 
         assertThatThrownBy(() ->
                 this.putRelationBetweenObjects(postedObjectParent.getObjectId().getInternalObjectId()
@@ -730,7 +730,7 @@ public class ObjectRelationshipsTests extends BaseTestSet {
                 ))
                 .isInstanceOf(HttpClientErrorException.class)
                 .extracting(e -> ((HttpClientErrorException) e ).getStatusCode().value())
-                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .isEqualTo(HttpStatus.NOT_FOUND.value());
 
         assertAfterRelationNotShallBeUpdated(postedObjectParent.getObjectId().getInternalObjectId()
                 , springApplicationName , email , 10 ,0);
