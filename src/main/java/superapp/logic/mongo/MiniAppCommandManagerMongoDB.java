@@ -15,6 +15,7 @@ import superapp.logic.boundaries.*;
 import superapp.logic.utils.convertors.CommandConvertor;
 import superapp.logic.utils.validators.BoundaryValidator;
 import superapp.logic.utils.validators.EntitiesValidator;
+import superapp.logic.utils.validators.ValidatorHelper;
 import superapp.miniapps.MiniAppNames;
 import superapp.miniapps.command.CommandInvoker;
 import superapp.miniapps.command.InvalidCommand;
@@ -168,6 +169,9 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
         if (MiniAppNames.strToMiniAppName(miniAppName).equals(MiniAppNames.UNKNOWN))
             throw new BadRequestException("MiniApp name is not valid");
 
+        ValidatorHelper.validatePage(page);
+        ValidatorHelper.validateSize(size);
+
         PageRequest pageRequest = PageRequest
                 .of(page, size, Sort.Direction.ASC,"invocationTimestamp", "targetObject", "commandId");
 
@@ -195,6 +199,8 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
 
         this.checkPermission(userEntity.getUserID(), "getAllCommands");
 
+        ValidatorHelper.validatePage(page);
+        ValidatorHelper.validateSize(size);
 
         PageRequest pageRequest = PageRequest
                 .of(page, size, Sort.Direction.ASC,"invocationTimestamp", "targetObject", "commandId");
