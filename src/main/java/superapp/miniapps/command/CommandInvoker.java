@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.miniapps.command.datingimpl.*;
 import superapp.miniapps.command.eventImpl.*;
+import superapp.miniapps.command.marketplaceImpl.*;
 
 
 @Component
@@ -28,6 +29,17 @@ public class CommandInvoker {
     private EventGetEventsBaseOnPreferencesCommand eventGetEventsBaseOnPreferencesCommand;
     private EventGetCreatedByMeEventsCommand eventGetCreatedByMeEventsCommand;
     private EventGetAllFutureEventsCommand eventGetAllFutureEventsCommand;
+
+    /******************** Marketplace Commands ********************/
+
+    private SearchProductByCategory searchProductByCategory;
+    private SearchProductByPrice searchProductByPrice;
+
+    private GetSuppliersProducts getSuppliersProducts;
+    private SearchProductByCurrency searchProductByCurrency;
+
+    private SearchProductByName searchProductByName;
+    private GetProductsByPreferences getProductsByPreferences;
     /******************** General Commands ********************/
     private GetUserDetailsCommand getUserDetailsCommand;
 
@@ -47,7 +59,14 @@ public class CommandInvoker {
                           GetUserDetailsCommand getUserDetailsCommand,
                           EventGetEventsBaseOnPreferencesCommand eventGetEventsBaseOnPreferencesCommand,
                           EventGetCreatedByMeEventsCommand eventGetCreatedByMeEventsCommand,
-                          EventGetAllFutureEventsCommand eventGetAllFutureEventsCommand) {
+                          EventGetAllFutureEventsCommand eventGetAllFutureEventsCommand,
+                          SearchProductByPrice searchProductByPrice,
+                          SearchProductByCategory searchProductByCategory,
+                          GetSuppliersProducts getSuppliersProducts,
+                          SearchProductByCurrency searchProductByCurrency,
+                          SearchProductByName searchProductByName,
+                          GetProductsByPreferences getProductsByPreferences) {
+
 
         this.datingLikeProfile = datingLikeProfile;
         this.datingUnmatch = datingUnmatch;
@@ -65,6 +84,12 @@ public class CommandInvoker {
         this.eventGetEventsBaseOnPreferencesCommand = eventGetEventsBaseOnPreferencesCommand;
         this.eventGetCreatedByMeEventsCommand = eventGetCreatedByMeEventsCommand;
         this.eventGetAllFutureEventsCommand = eventGetAllFutureEventsCommand;
+        this.searchProductByCategory = searchProductByCategory;
+        this.searchProductByPrice = searchProductByPrice;
+        this.getSuppliersProducts = getSuppliersProducts;
+        this.searchProductByCurrency = searchProductByCurrency;
+        this.searchProductByName = searchProductByName;
+        this.getProductsByPreferences = getProductsByPreferences;
     }
 
 
@@ -93,6 +118,12 @@ public class CommandInvoker {
             case GET_EVENTS_BASED_ON_PREFERENCES -> eventGetEventsBaseOnPreferencesCommand;
             case GET_EVENTS_CREATED_BY_ME -> eventGetCreatedByMeEventsCommand;
             case GET_ALL_FUTURE_EVENTS -> eventGetAllFutureEventsCommand;
+            case SEARCH_BY_PRICE -> searchProductByPrice;
+            case SEARCH_BY_CATEGORY-> searchProductByCategory;
+            case GET_ALL_SUPPLIERS_PRODUCTS -> getSuppliersProducts;
+            case SEARCH_BY_CURRENCY -> searchProductByCurrency;
+            case SEARCH_BY_NAME -> searchProductByName;
+            case GET_PRODUCTS_BY_PREFERENCES -> getProductsByPreferences;
             default -> null; // TODO create default command?
         };
 

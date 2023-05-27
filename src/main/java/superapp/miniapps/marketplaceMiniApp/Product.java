@@ -16,7 +16,6 @@ public class Product {
 	private double price;
 	private Currency currency;
 	
-	
 	private String imageUrl;
 	private String status;
 	

@@ -82,4 +82,22 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
     @Query("{'type' :?0, 'objectDetails.date': {'$gt': ?1 } }")
     public List<SuperAppObjectEntity> findAllEventsInTheFuture(String type, long now, Pageable pageable);
+
+    @Query("{'type' :?0, 'objectDetails.category': ?1}")
+    public List<SuperAppObjectEntity> findAllProductsByCategory(String type, String category, Pageable pageable);
+
+    @Query("{ 'type': ?0, 'objectDetails.price': { $gt: ?1, $lt: ?2 } }")
+    public List<SuperAppObjectEntity> findAllProductsByPrice(String type, double maxPrice, double minPrice,  Pageable pageable);
+
+    @Query("{'createdBy': ?0,'type' :?1 }")
+    public List<SuperAppObjectEntity> findAllProductsCreatedBySupplier(String businessName, String type, Pageable pageable);
+
+    @Query("{'type' :?0, 'objectDetails.currency': ?1}")
+    public List<SuperAppObjectEntity> findAllProductsByCurrency(String type, String currency, Pageable pageable);
+
+    @Query("{'type' :?0, 'objectDetails.name': ?1 }")
+    public List<SuperAppObjectEntity> findAllProductsByName(String type, String name,  Pageable pageable);
+
+    @Query("{ 'type' : ?0, 'objectDetails.preferences' : { $in: ?1 } }")
+    public List<SuperAppObjectEntity> findAllProductsByPreferences(String type, List<String> preferences, Pageable pageable);
 }
