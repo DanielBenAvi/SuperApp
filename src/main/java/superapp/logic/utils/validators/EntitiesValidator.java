@@ -29,22 +29,18 @@ public class EntitiesValidator {
                 .orElseThrow(() -> new NotFoundException("User id " + userId + " not exist in database"));
     }
 
-    public void validateExistingObject(String superapp, String internalObjectId) {
+    public SuperAppObjectEntity validateExistingObject(String superapp, String internalObjectId) {
 
         String objectId = ConvertIdsHelper.concatenateIds(new String[]{superapp, internalObjectId});
-        SuperAppObjectEntity objectEntity;
 
-        if (this.objectCrud.existsById(objectId)) {
+        NotFoundException exception = new NotFoundException("Object with id " + objectId + " not exist in data base");
 
-            objectEntity = this.objectCrud
-                    .findById(objectId)
-                    .orElseThrow(() -> new NotFoundException("Target object not exist in data base"));
+        if (!this.objectCrud.existsById(objectId))
+            throw exception;
 
-            // validate object exist is not active:false
-            if (!objectEntity.getActive())
-                throw new NotFoundException(" target object id " + objectEntity.getObjectId() + "not found - active:false");
-
-        }
+        return this.objectCrud
+                .findById(objectId)
+                .orElseThrow(() -> exception);
 
     }
 }

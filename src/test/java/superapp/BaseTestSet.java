@@ -2,13 +2,13 @@ package superapp;
 
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
 import superapp.data.UserRole;
 import superapp.logic.boundaries.*;
-import superapp.miniapps.MiniAppNames;
 
 import java.util.Date;
 import java.util.Map;
@@ -16,6 +16,7 @@ import java.util.Map;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BaseTestSet {
     protected String springApplicationName;
+    protected String internalObjectIdForCommand;
     protected RestTemplate restTemplate;
     protected String baseUrl;
     protected int port;
@@ -36,6 +37,19 @@ public class BaseTestSet {
         this.restTemplate = new RestTemplate();
     }
 
+    @BeforeEach
+    public void initTest() {
+        String systemEmail = "system@gmail.com";
+        help_PostUserBoundary(systemEmail , UserRole.SUPERAPP_USER.toString(), "System", "avatar");
+        SuperAppObjectBoundary objectForCommand = help_PostObjectBoundary(null,"DEFAULT", "OBJECT_FOR_COMMAND_WITHOUT_TARGET_OBJECT",
+                null, true, null, new CreatedBy().setUserId(new UserId(this.springApplicationName, systemEmail)), null);
+
+        this.internalObjectIdForCommand = objectForCommand.getObjectId().getInternalObjectId();
+
+        help_PutUserBoundary(new UserBoundary().setRole(UserRole.ADMIN.toString()), systemEmail);
+        this.restTemplate.delete(this.baseUrl + "/superapp/admin/users?userSuperapp={userSuperapp}&userEmail={email}"
+                , springApplicationName, systemEmail);
+    }
     @AfterEach
     public void tearDown() {
         String email = "admin@gmail.com";
@@ -45,13 +59,13 @@ public class BaseTestSet {
         help_PostUserBoundary(email, role, username, avatar);
 
         this.restTemplate.delete(this.baseUrl + "/superapp/admin/miniapp?userSuperapp={userSuperapp}&userEmail={email}"
-                , springApplicationName,email);
+                , springApplicationName, email);
 
         this.restTemplate.delete(this.baseUrl + "/superapp/admin/objects?userSuperapp={userSuperapp}&userEmail={email}"
-                , springApplicationName,email);
+                , springApplicationName, email);
 
         this.restTemplate.delete(this.baseUrl + "/superapp/admin/users?userSuperapp={userSuperapp}&userEmail={email}"
-                , springApplicationName,email);
+                , springApplicationName, email);
     }
 
 

@@ -86,17 +86,22 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
 
         // validation
         this.boundaryValidator.validateCommandBoundary(commandBoundary);
+        this.boundaryValidator.validateInvokedBy(commandBoundary.getInvokedBy());
+        this.boundaryValidator.validateTargetObject(commandBoundary.getTargetObject());
+
 
         // validate that user exist and retrieve the user from database
         UserId userId = commandBoundary.getInvokedBy().getUserId();
-        UserEntity userEntity = this.entitiesValidator
-                .validateExistingUser(userId.getSuperapp(), userId.getEmail());
-
+        UserEntity userEntity = this.entitiesValidator.validateExistingUser(userId.getSuperapp(), userId.getEmail());
 
         // validate target object exist in database
         ObjectId objectId = commandBoundary.getTargetObject().getObjectId();
-        this.entitiesValidator
-                .validateExistingObject(objectId.getSuperapp(), objectId.getInternalObjectId());
+        SuperAppObjectEntity targetObject =
+                this.entitiesValidator.validateExistingObject(objectId.getSuperapp(), objectId.getInternalObjectId());
+
+        // validate object exist is not active:false
+        if (!targetObject.getActive())
+            throw new NotFoundException(" target object id " + targetObject + "not found - active:false");
 
         checkPermission(userEntity.getUserID(), "invokeCommand");
 

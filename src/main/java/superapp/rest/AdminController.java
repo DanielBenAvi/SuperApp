@@ -90,7 +90,7 @@ public class AdminController {
 			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
 			@RequestParam(name = "userEmail", required = true) String userEmail) {
 
-		this.usersService.deleteAllUsers(userSuperapp,userEmail);
+		this.usersService.deleteAllUsers(userSuperapp, userEmail);
 		System.err.println("All users deleted");
 	}
 
@@ -102,7 +102,7 @@ public class AdminController {
 			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
 			@RequestParam(name = "userEmail", required = true) String userEmail) {
 
-		this.objectsService.deleteAllObjects(userSuperapp,userEmail);
+		this.objectsService.deleteAllObjects(userSuperapp, userEmail);
 		System.err.println("All superapp objects deleted");
 	}
 
@@ -116,7 +116,7 @@ public class AdminController {
 			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
 			@RequestParam(name = "userEmail", required = true) String userEmail) {
 
-		this.miniAppCommandService.deleteAllCommands(userSuperapp,userEmail);
+		this.miniAppCommandService.deleteAllCommands(userSuperapp, userEmail);
 		System.err.println("All commands history deleted");
 
 	}

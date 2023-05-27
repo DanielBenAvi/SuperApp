@@ -107,8 +107,8 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
     public Optional<UserBoundary> login(String userSuperapp, String userEmail) {
 
         // validate that user exist and retrieve the user from database
-        UserEntity userEntity = entitiesValidator.validateExistingUser(userSuperapp, userEmail);
-        checkPermission(userEntity.getUserID(), "login");
+        UserEntity userEntity = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
+        this.checkPermission(userEntity.getUserID(), "login");
 
         return userEntity != null ? Optional.of(this.userConvertor.toBoundary(userEntity)) : Optional.empty();
     }
@@ -126,9 +126,9 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
     public UserBoundary updateUser(String userSuperapp, String userEmail, UserBoundary update) {
 
         // validate that user exist and retrieve the user from database
-        UserEntity existing = entitiesValidator.validateExistingUser(userSuperapp, userEmail);
+        UserEntity existing = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        checkPermission(existing.getUserID(), "updateUser");
+        this.checkPermission(existing.getUserID(), "updateUser");
 
 
         Set<String> ignoredProperties = new HashSet<>();
@@ -195,9 +195,9 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
     public void deleteAllUsers(String userSuperapp, String userEmail) {
 
         // validate that user exist and retrieve the user from database
-        UserEntity userEntity = entitiesValidator.validateExistingUser(userSuperapp, userEmail);
+        UserEntity userEntity = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        checkPermission(userEntity.getUserID(), "deleteAllUsers");
+        this.checkPermission(userEntity.getUserID(), "deleteAllUsers");
 
         this.usersCrudDB.deleteAll();
     }
