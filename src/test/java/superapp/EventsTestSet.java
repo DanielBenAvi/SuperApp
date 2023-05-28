@@ -235,6 +235,105 @@ public class EventsTestSet extends BaseTestSet {
     }
 
     // get all events based on preferences // todo
+    @Test
+    @DisplayName("Test get all events based on user preferences")
+    void getAllEventsBasedOnPreferences() {
+        // USER 1
+        String email1 = "user1@gmail.com";
+        String role1 = UserRole.SUPERAPP_USER.toString();
+        String username1 = "user1";
+        String avatar1 = "user1.png";
+
+
+        // create user Details Object Boundary
+        String type4 = "USER_DETAILS";
+        String alias4 = "USER_DETAILS";
+        Location location4 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy4 = new CreatedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> targetObjectAttributes = new HashMap<>();
+        targetObjectAttributes.put("name", "user 1");
+        targetObjectAttributes.put("phoneNum", "+9721234567");
+        targetObjectAttributes.put("preferences", new String[]{"music", "sport"});
+
+
+        // event 1 in the future
+        String type1 = "EVENT";
+        String alias1 = "EVENT";
+        Location location1 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy1 = new CreatedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> event1Attributes = new HashMap<>();
+        event1Attributes.put("name", ",music event");
+        event1Attributes.put("description", "event1 description");
+        event1Attributes.put("location", "demo location");
+        // date in current time in millis + 1 hour
+        event1Attributes.put("date", new Date().getTime() + 3600000);
+        event1Attributes.put("preferences", new String[]{"music", "ski"});
+        event1Attributes.put("attendees", new String[]{});
+
+        // event 2 in the future
+        String type2 = "EVENT";
+        String alias2 = "EVENT";
+        Location location2 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy2 = new CreatedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> event2Attributes = new HashMap<>();
+        event2Attributes.put("name", "sport event");
+        event2Attributes.put("description", "event2 description");
+        event2Attributes.put("location", "demo location");
+        // date in current time in millis + 2 hour
+        event2Attributes.put("date", new Date().getTime() + 7200000);
+        event2Attributes.put("preferences", new String[]{"sport"});
+        event2Attributes.put("attendees", new String[]{});
+
+        // event 3 in the future
+        String type3 = "EVENT";
+        String alias3 = "EVENT";
+        Location location3 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy3 = new CreatedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> event3Attributes = new HashMap<>();
+        event3Attributes.put("name", "tennis event");
+        event3Attributes.put("description", "event3 description");
+        event3Attributes.put("location", "demo location");
+        // date in current time in millis + 3 hour
+        event3Attributes.put("date", new Date().getTime() + 10800000);
+        event3Attributes.put("preferences", new String[]{"tennis"});
+        event3Attributes.put("attendees", new String[]{});
+
+
+        // ###################### Gherkin ######################
+        // GIVEN
+        // 1. SUPERAPP_USER 1 are in the system
+        help_PostUserBoundary(email1, role1, username1, avatar1);
+        // 2. SUPERAPP_USER 1 has created 3 events
+        help_PostObjectBoundary(new ObjectId(), type1, alias1, new Date(), true, location1, createdBy1, event1Attributes);
+        help_PostObjectBoundary(new ObjectId(), type2, alias2, new Date(), true, location2, createdBy2, event2Attributes);
+        help_PostObjectBoundary(new ObjectId(), type3, alias3, new Date(), true, location3, createdBy3, event3Attributes);
+        // 4. user details object
+        String targetObjectId = help_PostObjectBoundary(new ObjectId(), type4, alias4, new Date(), true, location4, createdBy4, targetObjectAttributes).getObjectId().getInternalObjectId();
+
+        // WHEN
+        // 1. SUPERAPP_USER 1 gets all events based on preferences
+        UserBoundary userBoundary = help_GetUserBoundary(email1);
+        userBoundary.setRole(UserRole.MINIAPP_USER.toString());
+        help_PutUserBoundary(userBoundary, email1);
+        // user 1 search for event by category
+        String miniappName = "EVENT";
+        CommandId commandId = new CommandId().setSuperapp(springApplicationName).setMiniapp(miniappName);
+        String command = "GET_EVENTS_BASED_ON_PREFERENCES";
+        TargetObject targetObject = new TargetObject().setObjectId(new ObjectId().setInternalObjectId(targetObjectId).setSuperapp(springApplicationName));
+        Date date = new Date();
+        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> params = new HashMap<>();
+        Object object = help_PostCommandBoundary(miniappName, commandId, command, targetObject, date, invokedBy, params);
+
+        // THEN
+        // 1. SUPERAPP_USER 1 gets all events based on preferences
+        // 1.1. SUPERAPP_USER 1 gets 2 events
+        List<SuperAppObjectBoundary> objectBoundaries = objectToListOfObjectBoundaries(object);
+        System.err.println(objectBoundaries);
+        assertEquals(2, objectBoundaries.size());
+
+
+    }
 
     // get all my events
     @Test
@@ -722,8 +821,200 @@ public class EventsTestSet extends BaseTestSet {
     // search event by location // todo
 
     // search event by date
+    @Test
+    @DisplayName("Test search event by date")
+    void searchByDateTest() {
+        // USER 1
+        String email1 = "user1@gmail.com";
+        String role1 = UserRole.SUPERAPP_USER.toString();
+        String username1 = "user1";
+        String avatar1 = "user1.png";
 
-    // search event by category
+        // event 1 in the future
+        String type1 = "EVENT";
+        String alias1 = "EVENT";
+        Location location1 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy1 = new CreatedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> event1Attributes = new HashMap<>();
+        event1Attributes.put("name", "ski event");
+        event1Attributes.put("description", "event1 description");
+        event1Attributes.put("location", "demo location");
+        // date in current time in millis + 1 hour
+        event1Attributes.put("date", new Date().getTime() + 3600000);
+        event1Attributes.put("preferences", new String[]{"music", "sport"});
+        event1Attributes.put("attendees", new String[]{});
+
+        // event 2 in the future
+        String type2 = "EVENT";
+        String alias2 = "EVENT";
+        Location location2 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy2 = new CreatedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> event2Attributes = new HashMap<>();
+        event2Attributes.put("name", "tennis event");
+        event2Attributes.put("description", "event2 description");
+        event2Attributes.put("location", "demo location");
+        // date in current time in millis + 2 hour
+        event2Attributes.put("date", new Date().getTime() + 7200000);
+        event2Attributes.put("preferences", new String[]{"music", "sport"});
+        event2Attributes.put("attendees", new String[]{});
+
+        // event 3 in the future
+        String type3 = "EVENT";
+        String alias3 = "EVENT";
+        Location location3 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy3 = new CreatedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> event3Attributes = new HashMap<>();
+        event3Attributes.put("name", "tennis event");
+        event3Attributes.put("description", "event2 description");
+        event3Attributes.put("location", "demo location");
+        // date in current time in millis + 2 days
+        event3Attributes.put("date", new Date().getTime() + 172800000);
+        event3Attributes.put("preferences", new String[]{"music", "sport"});
+        event3Attributes.put("attendees", new String[]{});
+
+        // demo target object
+        String type4 = "TARGET_OBJECT";
+        String alias4 = "TARGET_OBJECT";
+        Location location4 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy4 = new CreatedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> targetObjectAttributes = new HashMap<>();
+        targetObjectAttributes.put("name", "target object");
+
+
+        // GIVEN
+        // 1. USER 1 is registered to the system
+        help_PostUserBoundary(email1, role1, username1, avatar1);
+        // 2. USER 1 creates  3 event
+        help_PostObjectBoundary(new ObjectId(), type1, alias1, new Date(), true, location1, createdBy1, event1Attributes);
+        help_PostObjectBoundary(new ObjectId(), type2, alias2, new Date(), true, location2, createdBy2, event2Attributes);
+        help_PostObjectBoundary(new ObjectId(), type3, alias3, new Date(), true, location3, createdBy3, event3Attributes);
+        // 3. USER 1 creates target object
+        String targetObjectId = help_PostObjectBoundary(new ObjectId(), type4, alias4, new Date(), true, location4, createdBy4, targetObjectAttributes).getObjectId().getInternalObjectId();
+
+
+        // WHEN
+        // user 1 role is changed to MINIAPP_USER
+        UserBoundary userBoundary = help_GetUserBoundary(email1);
+        userBoundary.setRole(UserRole.MINIAPP_USER.toString());
+        help_PutUserBoundary(userBoundary, email1);
+
+        // user 1 search for event by dates
+        String miniappName = "EVENT";
+        CommandId commandId = new CommandId().setSuperapp(springApplicationName).setMiniapp(miniappName);
+        String command = "SEARCH_EVENTS_BY_DATE";
+        TargetObject targetObject = new TargetObject().setObjectId(new ObjectId().setInternalObjectId(targetObjectId).setSuperapp(springApplicationName));
+        Date date = new Date();
+        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> params = new HashMap<>();
+        long startDate = new Date().getTime();
+        long endDate = new Date().getTime() + 3600000 * 4;
+        params.put("startDate", startDate);
+        params.put("endDate", endDate);
+        Object object = help_PostCommandBoundary(miniappName, commandId, command, targetObject, date, invokedBy, params);
+
+
+        // THEN
+        // 1. USER 1 receives 2 events
+        List<SuperAppObjectBoundary> objectBoundaries = objectToListOfObjectBoundaries(object);
+        assertEquals(2, objectBoundaries.size());
+
+    }
+
+    // search event by category needs to be exact match
+    @Test
+    @DisplayName("Test search event by category")
+    void searchByCategoryTest() {
+        // USER 1
+        String email1 = "user1@gmail.com";
+        String role1 = UserRole.SUPERAPP_USER.toString();
+        String username1 = "user1";
+        String avatar1 = "user1.png";
+
+        // event 1 in the future
+        String type1 = "EVENT";
+        String alias1 = "EVENT";
+        Location location1 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy1 = new CreatedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> event1Attributes = new HashMap<>();
+        event1Attributes.put("name", "ski event");
+        event1Attributes.put("description", "event1 description");
+        event1Attributes.put("location", "demo location");
+        // date in current time in millis + 1 hour
+        event1Attributes.put("date", new Date().getTime() + 3600000);
+        event1Attributes.put("preferences", new String[]{"music"});
+        event1Attributes.put("attendees", new String[]{});
+
+        // event 2 in the future
+        String type2 = "EVENT";
+        String alias2 = "EVENT";
+        Location location2 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy2 = new CreatedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> event2Attributes = new HashMap<>();
+        event2Attributes.put("name", "tennis event");
+        event2Attributes.put("description", "event2 description");
+        event2Attributes.put("location", "demo location");
+        // date in current time in millis + 2 hour
+        event2Attributes.put("date", new Date().getTime() + 7200000);
+        event2Attributes.put("preferences", new String[]{"sport"});
+        event2Attributes.put("attendees", new String[]{});
+
+        // event 3 in the future
+        String type3 = "EVENT";
+        String alias3 = "EVENT";
+        Location location3 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy3 = new CreatedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> event3Attributes = new HashMap<>();
+        event3Attributes.put("name", "tennis event");
+        event3Attributes.put("description", "event2 description");
+        event3Attributes.put("location", "demo location");
+        // date in current time in millis + 2 days
+        event3Attributes.put("date", new Date().getTime() + 172800000);
+        event3Attributes.put("preferences", new String[]{"music", "sport"});
+        event3Attributes.put("attendees", new String[]{});
+
+        // demo target object
+        String type4 = "TARGET_OBJECT";
+        String alias4 = "TARGET_OBJECT";
+        Location location4 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy4 = new CreatedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> targetObjectAttributes = new HashMap<>();
+        targetObjectAttributes.put("name", "target object");
+
+
+        // GIVEN
+        // 1. USER 1 is registered to the system
+        help_PostUserBoundary(email1, role1, username1, avatar1);
+        // 2. USER 1 creates  3 event
+        help_PostObjectBoundary(new ObjectId(), type1, alias1, new Date(), true, location1, createdBy1, event1Attributes);
+        help_PostObjectBoundary(new ObjectId(), type2, alias2, new Date(), true, location2, createdBy2, event2Attributes);
+        help_PostObjectBoundary(new ObjectId(), type3, alias3, new Date(), true, location3, createdBy3, event3Attributes);
+        // 3. USER 1 creates target object
+        String targetObjectId = help_PostObjectBoundary(new ObjectId(), type4, alias4, new Date(), true, location4, createdBy4, targetObjectAttributes).getObjectId().getInternalObjectId();
+
+
+        // WHEN
+        // user 1 role is changed to MINIAPP_USER
+        UserBoundary userBoundary = help_GetUserBoundary(email1);
+        userBoundary.setRole(UserRole.MINIAPP_USER.toString());
+        help_PutUserBoundary(userBoundary, email1);
+        // user 1 search for event by category
+        String miniappName = "EVENT";
+        CommandId commandId = new CommandId().setSuperapp(springApplicationName).setMiniapp(miniappName);
+        String command = "SEARCH_EVENTS_BY_PREFERENCES";
+        TargetObject targetObject = new TargetObject().setObjectId(new ObjectId().setInternalObjectId(targetObjectId).setSuperapp(springApplicationName));
+        Date date = new Date();
+        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        Map<String, Object> params = new HashMap<>();
+        params.put("preference", "sport");
+        Object object = help_PostCommandBoundary(miniappName, commandId, command, targetObject, date, invokedBy, params);
+
+        // THEN
+        // 1. USER 1 receives 1 event
+        List<SuperAppObjectBoundary> objectBoundaries = objectToListOfObjectBoundaries(object);
+        assertEquals(2, objectBoundaries.size());
+
+
+    }
 
 
     private static List<SuperAppObjectBoundary> objectToListOfObjectBoundaries(Object object) {

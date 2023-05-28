@@ -1,6 +1,9 @@
 package superapp.miniapps.command.eventImpl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
@@ -9,7 +12,9 @@ import superapp.logic.boundaries.SuperAppObjectBoundary;
 import superapp.logic.utils.convertors.ObjectConvertor;
 import superapp.miniapps.command.MiniAppsCommand;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class EventGetEventsBaseOnPreferencesCommand implements MiniAppsCommand {
@@ -23,6 +28,7 @@ public class EventGetEventsBaseOnPreferencesCommand implements MiniAppsCommand {
         this.objectCrudDB = objectCrudDB;
         this.objectConvertor = objectConvertor;
     }
+
     @Override
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
         //todo: fix the return type
@@ -30,27 +36,35 @@ public class EventGetEventsBaseOnPreferencesCommand implements MiniAppsCommand {
         String userEmail = commandBoundary.getInvokedBy().getUserId().getEmail();
         String superApp = commandBoundary.getInvokedBy().getUserId().getSuperapp();
         String userId = superApp + "_" + userEmail;
+        String type = "EVENT";
 
         // get the user preferences from the database
         SuperAppObjectEntity superAppObjectEntity = this.objectCrudDB.findByCreatedByAndType(userId, "USER_DETAILS");
 
-// Convert the object to a string representation
-        String objString = superAppObjectEntity.getObjectDetails().get("preferences").toString();
+        SuperAppObjectBoundary superAppObjectBoundary = this.objectConvertor.toBoundary(superAppObjectEntity);
 
-// Split the string representation into individual parts or elements
-        String[] elements = objString.split(" "); // You can use a different delimiter if needed
-
-// Store the elements in an array of strings
-        String[] array = new String[elements.length];
-        System.arraycopy(elements, 0, array, 0, elements.length);
-
-        System.out.println("The array of strings is: " + array);
-        // convert the user preferences to a boundary
+        ObjectMapper objectMapper = new ObjectMapper();
+        String[] preferences = objectMapper.convertValue(superAppObjectBoundary.getObjectDetails().get("preferences"), String[].class);
 
 
-        // get the events from the database
+        int page = commandBoundary
+                .getCommandAttributes()
+                .get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
 
-        return null;
+        int size = commandBoundary
+                .getCommandAttributes()
+                .get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
+
+
+        long now = System.currentTimeMillis();
+
+
+
+        return this.objectCrudDB
+                .findAllEventsBaseOnPreferencesCommand(type, userId, now, preferences, PageRequest.of(page, size, Sort.by("creationTimestamp").descending()))
+                .stream()
+                .map(this.objectConvertor::toBoundary)
+                .toList();
     }
 
 }
