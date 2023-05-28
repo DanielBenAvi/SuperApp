@@ -56,8 +56,8 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     public List<SuperAppObjectEntity> searchEventByDates(String type, long now, long startDate, long endDate, Pageable pageable);
 
     // search by event contains preferences
-    @Query("{'type': ?0, 'objectDetails.date': {'$gt': ?1 }, 'objectDetails.preferences': {'$in': [?2] }}")
-    public List<SuperAppObjectEntity> searchEventByPreferences(String type, long now, String preference, Pageable pageable); //p    reference must be exact string
+    @Query("{'type': ?0, 'objectDetails.date': {'$gt': ?1 }, 'objectDetails.preferences': {'$in': ?2 }}")
+    public List<SuperAppObjectEntity> searchEventByPreferences(String type, long now, String[] preference, Pageable pageable);
 
 
     public SuperAppObjectEntity findByCreatedByAndType(@Param("createdBy") String createdBy, @Param("type") String type);

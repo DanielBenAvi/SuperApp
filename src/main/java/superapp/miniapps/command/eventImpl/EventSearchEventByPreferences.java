@@ -1,5 +1,6 @@
 package superapp.miniapps.command.eventImpl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -26,7 +27,8 @@ public class EventSearchEventByPreferences implements MiniAppsCommand {
     }
     @Override
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
-        String preference = commandBoundary.getCommandAttributes().get("preference").toString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String[] preference = objectMapper.convertValue(commandBoundary.getCommandAttributes().get("preferences"), String[].class);
         String type = "EVENT";
         long now = System.currentTimeMillis();
 

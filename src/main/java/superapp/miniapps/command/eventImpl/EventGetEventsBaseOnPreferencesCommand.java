@@ -31,7 +31,7 @@ public class EventGetEventsBaseOnPreferencesCommand implements MiniAppsCommand {
 
     @Override
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
-        //todo: fix the return type
+        // todo: fix the return type
         // get the user email and superapp from the command boundary
         String userEmail = commandBoundary.getInvokedBy().getUserId().getEmail();
         String superApp = commandBoundary.getInvokedBy().getUserId().getSuperapp();
@@ -40,6 +40,11 @@ public class EventGetEventsBaseOnPreferencesCommand implements MiniAppsCommand {
 
         // get the user preferences from the database
         SuperAppObjectEntity superAppObjectEntity = this.objectCrudDB.findByCreatedByAndType(userId, "USER_DETAILS");
+
+
+        if (Objects.isNull(superAppObjectEntity)) {
+            return new ArrayList<>();
+        }
 
         SuperAppObjectBoundary superAppObjectBoundary = this.objectConvertor.toBoundary(superAppObjectEntity);
 
@@ -57,7 +62,6 @@ public class EventGetEventsBaseOnPreferencesCommand implements MiniAppsCommand {
 
 
         long now = System.currentTimeMillis();
-
 
 
         return this.objectCrudDB
