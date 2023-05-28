@@ -818,8 +818,6 @@ public class EventsTestSet extends BaseTestSet {
         }
     }
 
-    // search event by location // todo
-
     // search event by date
     @Test
     @DisplayName("Test search event by date")

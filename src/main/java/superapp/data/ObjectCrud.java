@@ -59,11 +59,6 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     @Query("{'type': ?0, 'objectDetails.date': {'$gt': ?1 }, 'objectDetails.preferences': {'$in': [?2] }}")
     public List<SuperAppObjectEntity> searchEventByPreferences(String type, long now, String preference, Pageable pageable); //p    reference must be exact string
 
-    // search by event location
-    // todo : fix this query
-    @Query("{'type': ?0, 'objectDetails.date': {'$gt': ?1 }, " +
-            "'objectDetails.location': {'$near': {'$geometry': {'type': 'Point', 'coordinates': [?2, ?3]}, '$maxDistance': ?4}}}")
-    public List<SuperAppObjectEntity> searchEventByLocation(String type, long now, Double lat, Double lng, Double distance, Pageable pageable);
 
     public SuperAppObjectEntity findByCreatedByAndType(@Param("createdBy") String createdBy, @Param("type") String type);
 

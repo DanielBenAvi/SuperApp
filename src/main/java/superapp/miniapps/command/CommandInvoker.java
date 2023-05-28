@@ -24,7 +24,6 @@ public class CommandInvoker {
     private EventLeaveEventCommand eventLeaveEventCommand;
     private EventSearchEventByName eventSearchEventByName;
     private EventSearchEventByDate eventSearchEventByDate;
-    private EventSearchEventByLocation eventSearchEventByLocation;
     private EventSearchEventByPreferences eventSearchEventByPreferences;
     private EventGetEventsBaseOnPreferencesCommand eventGetEventsBaseOnPreferencesCommand;
     private EventGetCreatedByMeEventsCommand eventGetCreatedByMeEventsCommand;
@@ -54,7 +53,6 @@ public class CommandInvoker {
                           EventLeaveEventCommand eventLeaveEventCommand,
                           EventSearchEventByName eventSearchEventByName,
                           EventSearchEventByDate eventSearchEventByDate,
-                          EventSearchEventByLocation eventSearchEventByLocation,
                           EventSearchEventByPreferences eventSearchEventByPreferences,
                           GetUserDetailsCommand getUserDetailsCommand,
                           EventGetEventsBaseOnPreferencesCommand eventGetEventsBaseOnPreferencesCommand,
@@ -78,7 +76,6 @@ public class CommandInvoker {
         this.eventLeaveEventCommand = eventLeaveEventCommand;
         this.eventSearchEventByName = eventSearchEventByName;
         this.eventSearchEventByDate = eventSearchEventByDate;
-        this.eventSearchEventByLocation = eventSearchEventByLocation;
         this.eventSearchEventByPreferences = eventSearchEventByPreferences;
         this.getUserDetailsCommand = getUserDetailsCommand;
         this.eventGetEventsBaseOnPreferencesCommand = eventGetEventsBaseOnPreferencesCommand;
@@ -111,7 +108,6 @@ public class CommandInvoker {
             case JOIN_EVENT -> eventJoinEventCommand;
             case LEAVE_EVENT -> eventLeaveEventCommand;
             case SEARCH_EVENTS_BY_NAME -> eventSearchEventByName;
-            case SEARCH_EVENTS_BY_LOCATION -> eventSearchEventByLocation;
             case SEARCH_EVENTS_BY_DATE -> eventSearchEventByDate;
             case SEARCH_EVENTS_BY_PREFERENCES -> eventSearchEventByPreferences;
             case GET_USER_DETAILS_BY_EMAIL -> getUserDetailsCommand;
@@ -119,7 +115,7 @@ public class CommandInvoker {
             case GET_EVENTS_CREATED_BY_ME -> eventGetCreatedByMeEventsCommand;
             case GET_ALL_FUTURE_EVENTS -> eventGetAllFutureEventsCommand;
             case SEARCH_BY_PRICE -> searchProductByPrice;
-            case SEARCH_BY_CATEGORY-> searchProductByCategory;
+            case SEARCH_BY_CATEGORY -> searchProductByCategory;
             case GET_ALL_SUPPLIERS_PRODUCTS -> getSuppliersProducts;
             case SEARCH_BY_CURRENCY -> searchProductByCurrency;
             case SEARCH_BY_NAME -> searchProductByName;
