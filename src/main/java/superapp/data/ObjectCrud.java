@@ -98,4 +98,9 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
     @Query("{ 'type' : ?0, 'objectDetails.preferences' : { $in: ?1 } }")
     public List<SuperAppObjectEntity> findAllProductsByPreferences(String type, List<String> preferences, Pageable pageable);
+
+    @Query("{ '_id': { $in: ?0 }, 'type': ?1, 'active': true }")
+    public List<SuperAppObjectEntity> findAllByObjectIdAndTypeAndActiveIsTrue(@Param("ids") String[] ids,
+                                                                              @Param("type") String type,
+                                                                              PageRequest pageRequest);
 }
