@@ -126,9 +126,9 @@ public class TestSetDating extends BaseTestSet {
         this.help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.name()), email);
 
 
-        Map<String, Object> comandAttr = new HashMap<>();
-        comandAttr.put("page", 0);
-        comandAttr.put("size", 100);
+        Map<String, Object> commandAttr = new HashMap<>();
+        commandAttr.put("page", 0);
+        commandAttr.put("size", 100);
         Object result = this.help_PostCommandBoundary(MiniAppNames.DATING.name(),
                 null,
                 MiniAppsCommand.commands.GET_LIKES.name(),
@@ -136,7 +136,7 @@ public class TestSetDating extends BaseTestSet {
                         .setObjectId(new ObjectId(this.springApplicationName, objectBoundary.getObjectId().getInternalObjectId())),
                 null,
                 new InvokedBy().setUserId(new UserId(this.springApplicationName, email)),
-                comandAttr);
+                commandAttr);
         // TODO add assert
         int x = 1;
     }

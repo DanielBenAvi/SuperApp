@@ -83,7 +83,7 @@ public class DatingGetLikesCommand implements MiniAppsCommand {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "objectId");
         return this.objectCrudDB
-                .findAllByObjectIdAndTypeAndActiveIsTrue(ids, type, pageRequest)
+                .findAllByObjectIdInAndTypeAndActiveIsTrue(ids, type, pageRequest)
                 .stream()
                 .map(this.objectConvertor::toBoundary)
                 .toList();
