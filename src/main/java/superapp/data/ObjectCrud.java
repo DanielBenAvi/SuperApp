@@ -8,7 +8,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.Update;
 import org.springframework.data.repository.query.Param;
+import superapp.miniapps.Gender;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,7 +101,31 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     @Query("{ 'type' : ?0, 'objectDetails.preferences' : { $in: ?1 } }")
     public List<SuperAppObjectEntity> findAllProductsByPreferences(String type, List<String> preferences, Pageable pageable);
 
+
     public List<SuperAppObjectEntity> findAllByObjectIdInAndTypeAndActiveIsTrue(@Param("ids") String[] ids,
                                                                                 @Param("type") String type,
                                                                                 PageRequest pageRequest);
+
+    @Query("{" +
+            "$and: [" +
+            "{$nin: {'_id': ?1}}, " +
+            "{$nin: {'_id': ?2}}, " +
+            "{$and: [{'type': ?0}]}, " +
+            "{$and: [{'objectDetails.sexPreferences': {$all: ?3}}]}, " +
+            "{$and: [{objectDetails.publicProfile.age: {$gte: ?5}, {$lte: ?6}}]}, " +
+            "{$and: [{location: {$nearSphere: {'location': ?7}, $maxDistance: ?8}]}" +
+            "{$and: [{'parent.objectDetails.preferences': {$all: ?4}}]}" +
+            "]" +
+            "}")
+    public List<SuperAppObjectEntity> findAllMyPotentialDates(String type,
+                                                              String[] likesIds,
+                                                              String[] matchesIds,
+                                                              Gender[] sexPreferences,
+                                                              String[] interests,
+                                                              int minAge, int maxAge,
+                                                              Point point, Distance maxDistance,
+                                                              PageRequest pageRequest);
+
+
+
 }

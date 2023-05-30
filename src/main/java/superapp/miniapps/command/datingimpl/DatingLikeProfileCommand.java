@@ -1,16 +1,20 @@
 package superapp.miniapps.command.datingimpl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
-import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.logic.boundaries.ObjectId;
+import superapp.logic.ObjectsService;
+import superapp.logic.boundaries.*;
+import superapp.logic.mongo.NotFoundException;
 import superapp.logic.utils.convertors.CommandConvertor;
-import superapp.miniapps.Gender;
+import superapp.logic.utils.convertors.ConvertIdsHelper;
+import superapp.logic.utils.convertors.ObjectConvertor;
 import superapp.miniapps.command.MiniAppsCommand;
+import superapp.miniapps.datingMiniApp.MatchBoundary;
+import superapp.miniapps.datingMiniApp.MatchEntity;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
-import superapp.miniapps.datingMiniApp.PublicDatingProfile;
 
 import java.util.*;
 
@@ -19,137 +23,176 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
     private final CommandConvertor commandConvertor;
+    private final ObjectConvertor objectConvertor;
+    private final ObjectMapper jackson;
+    private final ObjectsService objectsService;
+
 
     @Autowired
-    public DatingLikeProfileCommand(ObjectCrud objectCrudDB, CommandConvertor commandConvertor) {
+    public DatingLikeProfileCommand(ObjectCrud objectCrudDB,
+                                    CommandConvertor commandConvertor,
+                                    ObjectConvertor objectConvertor,
+                                    ObjectsService objectsService) {
+
         this.objectCrudDB = objectCrudDB;
         this.commandConvertor =  commandConvertor;
+        this.objectConvertor = objectConvertor;
+        this.objectsService = objectsService;
+        this.jackson = new ObjectMapper();
     }
 
 
     @Override
     public Object execute(MiniAppCommandBoundary command) {
 
-        // command attributes required : myDatingProfileId
+        // command attributes required : <'myDatingProfileId', ObjectId> #  ObjectId Boundary
         // command as define in MiniAppCommand.command
         // targetObject = dating profile objectId (of other profile that my profile likes)
         // invokedBy - userId of client user
 
         // Note : instead  command attributes required : myDatingProfileId, we can use invokedBy.
 
-
         // return Map<String, boolean> : like_status : true, match_status : false
 
-        /**
-         * * האם יש קשר בין collections שונים? למשל יוזר ואובייקט
-        UserId invokedByUserID = command.getInvokedBy().getUserId();
-        String invokedByUserEntityID = invokedByUserID.getSuperapp() + ConvertHelp.DELIMITER_ID + invokedByUserID.getEmail();
-        **/
+        String myDatingProfileId, iLikeDatingProfileId;
+        SuperAppObjectEntity myObjectEntity, iLikeObjectEntity;
+        PrivateDatingProfile myDatingProfile, iLikeDatingProfile;
 
-        //
+        Map<String, Object> likeResult;
 
-        ObjectId targetBoundaryID = command.getTargetObject().getObjectId();
+        ////// parse all data needed to execute //////
 
-        String targetEntityID = this.commandConvertor.targetObjToEntity(command.getTargetObject());
+        // extract ids
+        iLikeDatingProfileId = this.commandConvertor.targetObjToEntity(command.getTargetObject());
 
-//        /////////////////////
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        String t = objectMapper.writeValueAsString(PrivateDatingProfile);
-//        PrivateDatingProfile car = objectMapper.readValue(json, PrivateDatingProfile.class);
-//        ///////////////////
+        myDatingProfileId = this.objectConvertor
+                .objectIdToEntity(this.jacksonHandle(command.getCommandAttributes().get("myDatingProfileId"),
+                        ObjectId.class));
+
+        // retrieve superApp objects of Dating Profiles
+
+        myObjectEntity = this.objectCrudDB
+                .findById(myDatingProfileId)
+                .orElseThrow(() ->
+                        new NotFoundException("Target Object with id " + myDatingProfileId + " not exist in data base")
+                );
+
+        iLikeObjectEntity = this.objectCrudDB
+                .findById(iLikeDatingProfileId)
+                .orElseThrow(() ->
+                        new NotFoundException("Object with id " + iLikeDatingProfileId + " not exist in data base")
+                );
+
+        // check if other object is active:false
+        if (!iLikeObjectEntity.isActive())
+            return this.resultCreator(false, false, iLikeDatingProfileId, null);
+
+        // read my dating profile
+        myDatingProfile = this.jacksonHandle(myObjectEntity.getObjectDetails(), PrivateDatingProfile.class);
+
+        // read I liked dating profile
+        iLikeDatingProfile = this.jacksonHandle(iLikeObjectEntity.getObjectDetails(), PrivateDatingProfile.class);
+
+        // do like by add iLikeDatingProfileId to likes list of myDatingProfile
+        myDatingProfile.getLikes().add(iLikeDatingProfileId);
+        likeResult = resultCreator(true, false, iLikeDatingProfileId, null);
 
 
-        // get my profile dating
-        String myDatingProfileId = command.getCommandAttributes().get("myDatingProfileId").toString();
-        SuperAppObjectEntity myObject = this.objectCrudDB.findById(myDatingProfileId).get();
+        // check if match occurs
+        if (iLikeDatingProfile.getLikes().contains(myDatingProfileId)) {
 
-        PrivateDatingProfile myDatingProfile
-                = datingProfileDto((LinkedHashMap<String, Object>) myObject.getObjectDetails().get("key"));
+            // match creator and store the match
+            SuperAppObjectBoundary createdMatch
+                    = createAndStoreMatch(myDatingProfileId, iLikeDatingProfileId, myObjectEntity);
 
+            ObjectId matchObjectIdAsBoundary = createdMatch.getObjectId();
+            String matchObjectId = this.objectConvertor.objectIdToEntity(matchObjectIdAsBoundary);
 
+            // add match id to list of both dating profile
+            myDatingProfile.getMatches().add(matchObjectId);
+            iLikeDatingProfile.getMatches().add(matchObjectId);
 
-        SuperAppObjectEntity targetObject = this.objectCrudDB.findById(targetEntityID).get();
-        Object objectDetailsValue = targetObject.getObjectDetails().get("key");
-        PrivateDatingProfile targetDatingProfile = new PrivateDatingProfile();
-
-        if (objectDetailsValue instanceof LinkedHashMap) {
-
-            LinkedHashMap<String, Object> objectDetailsMap = (LinkedHashMap<String, Object>) objectDetailsValue;
-            targetDatingProfile = datingProfileDto(objectDetailsMap);
+            likeResult =  resultCreator(true, true, iLikeDatingProfileId, matchObjectIdAsBoundary);
 
         }
-        else if (objectDetailsValue instanceof PrivateDatingProfile){
 
-            targetDatingProfile = (PrivateDatingProfile) objectDetailsValue;
-        }
-        else {
-            // TODO
-            System.err.println(objectDetailsValue);
-        }
+        myObjectEntity.setObjectDetails(this.jacksonHandle(myDatingProfile, Map.class));
+        iLikeObjectEntity.setObjectDetails(this.jacksonHandle(iLikeDatingProfile, Map.class));
 
-
-        // check match occurs
-        if (targetDatingProfile.getLikes().contains(myDatingProfileId)) {
-
-            // TODO - validate that match already exist
-            // create new match
-//            MatchEntity newMatchEntity = new MatchEntity()
-//                    .setChat(new Chat())
-//                    .setUser1(targetDatingProfile.getPublicProfile())
-//                    .setUser2(myDatingProfile.getPublicProfile());
-
-            // update 2 profile with the match
-//            myDatingProfile.getMatches().add(newMatch);
-//            targetDatingProfile.getMatches().add(newMatch);
-
-            // update the targetObject and save to database
-            targetObject.getObjectDetails().put("key", targetDatingProfile);
-            this.objectCrudDB.save(targetObject);
-        }
-
-        // update the myDatingProfile and save to database
-        myDatingProfile.getLikes().add(targetEntityID);
-        myObject.getObjectDetails().put("key", myDatingProfile);
-        this.objectCrudDB.save(myObject);
-
-
-        // create the result
-        Map<String, Object> likesAndMatches = new HashMap<>();
-        PrivateDatingProfile myDatingProfileAfterUpdate = (PrivateDatingProfile) this.objectCrudDB
-                .findById(myDatingProfileId).get().getObjectDetails().get("key");
-
-        likesAndMatches.put("likes", myDatingProfileAfterUpdate.getLikes());
-        likesAndMatches.put("matches", myDatingProfileAfterUpdate.getMatches());
-
-
-        // TODO Match between A & B will be saved SuperAppObjectEntity (Created BY - default user or last like User id )
-
-        return likesAndMatches;
+        this.objectCrudDB.save(myObjectEntity);
+        this.objectCrudDB.save(iLikeObjectEntity);
+        return likeResult;
     }
 
-    private PrivateDatingProfile datingProfileDto(LinkedHashMap<String, Object> map) {
+    private SuperAppObjectBoundary createAndStoreMatch(String myDatingProfileId,
+                                                       String iLikeDatingProfileId,
+                                                       SuperAppObjectEntity myObjectEntity) {
 
-        PrivateDatingProfile profile = new PrivateDatingProfile();
 
-        profile.setPublicProfile(createPublicDatingProfileFromMap((LinkedHashMap<String, Object>) map.get("publicProfile")));
-        profile.setDistanceRange((int) map.get("distanceRange"));
-        profile.setGenderPreferences((ArrayList<Gender>) map.get("genderPreferences"));
-        profile.setMatches((ArrayList<String>) map.get("matches"));
-        profile.setLikes((ArrayList<String>) map.get("likes"));
-        return profile;
+        // create match as entity using jackson
+        Map<String, Object> match
+                = this.jacksonHandle(new MatchEntity()
+                        .setProfileDatingId1(myDatingProfileId)
+                        .setProfileDatingId2(iLikeDatingProfileId),
+                        Map.class);
+
+        SuperAppObjectBoundary newMatch
+                = new SuperAppObjectBoundary()
+                .setActive(true)
+                .setAlias("match between 2 dating profile")
+                .setType("MATCH")
+                .setLocation(this.objectConvertor.locationToBoundary(myObjectEntity.getLocation()))
+                .setCreatedBy(this.objectConvertor.createByToBoundary(myObjectEntity.getCreatedBy()))
+                .setObjectDetails(match);
+
+        SuperAppObjectBoundary createObjectRes
+                = this.objectsService.createObject(newMatch);
+
+
+        return createObjectRes
+                .setObjectDetails(
+                        this.jacksonHandle(
+                                this.matchToBoundary(
+                                        this.jacksonHandle(
+                                                createObjectRes.getObjectDetails(),
+                                                MatchEntity.class)),
+                                Map.class)
+                );
+
     }
 
-    private PublicDatingProfile createPublicDatingProfileFromMap(LinkedHashMap<String, Object> map) {
+    private <T> T jacksonHandle(Object toRead, Class<T> readAs) {
 
-        PublicDatingProfile publicDatingProfile = new PublicDatingProfile();
+        try {
+            String json = this.jackson.writeValueAsString(toRead);
+            return this.jackson.readValue(json, readAs);
 
-        publicDatingProfile.setNickName((String) map.get("nickName"));
-        publicDatingProfile.setGender((Gender.valueOf((String) map.get("gender"))));
-        publicDatingProfile.setAge((int) map.get("age"));
-        publicDatingProfile.setBio((String) map.get("bio"));
-        publicDatingProfile.setPictures((ArrayList<String>) map.get("pictures"));
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-        return publicDatingProfile;
+    private Map<String, Object> resultCreator(boolean likeStatus, boolean matchStatus,
+                                              String iLikeDatingProfileId, ObjectId matchObjectId) {
+
+        Map<String, Object> likeResult = new HashMap<>();
+
+        likeResult.put("like_status", likeStatus);
+        likeResult.put("like_profile_id", iLikeDatingProfileId);
+        likeResult.put("match_status", matchStatus);
+        likeResult.put("match_id", matchObjectId);
+
+        return likeResult;
+    }
+
+    public MatchBoundary matchToBoundary(MatchEntity match) {
+
+        String [] objectId1 = ConvertIdsHelper.splitConcretedIds(match.getProfileDatingId1());
+        String [] objectId2 = ConvertIdsHelper.splitConcretedIds(match.getProfileDatingId2());
+
+        return new MatchBoundary()
+                .setProfileDatingId1(new ObjectId(objectId1[0], objectId1[1]))
+                .setProfileDatingId2(new ObjectId(objectId2[0], objectId2[1]));
     }
 
 }

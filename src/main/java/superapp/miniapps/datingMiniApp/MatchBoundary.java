@@ -7,16 +7,12 @@ public class MatchBoundary {
 
 	private ObjectId profileDatingId1;
 	private ObjectId profileDatingId2;
-	private Chat chat;
 
-	public MatchBoundary() {
-		this.chat = new Chat();
-	}
+	public MatchBoundary() {}
 
 	public MatchBoundary(ObjectId profileDatingId1, ObjectId profileDatingId2) {
 		this.profileDatingId1 = profileDatingId1;
 		this.profileDatingId2 = profileDatingId2;
-		this.chat = new Chat();
 	}
 
 	public ObjectId getProfileDatingId1() {
@@ -37,21 +33,11 @@ public class MatchBoundary {
 		return this;
 	}
 
-	public Chat getChat() {
-		return chat;
-	}
-
-	public MatchBoundary setChat(Chat chat) {
-		this.chat = chat;
-		return this;
-	}
-
 	@Override
 	public String toString() {
 		return "MatchBoundary{" +
 				"profileDatingId1=" + profileDatingId1 +
 				", profileDatingId2=" + profileDatingId2 +
-				", chat=" + chat +
 				'}';
 	}
 }

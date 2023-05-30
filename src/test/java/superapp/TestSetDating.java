@@ -140,4 +140,37 @@ public class TestSetDating extends BaseTestSet {
         // TODO add assert
         int x = 1;
     }
+
+
+    @Test
+    @DisplayName("Successfully get all private dating profiles that user has match with")
+    public void testGetMyMatches(){
+
+    }
+
+    @Test
+    @DisplayName("Successfully get potential date")
+    public void testGetPotentialDate(){
+
+    }
+
+    @Test
+    @DisplayName("Successfully like other profile without match")
+    public void testLikeProfile(){
+
+    }
+
+    @Test
+    @DisplayName("Successfully like other profile with match")
+    public void testLikeProfileWithMatch(){
+
+    }
+
+    @Test
+    @DisplayName("Successfully do unmatch")
+    public void testUnmatch(){
+
+    }
+
+
 }
