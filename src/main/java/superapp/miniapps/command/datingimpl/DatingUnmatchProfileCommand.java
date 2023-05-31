@@ -23,12 +23,10 @@ public class DatingUnmatchProfileCommand implements MiniAppsCommand {
     @Override
     public Object execute(MiniAppCommandBoundary commandBoundary) {
 
-        // command attributes required : myDatingProfileId
+        // command attributes required : not necessary
         // command as define in MiniAppCommand.command
         // targetObject = match objectId
         // invokedBy - userId of client user
-
-        // Note : instead  command attributes required : myDatingProfileId, we can use invokedBy.
 
 
         // return Map<String, boolean> : like_status : true, match_status : false

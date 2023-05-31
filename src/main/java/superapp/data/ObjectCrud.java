@@ -106,17 +106,10 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
                                                                                 @Param("type") String type,
                                                                                 PageRequest pageRequest);
 
-    @Query("{" +
-            "$and: [" +
-            "{$nin: {'_id': ?1}}, " +
-            "{$nin: {'_id': ?2}}, " +
-            "{$and: [{'type': ?0}]}, " +
-            "{$and: [{'objectDetails.sexPreferences': {$all: ?3}}]}, " +
-            "{$and: [{objectDetails.publicProfile.age: {$gte: ?5}, {$lte: ?6}}]}, " +
-            "{$and: [{location: {$nearSphere: {'location': ?7}, $maxDistance: ?8}]}" +
-            "{$and: [{'parent.objectDetails.preferences': {$all: ?4}}]}" +
-            "]" +
-            "}")
+    @Query("{'type': ?0, {$nin: {'_id': ?1}}, {$nin: {'_id': ?2}}, {'objectDetails.gender': {$in: ?3}}]}, " +
+            "'objectDetails.publicProfile.age': {{$gte: ?5}, {$lte: ?6}}, " +
+            "'location': {$nearSphere: {'location': ?7}, $maxDistance: ?8}, " +
+            "'parent.objectDetails.preferences': {$in: ?4}" + "}")
     public List<SuperAppObjectEntity> findAllMyPotentialDates(String type,
                                                               String[] likesIds,
                                                               String[] matchesIds,
