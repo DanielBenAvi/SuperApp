@@ -1,4 +1,4 @@
-package superapp.miniapps.command.marketplaceImpl;
+package superapp.miniapps.command.marketplaceimpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;

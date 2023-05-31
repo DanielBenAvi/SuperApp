@@ -5,7 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.miniapps.command.datingimpl.*;
 import superapp.miniapps.command.eventImpl.*;
-import superapp.miniapps.command.marketplaceImpl.*;
+import superapp.miniapps.command.marketplaceimpl.GetProductsByPreferences;
+import superapp.miniapps.command.marketplaceimpl.GetSuppliersProducts;
+import superapp.miniapps.command.marketplaceimpl.SearchProductByCategory;
+import superapp.miniapps.command.marketplaceimpl.SearchProductByCurrency;
+import superapp.miniapps.command.marketplaceimpl.SearchProductByName;
+import superapp.miniapps.command.marketplaceimpl.SearchProductByPrice;
 
 
 @Component
