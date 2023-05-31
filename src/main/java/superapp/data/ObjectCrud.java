@@ -44,19 +44,19 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
                                                                            @Param("maxDistance") Distance maxDistance,
                                                                            Pageable pageable);
 
-    @Query("{'type' :?1, 'objectDetails.attendees': {'$in':[?0] }, 'objectDetails.date': {'$gt': ?2 } }")
+    @Query("{'type' :?1, 'active': true,'objectDetails.attendees': {'$in':[?0] }, 'objectDetails.date': {'$gt': ?2 } }")
     public List<SuperAppObjectEntity> findAllByTypeAndMyEvents(String userEmail, String type, long now, PageRequest creationTimestamp);
 
     // search by event name
-    @Query("{'type': ?0, 'objectDetails.date': {'$gt': ?1 }, 'objectDetails.name': {'$regex': ?2 }}")
+    @Query("{'type': ?0, 'active': true, 'objectDetails.date': {'$gt': ?1 }, 'objectDetails.name': {'$regex': ?2 }}")
     public List<SuperAppObjectEntity> searchEventByName(String type, long now, String name, Pageable pageable);
     // search by event date
 
-    @Query("{'type': ?0, 'objectDetails.date': {'$gt': ?1 } ,'objectDetails.date': {'$gt': ?2, '$lt': ?3 }}")
+    @Query("{'type': ?0, 'active': true, 'objectDetails.date': {'$gt': ?1 } ,'objectDetails.date': {'$gt': ?2, '$lt': ?3 }}")
     public List<SuperAppObjectEntity> searchEventByDates(String type, long now, long startDate, long endDate, Pageable pageable);
 
     // search by event contains preferences
-    @Query("{'type': ?0, 'objectDetails.date': {'$gt': ?1 }, 'objectDetails.preferences': {'$in': ?2 }}")
+    @Query("{'type': ?0, 'active': true, 'objectDetails.date': {'$gt': ?1 }, 'objectDetails.preferences': {'$in': ?2 }}")
     public List<SuperAppObjectEntity> searchEventByPreferences(String type, long now, String[] preference, Pageable pageable);
 
 
@@ -72,13 +72,13 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     @Update("{ $pull: { 'objectDetails.attendees': ?1 } }")
     void removeAttendeeFromEvent(String eventObjectId, String userEmail);
 
-    @Query("{'createdBy': ?0,'type' :?1, 'objectDetails.date': {'$gt': ?2 } }")
+    @Query("{'createdBy': ?0, 'active': true,'type' :?1, 'objectDetails.date': {'$gt': ?2 } }")
     public List<SuperAppObjectEntity> findAllByEventsCreatedByMe(String owner, String type, long now, Pageable pageable);
 
-    @Query("{'type' :?0, 'objectDetails.date': {'$gt': ?1 } }")
+    @Query("{'type' :?0, 'active': true, 'objectDetails.date': {'$gt': ?1 } }")
     public List<SuperAppObjectEntity> findAllEventsInTheFuture(String type, long now, Pageable pageable);
 
-    @Query("{'type' :?0, 'createdBy': ?1 ,'objectDetails.date': {'$gt': ?2 } , 'objectDetails.preferences': {'$in': ?3 }}")
+    @Query("{'type' :?0, 'active': true, 'createdBy': ?1 ,'objectDetails.date': {'$gt': ?2 } , 'objectDetails.preferences': {'$in': ?3 }}")
     public List<SuperAppObjectEntity> findAllEventsBaseOnPreferencesCommand(String type, String userId, long now, String[] preferences, Pageable pageable);
 
     @Query("{'type' :?0, 'objectDetails.category': ?1}")
