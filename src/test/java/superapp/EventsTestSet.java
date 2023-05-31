@@ -1003,7 +1003,7 @@ public class EventsTestSet extends BaseTestSet {
         Date date = new Date();
         InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
         Map<String, Object> params = new HashMap<>();
-        params.put("preference", "sport");
+        params.put("preferences", new String[]{"sport"});
         Object object = help_PostCommandBoundary(miniappName, commandId, command, targetObject, date, invokedBy, params);
 
         // THEN
