@@ -1,16 +1,24 @@
 package superapp;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import superapp.data.UserDetails;
 import superapp.data.UserRole;
 import superapp.logic.boundaries.*;
+import superapp.logic.utils.UtilHelper;
 import superapp.logic.utils.convertors.ConvertIdsHelper;
 import superapp.miniapps.Gender;
 import superapp.miniapps.MiniAppNames;
 import superapp.miniapps.command.MiniAppsCommand;
 import superapp.miniapps.datingMiniApp.PublicDatingProfile;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -152,6 +160,74 @@ public class TestSetDating extends BaseTestSet {
     @DisplayName("Successfully get potential date")
     public void testGetPotentialDate(){
 
+        // GIVEN
+        // server and database is up
+        // db contain the follow objects
+        // 15 users
+        // 15 SuperAppObject with objectDetails of UserDetails
+        // 15 SuperAppObject with objectDetails PrivetDatingProfile
+
+        // Create an instance of ObjectMapper from Jackson library
+        ObjectMapper objectMapper = new ObjectMapper();
+        String absolutePath = new File("src/test/resources").getAbsolutePath();
+
+
+        List<Object> allRes = new ArrayList<>();
+        JsonNode inputs;
+        // Read the JSON file and parse it into a JsonNode object
+        try {
+            inputs = objectMapper.readTree(new File(absolutePath +"/PotentialDateTestInput.json"));
+            for (JsonNode element: inputs) {
+
+                NewUserBoundary user = UtilHelper
+                        .jacksonHandle(element.get("user"), NewUserBoundary.class, objectMapper);
+                Map<String,Object> userDetailsAsMap = UtilHelper
+                        .jacksonHandle(element.get("userDetails"), Map.class, objectMapper);
+                Map<String,Object> datingProfilesAsMap = UtilHelper
+                        .jacksonHandle(element.get("datingProfile"), Map.class, objectMapper);
+
+                UserBoundary userBoundary = this.help_PostUserBoundary(user.getEmail(), user.getRole(),
+                        user.getUsername(), user.getAvatar());
+
+                SuperAppObjectBoundary userDetailsBoundary
+                        = this.help_PostObjectBoundary(null, "USER_DETAILS", "USER_DETAILS",
+                        null,true, null,
+                        new CreatedBy().setUserId(new UserId(this.springApplicationName, userBoundary.getUserId().getEmail())),
+                        userDetailsAsMap);
+
+                SuperAppObjectBoundary datingProfileBoundary
+                        = this.help_PostObjectBoundary(null, "PRIVATE_DATING_PROFILE", "PRIVATE_DATING_PROFILE",
+                        null,true, null,
+                        new CreatedBy().setUserId(new UserId(this.springApplicationName, userBoundary.getUserId().getEmail())),
+                        datingProfilesAsMap);
+
+                this.putRelationBetweenObjects(userDetailsBoundary.getObjectId().getInternalObjectId(),
+                        datingProfileBoundary.getObjectId(), this.springApplicationName,
+                        userBoundary.getUserId().getEmail());
+
+                Map<String, Object> commandAttribute = new HashMap<>();
+                commandAttribute.put("size", 15);
+                commandAttribute.put("page", 0);
+                commandAttribute.put("userDetailsId", userDetailsBoundary.getObjectId());
+
+                help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.name()), userBoundary.getUserId().getEmail());
+
+                Map<String, Object> results = UtilHelper.jacksonHandle(help_PostCommandBoundary(
+                        MiniAppNames.DATING.name(),
+                        null,
+                        MiniAppsCommand.commands.GET_POTENTIAL_DATES.name(),
+                        new TargetObject().setObjectId(datingProfileBoundary.getObjectId()),
+                        null,
+                        new InvokedBy().setUserId(new UserId(this.springApplicationName, userBoundary.getUserId().getEmail())),
+                        commandAttribute), Map.class, objectMapper);
+                allRes.add(results);
+
+            }
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
+        System.err.println(allRes);
     }
 
     @Test

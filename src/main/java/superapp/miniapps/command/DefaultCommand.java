@@ -1,14 +1,12 @@
-package superapp.miniapps.chat.command.impl;
+package superapp.miniapps.command;
 
 import org.springframework.stereotype.Component;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.miniapps.chat.command.ChatCommand;
 
 @Component
-public class ChatSendMessageCommand implements ChatCommand {
-
+public class DefaultCommand implements MiniAppsCommand{
     @Override
     public Object execute(MiniAppCommandBoundary commandBoundary) {
-        return null;
+        return commandBoundary;
     }
 }

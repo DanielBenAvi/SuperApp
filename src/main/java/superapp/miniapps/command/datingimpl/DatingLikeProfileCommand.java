@@ -47,12 +47,10 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
 
         // command attributes required : <'myDatingProfileId', ObjectId> #  ObjectId Boundary
         // command as define in MiniAppCommand.command
-        // targetObject = dating profile objectId (of other profile that my profile likes)
+        // targetObject = dating profile objectId (of other profile that my profile likes) #  ObjectId Boundary
         // invokedBy - userId of client user
 
-        // Note : instead  command attributes required : myDatingProfileId, we can use invokedBy.
-
-        // return Map<String, boolean> : like_status : true, match_status : false
+        // return Map<String, boolean> : like_status : true, match_status : false, like_profile_id : dating profile objectId, match_id : ObjectId
 
         String myDatingProfileId, iLikeDatingProfileId;
         SuperAppObjectEntity myObjectEntity, iLikeObjectEntity;
@@ -84,8 +82,13 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
                 );
 
         // check if other object is active:false
-        if (!iLikeObjectEntity.isActive())
-            return this.resultCreator(false, false, iLikeDatingProfileId, null);
+        if (!iLikeObjectEntity.isActive()) {
+            return this.resultCreator(
+                    false,
+                    false,
+                    this.objectConvertor.objectIdToBoundary(iLikeDatingProfileId),
+                    null);
+        }
 
         // read my dating profile
         myDatingProfile = this.jacksonHandle(myObjectEntity.getObjectDetails(), PrivateDatingProfile.class);
@@ -95,8 +98,6 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
 
         // do like by add iLikeDatingProfileId to likes list of myDatingProfile
         myDatingProfile.getLikes().add(iLikeDatingProfileId);
-        likeResult = resultCreator(true, false, iLikeDatingProfileId, null);
-
 
         // check if match occurs
         if (iLikeDatingProfile.getLikes().contains(myDatingProfileId)) {
@@ -112,16 +113,30 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
             myDatingProfile.getMatches().add(matchObjectId);
             iLikeDatingProfile.getMatches().add(matchObjectId);
 
-            likeResult =  resultCreator(true, true, iLikeDatingProfileId, matchObjectIdAsBoundary);
+            myObjectEntity.setObjectDetails(this.jacksonHandle(myDatingProfile, Map.class));
+            iLikeObjectEntity.setObjectDetails(this.jacksonHandle(iLikeDatingProfile, Map.class));
 
+            this.objectCrudDB.save(myObjectEntity);
+            this.objectCrudDB.save(iLikeObjectEntity);
+            return this.resultCreator(
+                    true,
+                    true,
+                    this.objectConvertor.objectIdToBoundary(iLikeDatingProfileId),
+                    matchObjectIdAsBoundary);
+
+        } else {
+
+
+            myObjectEntity.setObjectDetails(this.jacksonHandle(myDatingProfile, Map.class));
+            this.objectCrudDB.save(myObjectEntity);
+
+            return resultCreator(
+                    true,
+                    false,
+                    this.objectConvertor.objectIdToBoundary(iLikeDatingProfileId),
+                    null);
         }
 
-        myObjectEntity.setObjectDetails(this.jacksonHandle(myDatingProfile, Map.class));
-        iLikeObjectEntity.setObjectDetails(this.jacksonHandle(iLikeDatingProfile, Map.class));
-
-        this.objectCrudDB.save(myObjectEntity);
-        this.objectCrudDB.save(iLikeObjectEntity);
-        return likeResult;
     }
 
     private SuperAppObjectBoundary createAndStoreMatch(String myDatingProfileId,
@@ -141,7 +156,6 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
                 .setActive(true)
                 .setAlias("match between 2 dating profile")
                 .setType("MATCH")
-                .setLocation(this.objectConvertor.locationToBoundary(myObjectEntity.getLocation()))
                 .setCreatedBy(this.objectConvertor.createByToBoundary(myObjectEntity.getCreatedBy()))
                 .setObjectDetails(match);
 
@@ -173,13 +187,13 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
     }
 
     private Map<String, Object> resultCreator(boolean likeStatus, boolean matchStatus,
-                                              String iLikeDatingProfileId, ObjectId matchObjectId) {
+                                              ObjectId iLikeDatingProfileId, ObjectId matchObjectId) {
 
         Map<String, Object> likeResult = new HashMap<>();
 
         likeResult.put("like_status", likeStatus);
-        likeResult.put("like_profile_id", iLikeDatingProfileId);
         likeResult.put("match_status", matchStatus);
+        likeResult.put("like_profile_id", iLikeDatingProfileId);
         likeResult.put("match_id", matchObjectId);
 
         return likeResult;

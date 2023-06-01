@@ -12,7 +12,6 @@ public class PublicDatingProfile {
     private Gender gender;
     private int age; // calculate by dob in private dating profile
     private String bio;
-
     private List<String> pictures;
 
     //Optional attr : Personal details(color eyes, hair… ), zodiac, education, etc.

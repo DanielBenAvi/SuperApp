@@ -5,12 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.miniapps.command.datingimpl.*;
 import superapp.miniapps.command.eventImpl.*;
-import superapp.miniapps.command.marketplaceimpl.GetProductsByPreferences;
-import superapp.miniapps.command.marketplaceimpl.GetSuppliersProducts;
-import superapp.miniapps.command.marketplaceimpl.SearchProductByCategory;
-import superapp.miniapps.command.marketplaceimpl.SearchProductByCurrency;
-import superapp.miniapps.command.marketplaceimpl.SearchProductByName;
-import superapp.miniapps.command.marketplaceimpl.SearchProductByPrice;
+import superapp.miniapps.command.marketplaceimpl.*;
 
 
 @Component
@@ -46,9 +41,10 @@ public class CommandInvoker {
     private GetProductsByPreferences getProductsByPreferences;
     /******************** General Commands ********************/
     private GetUserDetailsCommand getUserDetailsCommand;
-
+    private DefaultCommand defaultCommand;
     @Autowired
-    public CommandInvoker(DatingLikeProfileCommand datingLikeProfile,
+    public CommandInvoker(DefaultCommand defaultCommand,
+                          DatingLikeProfileCommand datingLikeProfile,
                           DatingUnmatchProfileCommand datingUnmatch,
                           DatingGetPotentialDatesCommand datingGetPotentialDates,
                           DatingGetMatchesCommand datingGetMatches,
@@ -92,6 +88,7 @@ public class CommandInvoker {
         this.searchProductByCurrency = searchProductByCurrency;
         this.searchProductByName = searchProductByName;
         this.getProductsByPreferences = getProductsByPreferences;
+        this.defaultCommand = defaultCommand;
     }
 
 
@@ -101,7 +98,6 @@ public class CommandInvoker {
     }
 
     public MiniAppsCommand create(MiniAppsCommand.commands commandCode, Object... params) {
-
 
         return switch (commandCode) {
             case LIKE_PROFILE -> datingLikeProfile;
@@ -125,8 +121,7 @@ public class CommandInvoker {
             case SEARCH_BY_CURRENCY -> searchProductByCurrency;
             case SEARCH_BY_NAME -> searchProductByName;
             case GET_PRODUCTS_BY_PREFERENCES -> getProductsByPreferences;
-            default -> null; // TODO create default command?
+            default -> defaultCommand;
         };
-
     }
 }

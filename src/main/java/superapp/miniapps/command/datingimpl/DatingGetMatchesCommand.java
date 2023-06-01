@@ -10,6 +10,7 @@ import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.mongo.NotFoundException;
+import superapp.logic.utils.UtilHelper;
 import superapp.logic.utils.convertors.ObjectConvertor;
 import superapp.miniapps.command.MiniAppsCommand;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
@@ -30,8 +31,13 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
     }
 
 
+    /**
+     *
+     * @param command
+     * @return
+     */
     @Override
-    public Object execute(MiniAppCommandBoundary commandBoundary) {
+    public Object execute(MiniAppCommandBoundary command) {
 
         // command attributes required : page, size
         // command as define in MiniAppCommand.command
@@ -41,9 +47,22 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
         // return SuperAppObjectBoundary[] with objectDetails : match,
         // this is matches (of ObjectId) list.
 
-        // TODO: add validation for pagination values
+//        TODO change rturn to Map<"MatchID", PrivateDatingProfile>
+
+        String type = "MATCH";
+
+        int page = 0, size = 15;
+        if (command.getCommandAttributes() != null) {
+
+            if (command.getCommandAttributes().get("size") != null)
+                size = UtilHelper.getSizeAsInt(command.getCommandAttributes().get("size").toString() , size);
+
+            if (command.getCommandAttributes().get("page") != null)
+                page = UtilHelper.getPageAsInt(command.getCommandAttributes().get("page").toString(), page);
+        }
+
         String targetObjectId = this.objectConvertor
-                .objectIdToEntity(commandBoundary
+                .objectIdToEntity(command
                         .getTargetObject()
                         .getObjectId());
 
@@ -54,20 +73,10 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
         if (!targetObject.isActive())
             throw new NotFoundException("Target Object with id " + targetObjectId + " not exist , active : false");
 
-        String type = "MATCH";
 
-        int page = commandBoundary
-                .getCommandAttributes()
-                .get("page") == null ? 0 : Integer
-                .parseInt(commandBoundary.getCommandAttributes()
-                        .get("page")
-                        .toString());
-        int size = commandBoundary
-                .getCommandAttributes()
-                .get("size") == null ? 20 : Integer
-                .parseInt(commandBoundary.getCommandAttributes()
-                        .get("size")
-                        .toString());
+
+
+
         String[] ids;
 
         try {

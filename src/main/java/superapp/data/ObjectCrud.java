@@ -8,9 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.Update;
 import org.springframework.data.repository.query.Param;
-import superapp.miniapps.Gender;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,21 +16,13 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
 
     public Optional<SuperAppObjectEntity> findByObjectIdAndActiveIsTrue(@Param("objectId") String objectId);
-
     public List<SuperAppObjectEntity> findAllByActiveIsTrue(Pageable pageable);
-
     public List<SuperAppObjectEntity> findAllByParent_objectIdAndActiveIsTrue(@Param("parentObjectId") String parentObjectId, Pageable pageable);
-
     public List<SuperAppObjectEntity> findAllByChildren_objectIdAndActiveIsTrue(@Param("childObjectId") String childObjectId, Pageable pageable);
-
     public List<SuperAppObjectEntity> findAllByParent_objectId(@Param("parentObjectId") String parentObjectId, Pageable pageable);
-
     public List<SuperAppObjectEntity> findAllByChildren_objectId(@Param("childObjectId") String childObjectId, Pageable pageable);
-
     public List<SuperAppObjectEntity> findAllByType(@Param("type") String type, Pageable pageable);
-
     public List<SuperAppObjectEntity> findAllByTypeAndActiveIsTrue(@Param("type") String type, Pageable pageable);
-
     public List<SuperAppObjectEntity> findAllByAlias(@Param("alias") String alias, Pageable pageable);
 
     public List<SuperAppObjectEntity> findAllByAliasAndActiveIsTrue(@Param("alias") String alias, PageRequest pageRequest);
@@ -104,21 +94,18 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
     public List<SuperAppObjectEntity> findAllByObjectIdInAndTypeAndActiveIsTrue(@Param("ids") String[] ids,
                                                                                 @Param("type") String type,
-                                                                                PageRequest pageRequest);
-
-    @Query("{'type': ?0, {$nin: {'_id': ?1}}, {$nin: {'_id': ?2}}, {'objectDetails.gender': {$in: ?3}}]}, " +
-            "'objectDetails.publicProfile.age': {{$gte: ?5}, {$lte: ?6}}, " +
-            "'location': {$nearSphere: {'location': ?7}, $maxDistance: ?8}, " +
-            "'parent.objectDetails.preferences': {$in: ?4}" + "}")
-    public List<SuperAppObjectEntity> findAllMyPotentialDates(String type,
-                                                              String[] likesIds,
-                                                              String[] matchesIds,
-                                                              Gender[] sexPreferences,
-                                                              String[] interests,
-                                                              int minAge, int maxAge,
-                                                              Point point, Distance maxDistance,
-                                                              PageRequest pageRequest);
+                                                                                Pageable pageable);
 
 
+    @Query("{" +
+            "'type': ?0, " +
+            "'active': true, " +
+            "'_id': {$nin: ?1}, " +
+            "'_id': {$nin: ?2}, " +
+            "'objectDetails.publicProfile.gender': {$in: ?3}, " +
+            "'parent.objectDetails.interests': {$all: ?4}, " +
+            "'objectDetails.publicProfile.age': {$gte: ?5, $lte: ?6}" +
+            "}")
+    public List<SuperAppObjectEntity> findAllMyPotentialDates (String type, String[] likesIds, String[] matchesIds, String[] genderPreferences, String[] interests, int minAge, int maxAge, Pageable pageable);
 
 }

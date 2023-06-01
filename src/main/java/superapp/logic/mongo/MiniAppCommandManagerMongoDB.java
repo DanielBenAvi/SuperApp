@@ -112,7 +112,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
 
         // validate object exist is not active:false
         if (!targetObject.getActive())
-            throw new NotFoundException(" target object id " + targetObject + "not found - active:false");
+            throw new NotFoundException("target object id " + targetObject + "not found - active:false");
 
         checkPermission(userEntity.getUserID(), "invokeCommand");
 
@@ -122,7 +122,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
         MiniAppNames miniappName = MiniAppNames.strToMiniAppName(commandBoundary.getCommandId().getMiniapp());
         MiniAppsCommand.commands commandsToExecute = MiniAppsCommand.strToCommand(commandBoundary.getCommand());
 
-        if (miniappName.equals(MiniAppNames.UNKNOWN)) // TODO : is align with the spec?
+        if (miniappName.equals(MiniAppNames.UNKNOWN))
             resultObjectOfCommand = new InvalidCommand(miniappName + " miniapp name: "
                                                         + commandBoundary.getCommandId().getMiniapp() + " not supported");
         else if (commandsToExecute.equals(MiniAppsCommand.commands.UNKNOWN_COMMAND))

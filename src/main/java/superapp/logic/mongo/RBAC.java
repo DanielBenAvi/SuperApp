@@ -91,17 +91,8 @@ public class RBAC {
 
     public boolean hasPermission(String entityUserId, String permission) {
 
-        String userRoleName = this.userCrudDB
-                .findById(entityUserId).orElseThrow(() -> new NotFoundException()).getRole().name();
-
-//        String userRoleName = this.userCrudDB
-//                                            .findById(entityUserId)
-//                                            .get()
-//                                            .getRole()
-//                                            .name();
-
         return roles
-                .get(userRoleName)
+                .get(this.userCrudDB.findById(entityUserId).orElseThrow(() -> new NotFoundException()).getRole().name())
                 .getPermissions()
                 .contains(permission);
     }
