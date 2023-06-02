@@ -12,26 +12,27 @@ import superapp.miniapps.command.MiniAppsCommand;
 import java.util.List;
 
 @Component
-public class GetSuppliersProducts implements MiniAppsCommand {
+public class GetAllMyProducts implements MiniAppsCommand {
     private final ObjectCrud objectCrudDB;
 
     private final ObjectConvertor objectConvertor;
 
     @Autowired
-    public GetSuppliersProducts(ObjectCrud objectCrudDB, ObjectConvertor objectConvertor) {
+    public GetAllMyProducts(ObjectCrud objectCrudDB, ObjectConvertor objectConvertor) {
         this.objectCrudDB = objectCrudDB;
         this.objectConvertor = objectConvertor;
     }
+
     @Override
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
         String userEmail = commandBoundary.getInvokedBy().getUserId().getEmail();
-        String businessName = "2023b.LiorAriely_" + userEmail;
-        String type = "MARKETPLACE";
+        String userId = commandBoundary.getInvokedBy().getUserId().getSuperapp() + "_" + userEmail;
+        String type = "PRODUCT";
         int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
 
         int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 
-        return this.objectCrudDB.findAllProductsCreatedBySupplier(businessName, type, PageRequest.of(page, size))
+        return this.objectCrudDB.findAllMyProducts(userId, type, PageRequest.of(page, size))
                 .stream()
                 .map(this.objectConvertor::toBoundary)
                 .toList();

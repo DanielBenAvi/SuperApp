@@ -1015,15 +1015,4 @@ public class EventsTestSet extends BaseTestSet {
     }
 
 
-    private static List<SuperAppObjectBoundary> objectToListOfObjectBoundaries(Object object) {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> map = mapper.convertValue(object, Map.class);
-        Map.Entry<String, Object> entry = map.entrySet().iterator().next();
-        Object value = entry.getValue();
-
-        // convert object to list of object boundary
-        List<SuperAppObjectBoundary> objectBoundaries = mapper.convertValue(value, new TypeReference<>() {
-        });
-        return objectBoundaries;
-    }
 }

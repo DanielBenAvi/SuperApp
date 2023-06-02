@@ -34,14 +34,14 @@ public class CommandInvoker {
     private SearchProductByCategory searchProductByCategory;
     private SearchProductByPrice searchProductByPrice;
 
-    private GetSuppliersProducts getSuppliersProducts;
-    private SearchProductByCurrency searchProductByCurrency;
+    private GetAllMyProducts getAllMyProducts;
 
     private SearchProductByName searchProductByName;
     private GetProductsByPreferences getProductsByPreferences;
     /******************** General Commands ********************/
     private GetUserDetailsCommand getUserDetailsCommand;
     private DefaultCommand defaultCommand;
+
     @Autowired
     public CommandInvoker(DefaultCommand defaultCommand,
                           DatingLikeProfileCommand datingLikeProfile,
@@ -61,8 +61,7 @@ public class CommandInvoker {
                           EventGetAllFutureEventsCommand eventGetAllFutureEventsCommand,
                           SearchProductByPrice searchProductByPrice,
                           SearchProductByCategory searchProductByCategory,
-                          GetSuppliersProducts getSuppliersProducts,
-                          SearchProductByCurrency searchProductByCurrency,
+                          GetAllMyProducts getAllMyProducts,
                           SearchProductByName searchProductByName,
                           GetProductsByPreferences getProductsByPreferences) {
 
@@ -84,8 +83,7 @@ public class CommandInvoker {
         this.eventGetAllFutureEventsCommand = eventGetAllFutureEventsCommand;
         this.searchProductByCategory = searchProductByCategory;
         this.searchProductByPrice = searchProductByPrice;
-        this.getSuppliersProducts = getSuppliersProducts;
-        this.searchProductByCurrency = searchProductByCurrency;
+        this.getAllMyProducts = getAllMyProducts;
         this.searchProductByName = searchProductByName;
         this.getProductsByPreferences = getProductsByPreferences;
         this.defaultCommand = defaultCommand;
@@ -115,11 +113,10 @@ public class CommandInvoker {
             case GET_EVENTS_BASED_ON_PREFERENCES -> eventGetEventsBaseOnPreferencesCommand;
             case GET_EVENTS_CREATED_BY_ME -> eventGetCreatedByMeEventsCommand;
             case GET_ALL_FUTURE_EVENTS -> eventGetAllFutureEventsCommand;
-            case SEARCH_BY_PRICE -> searchProductByPrice;
-            case SEARCH_BY_CATEGORY -> searchProductByCategory;
-            case GET_ALL_SUPPLIERS_PRODUCTS -> getSuppliersProducts;
-            case SEARCH_BY_CURRENCY -> searchProductByCurrency;
-            case SEARCH_BY_NAME -> searchProductByName;
+            case SEARCH_PRODUCT_BY_PRICE -> searchProductByPrice;
+            case SEARCH_PRODUCT_BY_CATEGORY -> searchProductByCategory;
+            case GET_ALL_MY_PRODUCTS -> getAllMyProducts;
+            case SEARCH_PRODUCT_BY_NAME -> searchProductByName;
             case GET_PRODUCTS_BY_PREFERENCES -> getProductsByPreferences;
             default -> defaultCommand;
         };

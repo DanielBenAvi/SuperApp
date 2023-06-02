@@ -16,16 +16,24 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
 
 
     public Optional<SuperAppObjectEntity> findByObjectIdAndActiveIsTrue(@Param("objectId") String objectId);
+
     public List<SuperAppObjectEntity> findAllByActiveIsTrue(Pageable pageable);
+
     public List<SuperAppObjectEntity> findAllByParent_objectIdAndActiveIsTrue(@Param("parentObjectId") String parentObjectId, Pageable pageable);
+
     public List<SuperAppObjectEntity> findAllByChildren_objectIdAndActiveIsTrue(@Param("childObjectId") String childObjectId, Pageable pageable);
+
     public List<SuperAppObjectEntity> findAllByParent_objectId(@Param("parentObjectId") String parentObjectId, Pageable pageable);
+
     public List<SuperAppObjectEntity> findAllByChildren_objectId(@Param("childObjectId") String childObjectId, Pageable pageable);
+
     public List<SuperAppObjectEntity> findAllByType(@Param("type") String type, Pageable pageable);
+
     public List<SuperAppObjectEntity> findAllByTypeAndActiveIsTrue(@Param("type") String type, Pageable pageable);
+
     public List<SuperAppObjectEntity> findAllByAlias(@Param("alias") String alias, Pageable pageable);
 
-    public List<SuperAppObjectEntity> findAllByAliasAndActiveIsTrue(@Param("alias") String alias, PageRequest pageRequest);
+    public List<SuperAppObjectEntity> findAllByAliasAndActiveIsTrue(@Param("alias") String alias, Pageable pageable);
 
 
     public List<SuperAppObjectEntity> findAllByLocationNear(@Param("location") Point location,
@@ -37,7 +45,7 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
                                                                            Pageable pageable);
 
     @Query("{'type' :?1, 'active': true,'objectDetails.attendees': {'$in':[?0] }, 'objectDetails.date': {'$gt': ?2 } }")
-    public List<SuperAppObjectEntity> findAllByTypeAndMyEvents(String userEmail, String type, long now, PageRequest creationTimestamp);
+    public List<SuperAppObjectEntity> findAllByTypeAndMyEvents(String userEmail, String type, long now, Pageable pageable);
 
     // search by event name
     @Query("{'type': ?0, 'active': true, 'objectDetails.date': {'$gt': ?1 }, 'objectDetails.name': {'$regex': ?2 }}")
@@ -73,23 +81,23 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     @Query("{'type' :?0, 'active': true, 'createdBy': ?1 ,'objectDetails.date': {'$gt': ?2 } , 'objectDetails.preferences': {'$in': ?3 }}")
     public List<SuperAppObjectEntity> findAllEventsBaseOnPreferencesCommand(String type, String userId, long now, String[] preferences, Pageable pageable);
 
-    @Query("{'type' :?0, 'objectDetails.category': ?1}")
-    public List<SuperAppObjectEntity> findAllProductsByCategory(String type, String category, Pageable pageable);
+    @Query("{'type' :?0,'active': true,  'objectDetails.preferences' : {'$in' :?1}}")
+    public List<SuperAppObjectEntity> findAllProductsByCategory(String type, String[] preferences, Pageable pageable);
 
-    @Query("{ 'type': ?0, 'objectDetails.price': { $gt: ?1, $lt: ?2 } }")
-    public List<SuperAppObjectEntity> findAllProductsByPrice(String type, double maxPrice, double minPrice, Pageable pageable);
+    @Query("{ 'type': ?0,'active' : true, 'objectDetails.price': { $gte: ?1, $lte: ?2 } }")
+    public List<SuperAppObjectEntity> findAllProductsByPrice(String type, double minPrice, double maxPrice, Pageable pageable);
 
-    @Query("{'createdBy': ?0,'type' :?1 }")
-    public List<SuperAppObjectEntity> findAllProductsCreatedBySupplier(String businessName, String type, Pageable pageable);
+    @Query("{'createdBy': ?0,'type' :?1 , 'active': true}")
+    public List<SuperAppObjectEntity> findAllMyProducts(String id, String type, Pageable pageable);
 
     @Query("{'type' :?0, 'objectDetails.currency': ?1}")
     public List<SuperAppObjectEntity> findAllProductsByCurrency(String type, String currency, Pageable pageable);
 
-    @Query("{'type' :?0, 'objectDetails.name': ?1 }")
+    @Query("{'type' :?0, 'active' : true,'objectDetails.name': ?1 }")
     public List<SuperAppObjectEntity> findAllProductsByName(String type, String name, Pageable pageable);
 
-    @Query("{ 'type' : ?0, 'objectDetails.preferences' : { $in: ?1 } }")
-    public List<SuperAppObjectEntity> findAllProductsByPreferences(String type, List<String> preferences, Pageable pageable);
+    @Query("{ 'type' : ?0,'active': true, 'objectDetails.preferences' : { $in: ?1 } }")
+    public List<SuperAppObjectEntity> findAllProductsByPreferences(String type, String[] preferences, Pageable pageable);
 
 
     public List<SuperAppObjectEntity> findAllByObjectIdInAndTypeAndActiveIsTrue(@Param("ids") String[] ids,
@@ -106,6 +114,6 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
             "'parent.objectDetails.interests': {$all: ?4}, " +
             "'objectDetails.publicProfile.age': {$gte: ?5, $lte: ?6}" +
             "}")
-    public List<SuperAppObjectEntity> findAllMyPotentialDates (String type, String[] likesIds, String[] matchesIds, String[] genderPreferences, String[] interests, int minAge, int maxAge, Pageable pageable);
+    public List<SuperAppObjectEntity> findAllMyPotentialDates(String type, String[] likesIds, String[] matchesIds, String[] genderPreferences, String[] interests, int minAge, int maxAge, Pageable pageable);
 
 }

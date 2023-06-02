@@ -1,5 +1,6 @@
 package superapp.miniapps.command.marketplaceimpl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
@@ -21,12 +22,13 @@ public class SearchProductByCategory implements MiniAppsCommand {
 
     @Override
     public Object execute(MiniAppCommandBoundary commandBoundary) {
-        String category = commandBoundary.getCommandAttributes().get("category").toString();
-        String type = "MARKETPLACE";
+        ObjectMapper objectMapper = new ObjectMapper();
+        String[] preference = objectMapper.convertValue(commandBoundary.getCommandAttributes().get("preferences"), String[].class);
+        String type = "PRODUCT";
         int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
         int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 
-        return this.objectCrudDB.findAllProductsByCategory(type, category, PageRequest.of(page, size))
+        return this.objectCrudDB.findAllProductsByCategory(type, preference, PageRequest.of(page, size))
                 .stream()
                 .map(this.objectConvertor::toBoundary)
                 .toList();

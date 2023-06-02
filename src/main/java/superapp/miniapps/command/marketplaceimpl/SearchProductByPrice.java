@@ -25,11 +25,11 @@ public class SearchProductByPrice implements MiniAppsCommand {
     public Object execute(MiniAppCommandBoundary commandBoundary) {
         double maxPrice = (double) commandBoundary.getCommandAttributes().get("maxPrice");
         double minPrice = (double) commandBoundary.getCommandAttributes().get("minPrice");
-        String type = "MARKETPLACE";
+        String type = "PRODUCT";
         int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
         int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 
-        return this.objectCrudDB.findAllProductsByPrice(type, maxPrice, minPrice,  PageRequest.of(page, size, Sort.Direction.DESC, "price"))
+        return this.objectCrudDB.findAllProductsByPrice(type, minPrice, maxPrice,  PageRequest.of(page, size, Sort.Direction.DESC, "price"))
                 .stream()
                 .map(this.objectConvertor::toBoundary)
                 .toList();

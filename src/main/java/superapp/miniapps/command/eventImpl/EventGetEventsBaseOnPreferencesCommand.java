@@ -31,7 +31,6 @@ public class EventGetEventsBaseOnPreferencesCommand implements MiniAppsCommand {
 
     @Override
     public List<SuperAppObjectBoundary> execute(MiniAppCommandBoundary commandBoundary) {
-        // todo: fix the return type
         // get the user email and superapp from the command boundary
         String userEmail = commandBoundary.getInvokedBy().getUserId().getEmail();
         String superApp = commandBoundary.getInvokedBy().getUserId().getSuperapp();

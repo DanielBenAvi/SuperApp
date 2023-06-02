@@ -59,7 +59,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
 
     /**
-     *  this method create object and save in database
+     * this method create object and save in database
      *
      * @param objectBoundary SuperAppObjectBoundary
      * @return SuperAppObjectBoundary
@@ -82,7 +82,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         UserId userId = objectBoundary.getCreatedBy().getUserId();
         UserEntity userEntity = this.entitiesValidator.validateExistingUser(userId.getSuperapp(), userId.getEmail());
 
-        this.checkPermission(userEntity.getUserID(),"createObject");
+        this.checkPermission(userEntity.getUserID(), "createObject");
 
         // save the object
         SuperAppObjectEntity entity = this.objectCrudDB
@@ -100,7 +100,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         // validate that user exist and retrieve the user from database
         UserEntity userEntity = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        this.checkPermission(userEntity.getUserID(),"updateObject");
+        this.checkPermission(userEntity.getUserID(), "updateObject");
 
         // validate that object exists and retrieve the object from database
         SuperAppObjectEntity exists = this.entitiesValidator.validateExistingObject(objectSuperApp, internalObjectId);
@@ -148,21 +148,21 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         // validate that user exist and retrieve the user from database
         UserEntity userEntity = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        this.checkPermission(userEntity.getUserID(),"getSpecificObject");
+        this.checkPermission(userEntity.getUserID(), "getSpecificObject");
 
         // validate that object exist in database
         SuperAppObjectEntity objectEntity = this.entitiesValidator.validateExistingObject(objectSuperApp, internalObjectId);
 
         // UserRole.MINIAPP_USER has permission just for object with active is true
         if (userEntity.getRole().equals(UserRole.MINIAPP_USER))
-            return  this.objectCrudDB
+            return this.objectCrudDB
                     .findByObjectIdAndActiveIsTrue(objectEntity.getObjectId())
                     .map(this.objectConvertor::toBoundary);
 
         // this is return for User Role SUPERAPP_USER
         return this.objectCrudDB
-                    .findById(objectEntity.getObjectId())
-                    .map(this.objectConvertor::toBoundary);
+                .findById(objectEntity.getObjectId())
+                .map(this.objectConvertor::toBoundary);
 
     }
 
@@ -173,7 +173,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         // validate that user exist and retrieve the user from database
         UserEntity userEntity = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        this.checkPermission(userEntity.getUserID(),"getAllObjects");
+        this.checkPermission(userEntity.getUserID(), "getAllObjects");
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "creationTimestamp", "type", "objectId");
         // UserRole.MINIAPP_USER has permission just for object with active is true
@@ -198,12 +198,12 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         // validate that user exist and retrieve the user from database
         UserEntity userEntity = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        this.checkPermission(userEntity.getUserID(),"addChild");
+        this.checkPermission(userEntity.getUserID(), "addChild");
 
         // validate that parent and child objects exist in database
         SuperAppObjectEntity parent = this.entitiesValidator.validateExistingObject(superapp, parentId);
         SuperAppObjectEntity child = this.entitiesValidator.validateExistingObject(childId.getSuperapp(),
-                                                                                    childId.getInternalObjectId());
+                childId.getInternalObjectId());
 
         if (parentId.equals(childId.getInternalObjectId()))
             throw new ConflictRequestException("Parent and child are the same object");
@@ -225,13 +225,13 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         // validate that user exist and retrieve the user from database
         UserEntity user = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        this.checkPermission(user.getUserID(),"getChildren");
+        this.checkPermission(user.getUserID(), "getChildren");
 
         // validate that parent object exist in database
         SuperAppObjectEntity parent = this.entitiesValidator.validateExistingObject(superapp, parentInternalObjectId);
 
 
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "type", "objectId");
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "creationTimestamp", "type", "objectId");
         // UserRole.MINIAPP_USER has permission to retrieve children of parent object
         // when active of parent is true
         if (user.getRole().equals(UserRole.MINIAPP_USER))
@@ -255,13 +255,13 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         // validate that user exist and retrieve the user from database
         UserEntity user = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        this.checkPermission(user.getUserID(),"getParent");
+        this.checkPermission(user.getUserID(), "getParent");
 
         // validate that child object exist in database
         SuperAppObjectEntity child = this.entitiesValidator.validateExistingObject(superapp, childInternalObjectId);
 
 
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "type", "objectId");
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "creationTimestamp", "type", "objectId");
         // UserRole.MINIAPP_USER has permission to retrieve parent of child object
         // when active of child is true
         if (user.getRole().equals(UserRole.MINIAPP_USER))
@@ -278,13 +278,14 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
                 .map(this.objectConvertor::toBoundary)
                 .toList();
     }
+
     @Override
-    public void deleteAllObjects(String userSuperapp,String userEmail) {
+    public void deleteAllObjects(String userSuperapp, String userEmail) {
 
         // validate that user exist and retrieve the user from database
         UserEntity userEntity = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        this.checkPermission(userEntity.getUserID(),"deleteAllObjects");
+        this.checkPermission(userEntity.getUserID(), "deleteAllObjects");
 
         this.objectCrudDB.deleteAll();
     }
@@ -295,13 +296,13 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         // validate that user exist and retrieve the user from database
         UserEntity user = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        this.checkPermission(user.getUserID(),"getAllObjectsByType");
+        this.checkPermission(user.getUserID(), "getAllObjectsByType");
 
         // TODO is necessary?
 //        if (type == null || type.isEmpty())
 //            throw new BadRequestException("type must include some word");
 
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "objectId");
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "creationTimestamp", "objectId");
 
         // UserRole.MINIAPP_USER has permission to retrieve objects with active is true
         if (user.getRole().equals(UserRole.MINIAPP_USER))
@@ -325,13 +326,13 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         // validate that user exist and retrieve the user from database
         UserEntity user = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        this.checkPermission(user.getUserID(),"getAllObjectsByAlias");
+        this.checkPermission(user.getUserID(), "getAllObjectsByAlias");
 
         // TODO is necessary?
 //        if (alias == null || alias.isEmpty())
 //            throw new BadRequestException("alias must include some content");
 
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "objectId");
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "creationTimestamp", "objectId");
         // UserRole.MINIAPP_USER has permission to retrieve parent of child object with active is true
         if (user.getRole().equals(UserRole.MINIAPP_USER))
             return this.objectCrudDB
@@ -355,7 +356,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
         // validate that user exist and retrieve the user from database
         UserEntity userEntity = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
-        this.checkPermission(userEntity.getUserID(),"getAllObjectsByLocation");
+        this.checkPermission(userEntity.getUserID(), "getAllObjectsByLocation");
 
         // parse lat, lng and distance
         double latitude, longitude, distanceRange;
@@ -365,18 +366,18 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
             distanceRange = Double.parseDouble(distance);
             if (distanceRange < 0)
                 throw new BadRequestException("distance must be positive number");
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new BadRequestException("lat, lng, distance values must be a numbers");
         }
 
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "objectId");
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "creationTimestamp", "objectId");
         Point point = new Point(latitude, longitude);
         Distance maxDistance = new Distance(distanceRange, convertToMetrics(distanceUnits));
 
         // UserRole.MINIAPP_USER has permission to retrieve objects with active is true
         if (userEntity.getRole().equals(UserRole.MINIAPP_USER))
             return this.objectCrudDB
-                    .findAllByActiveIsTrueAndLocationNear(point ,maxDistance , pageRequest)
+                    .findAllByActiveIsTrueAndLocationNear(point, maxDistance, pageRequest)
                     .stream()
                     .map(this.objectConvertor::toBoundary)
                     .toList();

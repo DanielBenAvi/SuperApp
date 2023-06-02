@@ -1,5 +1,7 @@
 package superapp;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +13,7 @@ import superapp.data.UserRole;
 import superapp.logic.boundaries.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -409,6 +412,18 @@ public class BaseTestSet {
                 this.baseUrl + "/superapp/admin/miniapp/{miniAppName}?userSuperapp={superapp}&userEmail={email}&size={size}&page={page}",
                 MiniAppCommandBoundary[].class, miniAppName, userSuperapp, userEmail, size, page);
 
+    }
+
+    public List<SuperAppObjectBoundary> objectToListOfObjectBoundaries(Object object) {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> map = mapper.convertValue(object, Map.class);
+        Map.Entry<String, Object> entry = map.entrySet().iterator().next();
+        Object value = entry.getValue();
+
+        // convert object to list of object boundary
+        List<SuperAppObjectBoundary> objectBoundaries = mapper.convertValue(value, new TypeReference<>() {
+        });
+        return objectBoundaries;
     }
 
 }

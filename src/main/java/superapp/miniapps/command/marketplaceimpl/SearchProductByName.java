@@ -25,7 +25,7 @@ public class SearchProductByName implements MiniAppsCommand {
     @Override
     public Object execute(MiniAppCommandBoundary commandBoundary) {
         String name = commandBoundary.getCommandAttributes().get("name").toString();
-        String type = "MARKETPLACE";
+        String type = "PRODUCT";
         int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
         int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 
