@@ -49,7 +49,7 @@ public class GetProductsByPreferences implements MiniAppsCommand {
         int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
         int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
 
-        return this.objectCrudDB.findAllProductsByPreferences(type, preferences, PageRequest.of(page, size))
+        return this.objectCrudDB.findAllProductsByPreferences(type, preferences,userId, PageRequest.of(page, size))
                 .stream()
                 .map(this.objectConvertor::toBoundary)
                 .toList();

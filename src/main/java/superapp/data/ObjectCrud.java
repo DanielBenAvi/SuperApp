@@ -78,7 +78,7 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     @Query("{'type' :?0, 'active': true, 'objectDetails.date': {'$gt': ?1 } }")
     public List<SuperAppObjectEntity> findAllEventsInTheFuture(String type, long now, Pageable pageable);
 
-    @Query("{'type' :?0, 'active': true, 'createdBy': ?1 ,'objectDetails.date': {'$gt': ?2 } , 'objectDetails.preferences': {'$in': ?3 }}")
+    @Query("{'type' :?0, 'active': true,  'createdBy': { $ne : ?1},'objectDetails.date': {'$gt': ?2 } , 'objectDetails.preferences': {'$in': ?3 }}")
     public List<SuperAppObjectEntity> findAllEventsBaseOnPreferencesCommand(String type, String userId, long now, String[] preferences, Pageable pageable);
 
     @Query("{'type' :?0,'active': true,  'objectDetails.preferences' : {'$in' :?1}}")
@@ -94,8 +94,8 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     @Query("{'type' :?0, 'active' : true,'objectDetails.name': {'$regex': ?1 } }")
     public List<SuperAppObjectEntity> findAllProductsByName(String type, String name, Pageable pageable);
 
-    @Query("{ 'type' : ?0,'active': true, 'objectDetails.preferences' : { $in: ?1 } }")
-    public List<SuperAppObjectEntity> findAllProductsByPreferences(String type, String[] preferences, Pageable pageable);
+    @Query("{ 'type' : ?0,'active': true, 'objectDetails.preferences' : { $in: ?1 } , 'createdBy': { $ne : ?2} }")
+    public List<SuperAppObjectEntity> findAllProductsByPreferences(String type, String[] preferences,String userId, Pageable pageable);
 
 
     public List<SuperAppObjectEntity> findAllByObjectIdInAndTypeAndActiveIsTrue(@Param("ids") String[] ids,
