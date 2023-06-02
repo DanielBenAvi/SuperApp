@@ -123,6 +123,13 @@ public class MarketPlaceTestSet extends BaseTestSet {
         String avatar1 = "user1.png";
 
 
+        // user 2 -> preferences: music, sport
+        String email2 = "user2@gmail.com";
+        String role2 = UserRole.SUPERAPP_USER.toString();
+        String username2 = "user2";
+        String avatar2 = "user2.png";
+
+
         // create user Details Object Boundary
         String userDetailsType = "USER_DETAILS";
         String userDetailsAlias = "USER_DETAILS";
@@ -132,6 +139,16 @@ public class MarketPlaceTestSet extends BaseTestSet {
         userDetailsAttributes.put("name", "user 1");
         userDetailsAttributes.put("phoneNum", "+9721234567");
         userDetailsAttributes.put("preferences", new String[]{"music", "sport"});
+
+        // create user Details Object Boundary
+        String userDetailsType2 = "USER_DETAILS";
+        String userDetailsAlias2 = "USER_DETAILS";
+        Location userDetailsLocation2 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy userDetailsCreatedBy2 = new CreatedBy().setUserId(new UserId().setEmail(email2).setSuperapp(springApplicationName));
+        Map<String, Object> userDetailsAttributes2 = new HashMap<>();
+        userDetailsAttributes2.put("name", "user 2");
+        userDetailsAttributes2.put("phoneNum", "+9721234567");
+        userDetailsAttributes2.put("preferences", new String[]{"music", "sport"});
 
         String type = "PRODUCT";
         String alias = "product";
@@ -201,9 +218,11 @@ public class MarketPlaceTestSet extends BaseTestSet {
 
         // ##################### GIVEN #####################
         // 1. 1 user is registered
-        help_PostUserBoundary(email1, role1, username1, avatar1);
+        help_PostUserBoundary(email1, role1, username1, avatar1); // creating
+        help_PostUserBoundary(email2, role2, username2, avatar2);  // searching
         // 2. user 1 created 1 user details object
         String targetObjectId = help_PostObjectBoundary(new ObjectId(), userDetailsType, userDetailsAlias, new Date(), true, userDetailsLocation, userDetailsCreatedBy, userDetailsAttributes).getObjectId().getInternalObjectId();
+        String targetObjectId2 = help_PostObjectBoundary(new ObjectId(), userDetailsType2, userDetailsAlias2, new Date(), true, userDetailsLocation2, userDetailsCreatedBy2, userDetailsAttributes2).getObjectId().getInternalObjectId();
 
         // 3. user 1 created 6 products
         help_PostObjectBoundary(new ObjectId(), type, alias, new Date(), active1, location, createdBy1, Attributes1);
@@ -216,17 +235,23 @@ public class MarketPlaceTestSet extends BaseTestSet {
 
         // ##################### WHEN #####################
         // 1. change user 1 role to miniapp user
-        UserBoundary userBoundary = help_GetUserBoundary(email1);
-        userBoundary.setRole(UserRole.MINIAPP_USER.toString());
-        help_PutUserBoundary(userBoundary, email1);
+        UserBoundary userBoundary1 = help_GetUserBoundary(email1);
+        userBoundary1.setRole(UserRole.MINIAPP_USER.toString());
+        help_PutUserBoundary(userBoundary1, email1);
+
+        UserBoundary userBoundary2 = help_GetUserBoundary(email2);
+        userBoundary2.setRole(UserRole.MINIAPP_USER.toString());
+        help_PutUserBoundary(userBoundary2, email2);
+
+
 
         // 2. get all products by user 1 preference
         String miniappName = "MARKETPLACE";
         CommandId commandId = new CommandId().setSuperapp(springApplicationName).setMiniapp(miniappName);
         String command = "GET_PRODUCTS_BY_PREFERENCES";
-        TargetObject targetObject = new TargetObject().setObjectId(new ObjectId().setInternalObjectId(targetObjectId).setSuperapp(springApplicationName));
+        TargetObject targetObject = new TargetObject().setObjectId(new ObjectId().setInternalObjectId(targetObjectId2).setSuperapp(springApplicationName));
         Date date = new Date();
-        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setEmail(email2).setSuperapp(springApplicationName));
         Map<String, Object> params = new HashMap<>();
         Object object = help_PostCommandBoundary(miniappName, commandId, command, targetObject, date, invokedBy, params);
 
@@ -492,7 +517,7 @@ public class MarketPlaceTestSet extends BaseTestSet {
     // search for products by price
     @Test
     @DisplayName("test search products by price")
-    public void searchProductByPrice(){
+    public void searchProductByPrice() {
         // user 1 -> preferences: music, sport
         String email1 = "user1@gmail.com";
         String role1 = UserRole.SUPERAPP_USER.toString();

@@ -242,7 +242,13 @@ public class EventsTestSet extends BaseTestSet {
         String email1 = "user1@gmail.com";
         String role1 = UserRole.SUPERAPP_USER.toString();
         String username1 = "user1";
-        String avatar1 = "user1.png";
+        String avatar1 = "user1.png";        // USER 1
+
+        // USER 2
+        String email2 = "user2@gmail.com";
+        String role2 = UserRole.SUPERAPP_USER.toString();
+        String username2 = "user2";
+        String avatar2 = "user2.png";
 
 
         // create user Details Object Boundary
@@ -254,6 +260,16 @@ public class EventsTestSet extends BaseTestSet {
         targetObjectAttributes.put("name", "user 1");
         targetObjectAttributes.put("phoneNum", "+9721234567");
         targetObjectAttributes.put("preferences", new String[]{"music", "sport"});
+
+        // create user Details Object Boundary
+        String type5 = "USER_DETAILS";
+        String alias5 = "USER_DETAILS";
+        Location location5 = new Location().setLat(32.115139).setLng(34.817804);
+        CreatedBy createdBy5 = new CreatedBy().setUserId(new UserId().setEmail(email2).setSuperapp(springApplicationName));
+        Map<String, Object> targetObjectAttributes5 = new HashMap<>();
+        targetObjectAttributes5.put("name", "user 2");
+        targetObjectAttributes5.put("phoneNum", "+9721234567");
+        targetObjectAttributes5.put("preferences", new String[]{"music", "sport"});
 
 
         // event 1 in the future
@@ -303,25 +319,27 @@ public class EventsTestSet extends BaseTestSet {
         // GIVEN
         // 1. SUPERAPP_USER 1 are in the system
         help_PostUserBoundary(email1, role1, username1, avatar1);
+        help_PostUserBoundary(email2, role2, username2, avatar2);
         // 2. SUPERAPP_USER 1 has created 3 events
         help_PostObjectBoundary(new ObjectId(), type1, alias1, new Date(), true, location1, createdBy1, event1Attributes);
         help_PostObjectBoundary(new ObjectId(), type2, alias2, new Date(), true, location2, createdBy2, event2Attributes);
         help_PostObjectBoundary(new ObjectId(), type3, alias3, new Date(), true, location3, createdBy3, event3Attributes);
         // 4. user details object
         String targetObjectId = help_PostObjectBoundary(new ObjectId(), type4, alias4, new Date(), true, location4, createdBy4, targetObjectAttributes).getObjectId().getInternalObjectId();
+        String targetObjectId5 = help_PostObjectBoundary(new ObjectId(), type5, alias5, new Date(), true, location5, createdBy5, targetObjectAttributes5).getObjectId().getInternalObjectId();
 
         // WHEN
         // 1. SUPERAPP_USER 1 gets all events based on preferences
-        UserBoundary userBoundary = help_GetUserBoundary(email1);
+        UserBoundary userBoundary = help_GetUserBoundary(email2);
         userBoundary.setRole(UserRole.MINIAPP_USER.toString());
-        help_PutUserBoundary(userBoundary, email1);
+        help_PutUserBoundary(userBoundary, email2);
         // user 1 search for event by category
         String miniappName = "EVENT";
         CommandId commandId = new CommandId().setSuperapp(springApplicationName).setMiniapp(miniappName);
         String command = "GET_EVENTS_BASED_ON_PREFERENCES";
-        TargetObject targetObject = new TargetObject().setObjectId(new ObjectId().setInternalObjectId(targetObjectId).setSuperapp(springApplicationName));
+        TargetObject targetObject = new TargetObject().setObjectId(new ObjectId().setInternalObjectId(targetObjectId5).setSuperapp(springApplicationName));
         Date date = new Date();
-        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setEmail(email1).setSuperapp(springApplicationName));
+        InvokedBy invokedBy = new InvokedBy().setUserId(new UserId().setEmail(email2).setSuperapp(springApplicationName));
         Map<String, Object> params = new HashMap<>();
         Object object = help_PostCommandBoundary(miniappName, commandId, command, targetObject, date, invokedBy, params);
 
