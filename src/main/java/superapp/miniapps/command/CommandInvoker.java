@@ -113,11 +113,11 @@ public class CommandInvoker {
             case GET_EVENTS_BASED_ON_PREFERENCES -> eventGetEventsBaseOnPreferencesCommand;
             case GET_EVENTS_CREATED_BY_ME -> eventGetCreatedByMeEventsCommand;
             case GET_ALL_FUTURE_EVENTS -> eventGetAllFutureEventsCommand;
-            case SEARCH_PRODUCT_BY_PRICE -> searchProductByPrice;
-            case SEARCH_PRODUCT_BY_CATEGORY -> searchProductByCategory;
             case GET_ALL_MY_PRODUCTS -> getAllMyProducts;
-            case SEARCH_PRODUCT_BY_NAME -> searchProductByName;
             case GET_PRODUCTS_BY_PREFERENCES -> getProductsByPreferences;
+            case SEARCH_PRODUCT_BY_NAME -> searchProductByName;
+            case SEARCH_PRODUCT_BY_PRICE -> searchProductByPrice;
+            case SEARCH_PRODUCT_BY_PREFERENCES -> searchProductByCategory;
             default -> defaultCommand;
         };
     }

@@ -90,10 +90,8 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
     @Query("{'createdBy': ?0,'type' :?1 , 'active': true}")
     public List<SuperAppObjectEntity> findAllMyProducts(String id, String type, Pageable pageable);
 
-    @Query("{'type' :?0, 'objectDetails.currency': ?1}")
-    public List<SuperAppObjectEntity> findAllProductsByCurrency(String type, String currency, Pageable pageable);
 
-    @Query("{'type' :?0, 'active' : true,'objectDetails.name': ?1 }")
+    @Query("{'type' :?0, 'active' : true,'objectDetails.name': {'$regex': ?1 } }")
     public List<SuperAppObjectEntity> findAllProductsByName(String type, String name, Pageable pageable);
 
     @Query("{ 'type' : ?0,'active': true, 'objectDetails.preferences' : { $in: ?1 } }")

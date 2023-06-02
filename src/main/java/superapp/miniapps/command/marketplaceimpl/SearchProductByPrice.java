@@ -23,8 +23,8 @@ public class SearchProductByPrice implements MiniAppsCommand {
 
     @Override
     public Object execute(MiniAppCommandBoundary commandBoundary) {
-        double maxPrice = (double) commandBoundary.getCommandAttributes().get("maxPrice");
-        double minPrice = (double) commandBoundary.getCommandAttributes().get("minPrice");
+        double maxPrice = Double.parseDouble(commandBoundary.getCommandAttributes().get("maxPrice").toString());
+        double minPrice = Double.parseDouble(commandBoundary.getCommandAttributes().get("minPrice").toString());
         String type = "PRODUCT";
         int page = commandBoundary.getCommandAttributes().get("page") == null ? 0 : Integer.parseInt(commandBoundary.getCommandAttributes().get("page").toString());
         int size = commandBoundary.getCommandAttributes().get("size") == null ? 20 : Integer.parseInt(commandBoundary.getCommandAttributes().get("size").toString());
