@@ -44,8 +44,7 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
         // targetObject = private dating profile object - ObjectId
         // invokedBy - userId of client user
 
-        // return SuperAppObjectBoundary[] with objectDetails : match,
-        // this is matches (of ObjectId) list.
+        // returnMap<"MatchID", SuperAppObject with objectDetails PrivateDatingProfile>.
 
 //        TODO change rturn to Map<"MatchID", PrivateDatingProfile>
 

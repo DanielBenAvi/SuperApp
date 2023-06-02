@@ -130,12 +130,11 @@ public class DatingGetPotentialDatesCommand implements MiniAppsCommand {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "objectId");
 
-        Object ob =this.objectCrudDB
+        return this.objectCrudDB
                 .findAllMyPotentialDates(type, likesIds, matchesIds, sexPreferences, interests, minAge, maxAge, pageRequest)
                 .stream()
                 .map(this.objectConvertor::toBoundary)
                 .toList();
-        return ob;
     }
 
 }
