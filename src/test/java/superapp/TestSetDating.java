@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import superapp.data.UserDetails;
 import superapp.data.UserRole;
 import superapp.logic.boundaries.*;
 import superapp.logic.utils.UtilHelper;
@@ -15,10 +14,7 @@ import superapp.miniapps.MiniAppNames;
 import superapp.miniapps.command.MiniAppsCommand;
 import superapp.miniapps.datingMiniApp.PublicDatingProfile;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -180,11 +176,11 @@ public class TestSetDating extends BaseTestSet {
             for (JsonNode element: inputs) {
 
                 NewUserBoundary user = UtilHelper
-                        .jacksonHandle(element.get("user"), NewUserBoundary.class, objectMapper);
+                        .jacksonHandle(element.get("user"), NewUserBoundary.class);
                 Map<String,Object> userDetailsAsMap = UtilHelper
-                        .jacksonHandle(element.get("userDetails"), Map.class, objectMapper);
+                        .jacksonHandle(element.get("userDetails"), Map.class);
                 Map<String,Object> datingProfilesAsMap = UtilHelper
-                        .jacksonHandle(element.get("datingProfile"), Map.class, objectMapper);
+                        .jacksonHandle(element.get("datingProfile"), Map.class);
 
                 UserBoundary userBoundary = this.help_PostUserBoundary(user.getEmail(), user.getRole(),
                         user.getUsername(), user.getAvatar());
@@ -219,7 +215,7 @@ public class TestSetDating extends BaseTestSet {
                         new TargetObject().setObjectId(datingProfileBoundary.getObjectId()),
                         null,
                         new InvokedBy().setUserId(new UserId(this.springApplicationName, userBoundary.getUserId().getEmail())),
-                        commandAttribute), Map.class, objectMapper);
+                        commandAttribute), Map.class);
                 allRes.add(results);
 
             }

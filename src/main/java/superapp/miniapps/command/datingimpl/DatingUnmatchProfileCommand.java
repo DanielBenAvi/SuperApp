@@ -1,6 +1,5 @@
 package superapp.miniapps.command.datingimpl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
@@ -22,25 +21,28 @@ public class DatingUnmatchProfileCommand implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
     private final ObjectConvertor objectConvertor;
-    private ObjectMapper jackson;
 
     @Autowired
     public DatingUnmatchProfileCommand(ObjectCrud objectCrudDB, ObjectConvertor objectConvertor) {
         this.objectCrudDB = objectCrudDB;
         this.objectConvertor = objectConvertor;
-        this.jackson = new ObjectMapper();
     }
 
 
+    /**
+     * This method is for cancel match.
+     * Match object active:false, and remove likes ids from both of dating profiles.
+     *
+     * command attributes required : not necessary
+     * command as define in MiniAppCommand. command
+     * targetObject = match objectId
+     * invokedBy - userId of client user
+     *
+     * @param command MiniAppCommandBoundary
+     * @return Map<String, Object> : like_status : removed, match_status : canceled
+     */
     @Override
     public Object execute(MiniAppCommandBoundary command) {
-
-        // command attributes required : not necessary
-        // command as define in MiniAppCommand.command
-        // targetObject = match objectId
-        // invokedBy - userId of client user
-
-        // return Map<String, Object> : like_status : removed, match_status : canceled
 
 
         String matchId;
@@ -49,9 +51,6 @@ public class DatingUnmatchProfileCommand implements MiniAppsCommand {
         PrivateDatingProfile datingProfile_1, datingProfile_2;
 
         Map<String, Object> commandRes = new HashMap<>();
-        commandRes.put("like_status", "removed");
-        commandRes.put("match_status", "canceled");
-
 
         try {
 
@@ -59,12 +58,12 @@ public class DatingUnmatchProfileCommand implements MiniAppsCommand {
                     .objectIdToEntity(
                             UtilHelper
                                     .jacksonHandle(
-                                            command.getTargetObject().getObjectId(), ObjectId.class, jackson));
+                                            command.getTargetObject().getObjectId(), ObjectId.class));
 
             matchObject = objectCrudDB.findById(matchId).orElseThrow(() ->
                     new NotFoundException("Match Object with id " + matchId + " not exist in data base"));
 
-            matchEntity = UtilHelper.jacksonHandle(matchObject.getObjectDetails(), MatchEntity.class, jackson);
+            matchEntity = UtilHelper.jacksonHandle(matchObject.getObjectDetails(), MatchEntity.class);
 
             datingObject_1 = objectCrudDB.findById(matchEntity.getProfileDatingId1()).orElseThrow(() ->
                     new NotFoundException("Match Object with id " + matchId + " not exist in data base"));
@@ -72,8 +71,8 @@ public class DatingUnmatchProfileCommand implements MiniAppsCommand {
             datingObject_2 = objectCrudDB.findById(matchEntity.getProfileDatingId2()).orElseThrow(() ->
                     new NotFoundException("Match Object with id " + matchId + " not exist in data base"));
 
-            datingProfile_1 = UtilHelper.jacksonHandle(datingObject_1.getObjectDetails(), PrivateDatingProfile.class, jackson);
-            datingProfile_2 = UtilHelper.jacksonHandle(datingObject_2.getObjectDetails(), PrivateDatingProfile.class, jackson);
+            datingProfile_1 = UtilHelper.jacksonHandle(datingObject_1.getObjectDetails(), PrivateDatingProfile.class);
+            datingProfile_2 = UtilHelper.jacksonHandle(datingObject_2.getObjectDetails(), PrivateDatingProfile.class);
 
         } catch (Exception e) {
 
@@ -96,6 +95,10 @@ public class DatingUnmatchProfileCommand implements MiniAppsCommand {
         this.objectCrudDB.save(datingObject_1);
         this.objectCrudDB.save(datingObject_2);
         this.objectCrudDB.save(matchObject);
+
+
+        commandRes.put("like_status", "removed");
+        commandRes.put("match_status", "canceled");
 
         return commandRes;
     }

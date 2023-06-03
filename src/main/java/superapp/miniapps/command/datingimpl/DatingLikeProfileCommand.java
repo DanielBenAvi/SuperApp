@@ -1,6 +1,5 @@
 package superapp.miniapps.command.datingimpl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
@@ -8,6 +7,7 @@ import superapp.data.SuperAppObjectEntity;
 import superapp.logic.ObjectsService;
 import superapp.logic.boundaries.*;
 import superapp.logic.mongo.NotFoundException;
+import superapp.logic.utils.UtilHelper;
 import superapp.logic.utils.convertors.CommandConvertor;
 import superapp.logic.utils.convertors.ConvertIdsHelper;
 import superapp.logic.utils.convertors.ObjectConvertor;
@@ -24,7 +24,6 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
     private final ObjectCrud objectCrudDB;
     private final CommandConvertor commandConvertor;
     private final ObjectConvertor objectConvertor;
-    private final ObjectMapper jackson;
     private final ObjectsService objectsService;
 
 
@@ -38,44 +37,51 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
         this.commandConvertor =  commandConvertor;
         this.objectConvertor = objectConvertor;
         this.objectsService = objectsService;
-        this.jackson = new ObjectMapper();
     }
 
 
+    /**
+     * This method do like and if the other profile already like the profile --> match occurs
+     *
+     * command attributes required : <
+     * key 'myDatingProfileId', value: ObjectId
+     * command as define in MiniAppCommand.command
+     * targetObject = dating profile objectId (of other profile that my profile likes)
+     * invokedBy - userId of client user
+     *
+     * if like is valid the method add the object id to likes list
+     * if match occur the method create Match Object and add the id to both of dating profiles objects
+     *
+     * @param command MiniAppCommandBoundary
+     * @return Map<String, Object>
+     *     like_status : true, match_status : false, like_profile_id : dating profile objectId, match_id : ObjectId
+     */
     @Override
     public Object execute(MiniAppCommandBoundary command) {
 
-        // command attributes required : <'myDatingProfileId', ObjectId> #  ObjectId Boundary
-        // command as define in MiniAppCommand.command
-        // targetObject = dating profile objectId (of other profile that my profile likes) #  ObjectId Boundary
-        // invokedBy - userId of client user
 
-        // return Map<String, boolean> : like_status : true, match_status : false, like_profile_id : dating profile objectId, match_id : ObjectId
-
-        String myDatingProfileId, iLikeDatingProfileId;
-        SuperAppObjectEntity myObjectEntity, iLikeObjectEntity;
-        PrivateDatingProfile myDatingProfile, iLikeDatingProfile;
-
-        Map<String, Object> likeResult;
+        if (command.getCommandAttributes() == null ||
+                command.getCommandAttributes().get("myDatingProfileId") == null)
+            throw new RuntimeException();
 
         ////// parse all data needed to execute //////
 
         // extract ids
-        iLikeDatingProfileId = this.commandConvertor.targetObjToEntity(command.getTargetObject());
+        String iLikeDatingProfileId = this.commandConvertor.targetObjToEntity(command.getTargetObject());
 
-        myDatingProfileId = this.objectConvertor
-                .objectIdToEntity(this.jacksonHandle(command.getCommandAttributes().get("myDatingProfileId"),
+        String myDatingProfileId = this.objectConvertor
+                .objectIdToEntity(UtilHelper.jacksonHandle(command.getCommandAttributes().get("myDatingProfileId"),
                         ObjectId.class));
 
         // retrieve superApp objects of Dating Profiles
 
-        myObjectEntity = this.objectCrudDB
+        SuperAppObjectEntity myObjectEntity = this.objectCrudDB
                 .findById(myDatingProfileId)
                 .orElseThrow(() ->
                         new NotFoundException("Target Object with id " + myDatingProfileId + " not exist in data base")
                 );
 
-        iLikeObjectEntity = this.objectCrudDB
+        SuperAppObjectEntity iLikeObjectEntity = this.objectCrudDB
                 .findById(iLikeDatingProfileId)
                 .orElseThrow(() ->
                         new NotFoundException("Object with id " + iLikeDatingProfileId + " not exist in data base")
@@ -91,16 +97,22 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
         }
 
         // read my dating profile
-        myDatingProfile = this.jacksonHandle(myObjectEntity.getObjectDetails(), PrivateDatingProfile.class);
+        PrivateDatingProfile myDatingProfile = UtilHelper
+                .jacksonHandle(myObjectEntity.getObjectDetails(), PrivateDatingProfile.class);
 
         // read I liked dating profile
-        iLikeDatingProfile = this.jacksonHandle(iLikeObjectEntity.getObjectDetails(), PrivateDatingProfile.class);
+        PrivateDatingProfile iLikeDatingProfile = UtilHelper
+                .jacksonHandle(iLikeObjectEntity.getObjectDetails(), PrivateDatingProfile.class);
+
 
         // do like by add iLikeDatingProfileId to likes list of myDatingProfile
-        myDatingProfile.getLikes().add(iLikeDatingProfileId);
+        if (!myDatingProfile.getLikes().contains(iLikeDatingProfileId))
+            myDatingProfile.getLikes().add(iLikeDatingProfileId);
 
         // check if match occurs
         if (iLikeDatingProfile.getLikes().contains(myDatingProfileId)) {
+
+            // TODO: check if match already occur
 
             // match creator and store the match
             SuperAppObjectBoundary createdMatch
@@ -113,29 +125,29 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
             myDatingProfile.getMatches().add(matchObjectId);
             iLikeDatingProfile.getMatches().add(matchObjectId);
 
-            myObjectEntity.setObjectDetails(this.jacksonHandle(myDatingProfile, Map.class));
-            iLikeObjectEntity.setObjectDetails(this.jacksonHandle(iLikeDatingProfile, Map.class));
+            myObjectEntity.setObjectDetails(UtilHelper.jacksonHandle(myDatingProfile, Map.class));
+            iLikeObjectEntity.setObjectDetails(UtilHelper.jacksonHandle(iLikeDatingProfile, Map.class));
 
             this.objectCrudDB.save(myObjectEntity);
             this.objectCrudDB.save(iLikeObjectEntity);
+
             return this.resultCreator(
                     true,
                     true,
                     this.objectConvertor.objectIdToBoundary(iLikeDatingProfileId),
                     matchObjectIdAsBoundary);
 
-        } else {
-
-
-            myObjectEntity.setObjectDetails(this.jacksonHandle(myDatingProfile, Map.class));
-            this.objectCrudDB.save(myObjectEntity);
-
-            return resultCreator(
-                    true,
-                    false,
-                    this.objectConvertor.objectIdToBoundary(iLikeDatingProfileId),
-                    null);
         }
+
+        myObjectEntity.setObjectDetails(UtilHelper.jacksonHandle(myDatingProfile, Map.class));
+
+        this.objectCrudDB.save(myObjectEntity);
+
+        return resultCreator(
+                true,
+                false,
+                this.objectConvertor.objectIdToBoundary(iLikeDatingProfileId),
+                null);
 
     }
 
@@ -145,11 +157,11 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
 
 
         // create match as entity using jackson
-        Map<String, Object> match
-                = this.jacksonHandle(new MatchEntity()
+        Map<String, Object> match = UtilHelper
+                .jacksonHandle(new MatchEntity()
                         .setProfileDatingId1(myDatingProfileId)
                         .setProfileDatingId2(iLikeDatingProfileId),
-                        Map.class);
+                Map.class);
 
         SuperAppObjectBoundary newMatch
                 = new SuperAppObjectBoundary()
@@ -165,25 +177,14 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
 
         return createObjectRes
                 .setObjectDetails(
-                        this.jacksonHandle(
+                        UtilHelper.jacksonHandle(
                                 this.matchToBoundary(
-                                        this.jacksonHandle(
+                                        UtilHelper.jacksonHandle(
                                                 createObjectRes.getObjectDetails(),
                                                 MatchEntity.class)),
                                 Map.class)
                 );
 
-    }
-
-    private <T> T jacksonHandle(Object toRead, Class<T> readAs) {
-
-        try {
-            String json = this.jackson.writeValueAsString(toRead);
-            return this.jackson.readValue(json, readAs);
-
-        }catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private Map<String, Object> resultCreator(boolean likeStatus, boolean matchStatus,

@@ -1,7 +1,5 @@
 package superapp.miniapps.command.datingimpl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -9,44 +7,48 @@ import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
+import superapp.logic.boundaries.ObjectId;
+import superapp.logic.boundaries.SuperAppObjectBoundary;
 import superapp.logic.mongo.NotFoundException;
 import superapp.logic.utils.UtilHelper;
 import superapp.logic.utils.convertors.ObjectConvertor;
 import superapp.miniapps.command.MiniAppsCommand;
+import superapp.miniapps.datingMiniApp.MatchEntity;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class DatingGetMatchesCommand implements MiniAppsCommand {
 
     private final ObjectCrud objectCrudDB;
     private final ObjectConvertor objectConvertor;
-    private final ObjectMapper jackson;
 
 
     @Autowired
     public DatingGetMatchesCommand(ObjectCrud objectCrudDB, ObjectConvertor objectConvertor) {
         this.objectCrudDB = objectCrudDB;
         this.objectConvertor = objectConvertor;
-        this.jackson = new ObjectMapper();
     }
 
 
     /**
+     * This method retrieve all dating profile of my matches as
+     * Map<"MatchID", SuperAppObjectBoundary with objectDetails PrivateDatingProfile>.
      *
-     * @param command
-     * @return
+     * command attributes required : page, size
+     * command as define in MiniAppCommand. command
+     * targetObject = private dating profile object - ObjectId
+     * invokedBy - userId of client user
+     *
+     * @param command MiniAppCommandBoundary
+     * @return Map<ObjectId, SuperAppObjectBoundary>
+     *     key : ObjectId of MATCH object, value : SuperAppObjectBoundary with objectDetails PrivateDatingProfile
      */
     @Override
     public Object execute(MiniAppCommandBoundary command) {
-
-        // command attributes required : page, size
-        // command as define in MiniAppCommand.command
-        // targetObject = private dating profile object - ObjectId
-        // invokedBy - userId of client user
-
-        // returnMap<"MatchID", SuperAppObject with objectDetails PrivateDatingProfile>.
-
-//        TODO change rturn to Map<"MatchID", PrivateDatingProfile>
 
         String type = "MATCH";
 
@@ -69,31 +71,45 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
                 .findById(targetObjectId)
                 .orElseThrow(() -> new NotFoundException("Target Object with id " + targetObjectId + " not exist in data base"));
 
-        if (!targetObject.isActive())
-            throw new NotFoundException("Target Object with id " + targetObjectId + " not exist , active : false");
 
-
-
-
-
-        String[] ids;
-
-        try {
-            String json = this.jackson.writeValueAsString(targetObject.getObjectDetails());
-            PrivateDatingProfile datingProfile = this.jackson.readValue(json, PrivateDatingProfile.class);
-            ids = datingProfile
-                    .getMatches()
-                    .toArray(new String[0]);
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        String[] ids = UtilHelper
+                .jacksonHandle(
+                        targetObject.getObjectDetails(),
+                        PrivateDatingProfile.class)
+                .getMatches()
+                .toArray(new String[0]);
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC,"creationTimestamp", "objectId");
-        return this.objectCrudDB
-                .findAllByObjectIdInAndTypeAndActiveIsTrue(ids, type, pageRequest)
-                .stream()
-                .map(this.objectConvertor::toBoundary)
-                .toList();
+
+
+
+        List<SuperAppObjectBoundary> matches = this.objectCrudDB
+                                                                .findAllByObjectIdInAndTypeAndActiveIsTrue(ids, type, pageRequest)
+                                                                .stream()
+                                                                .map(this.objectConvertor::toBoundary)
+                                                                .toList();
+
+        Map<ObjectId, SuperAppObjectBoundary> res = new HashMap<>();
+
+        for (SuperAppObjectBoundary match: matches) {
+            ObjectId matchId = match.getObjectId();
+
+            MatchEntity matchEntity = UtilHelper.jacksonHandle(match.getObjectDetails(), MatchEntity.class);
+
+            String id = matchEntity.getProfileDatingId1().equals(targetObjectId) ?
+                                                matchEntity.getProfileDatingId2() : matchEntity.getProfileDatingId1();
+            if (this.objectCrudDB.existsById(id)) {
+                SuperAppObjectBoundary matchDatingProfile
+                        = this.objectCrudDB
+                        .findById(id)
+                        .map(this.objectConvertor::toBoundary).get();
+
+                if (matchDatingProfile.getActive())
+                    res.put(matchId, matchDatingProfile);
+            }
+        }
+
+        return res;
+
     }
 }

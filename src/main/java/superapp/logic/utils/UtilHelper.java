@@ -1,13 +1,21 @@
 package superapp.logic.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class UtilHelper {
 
-    public static <T> T jacksonHandle(Object toRead, Class<T> readAs, ObjectMapper jackson) throws Exception {
+    private static ObjectMapper jackson = new ObjectMapper();
 
+    public static <T> T jacksonHandle(Object toRead, Class<T> readAs){
+
+        try {
             String json = jackson.writeValueAsString(toRead);
             return jackson.readValue(json, readAs);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
