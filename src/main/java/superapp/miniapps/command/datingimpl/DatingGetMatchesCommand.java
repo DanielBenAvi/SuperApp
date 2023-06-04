@@ -44,8 +44,8 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
      * invokedBy - userId of client user
      *
      * @param command MiniAppCommandBoundary
-     * @return Map<ObjectId, SuperAppObjectBoundary>
-     *     key : ObjectId of MATCH object, value : SuperAppObjectBoundary with objectDetails PrivateDatingProfile
+     * @return Map<String, SuperAppObjectBoundary>
+     *     key : internalObjectId of MATCH object, value : SuperAppObjectBoundary with objectDetails PrivateDatingProfile
      */
     @Override
     public Object execute(MiniAppCommandBoundary command) {
@@ -89,7 +89,7 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
                                                                 .map(this.objectConvertor::toBoundary)
                                                                 .toList();
 
-        Map<ObjectId, SuperAppObjectBoundary> res = new HashMap<>();
+        Map<String, SuperAppObjectBoundary> res = new HashMap<>();
 
         for (SuperAppObjectBoundary match: matches) {
             ObjectId matchId = match.getObjectId();
@@ -106,7 +106,7 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
                         .map(this.objectConvertor::toBoundary).get();
 
                 if (matchDatingProfile.getActive())
-                    res.put(new ObjectId(matchId.getSuperapp(), matchId.getInternalObjectId()), matchDatingProfile);
+                    res.put( matchId.getInternalObjectId(), matchDatingProfile);
             }
         }
 
