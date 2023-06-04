@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class UtilHelper {
 
-    private static ObjectMapper jackson = new ObjectMapper();
+    private static final ObjectMapper jackson = new ObjectMapper();
 
     public static <T> T jacksonHandle(Object toRead, Class<T> readAs) {
 

@@ -16,8 +16,8 @@ import java.util.Map;
 @Component
 public class RBAC {
 
-    private UserCrud userCrudDB;
-    private Map<String, Role> roles;
+    private final UserCrud userCrudDB;
+    private final Map<String, Role> roles;
 
     @Autowired
     public RBAC(UserCrud userCrudDB) {
@@ -91,7 +91,7 @@ public class RBAC {
 
     public boolean hasPermission(String entityUserId, String permission) {
 
-        return roles
+        return !roles
                 .get(this.userCrudDB.findById(entityUserId).orElseThrow(() -> new NotFoundException()).getRole().name())
                 .getPermissions()
                 .contains(permission);

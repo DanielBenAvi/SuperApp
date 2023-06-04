@@ -124,7 +124,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
                 this.entitiesValidator.validateExistingObject(objectId.getSuperapp(), objectId.getInternalObjectId());
 
         // validate object exist is not active:false
-        if (!targetObject.isActive())
+        if (targetObject.isActive())
             throw new NotFoundException("target object id " + targetObject + "not found - active:false");
 
         this.checkPermission(userEntity.getUserID(), "invokeCommand");
@@ -247,7 +247,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
 
     private void checkPermission(String userId, String operationName) {
         // check role permission
-        if (!this.accessControl.hasPermission(userId, operationName))
+        if (this.accessControl.hasPermission(userId, operationName))
             throw new UnauthorizedRequestException("User " + userId + " has no permission to " + operationName);
     }
 

@@ -4,16 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import superapp.data.ObjectCrud;
 import superapp.data.SuperAppObjectEntity;
-import superapp.logic.ObjectsService;
 import superapp.logic.boundaries.*;
 import superapp.logic.mongo.NotFoundException;
 import superapp.logic.utils.UtilHelper;
 import superapp.logic.utils.convertors.CommandConvertor;
-import superapp.logic.utils.convertors.ConvertIdsHelper;
 import superapp.logic.utils.convertors.ObjectConvertor;
 import superapp.miniapps.command.MiniAppsCommand;
-import superapp.miniapps.datingMiniApp.MatchBoundary;
-import superapp.miniapps.datingMiniApp.MatchEntity;
+import superapp.miniapps.datingMiniApp.Match;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
 
 import java.util.*;
@@ -87,7 +84,7 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
                 );
 
         // check if other object is active:false
-        if (!iLikeObjectEntity.isActive()) {
+        if (iLikeObjectEntity.isActive()) {
             return this.resultCreator(
                     false,
                     false,
@@ -156,7 +153,7 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
 
         // create match as entity using jackson
         Map<String, Object> match = UtilHelper
-                .jacksonHandle(new MatchEntity()
+                .jacksonHandle(new Match()
                         .setProfileDatingId1(myDatingProfileId)
                         .setProfileDatingId2(iLikeDatingProfileId),
                 Map.class);
@@ -176,17 +173,7 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
 
         SuperAppObjectEntity createObjectRes = this.objectCrudDB.save(this.objectConvertor.toEntity(newMatch));
 
-        return this.objectConvertor
-                .toBoundary(
-                        createObjectRes
-                                .setObjectDetails(
-                                        UtilHelper.jacksonHandle(
-                                                this.matchToBoundary(
-                                                        UtilHelper.jacksonHandle(
-                                                                createObjectRes.getObjectDetails(),
-                                                                MatchEntity.class)),
-                                                Map.class)
-                ));
+        return this.objectConvertor.toBoundary(createObjectRes);
 
     }
 
@@ -203,14 +190,5 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
         return likeResult;
     }
 
-    public MatchBoundary matchToBoundary(MatchEntity match) {
-
-        String [] objectId1 = ConvertIdsHelper.splitConcretedIds(match.getProfileDatingId1());
-        String [] objectId2 = ConvertIdsHelper.splitConcretedIds(match.getProfileDatingId2());
-
-        return new MatchBoundary()
-                .setProfileDatingId1(new ObjectId(objectId1[0], objectId1[1]))
-                .setProfileDatingId2(new ObjectId(objectId2[0], objectId2[1]));
-    }
 
 }

@@ -18,12 +18,11 @@ import java.util.stream.Collectors;
 @Component
 public class BoundaryValidator {
 
-    private final ValidatorFactory validatorFactory;
     private final Validator validator;
 
     @Autowired
     public BoundaryValidator() {
-        this.validatorFactory = Validation.buildDefaultValidatorFactory();
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         this.validator = validatorFactory.getValidator();
     }
 

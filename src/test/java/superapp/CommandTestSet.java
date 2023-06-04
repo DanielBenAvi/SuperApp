@@ -387,21 +387,6 @@ public class CommandTestSet extends BaseTestSet {
                 .hasSize(1);
 
 
-        // TODO - complete - solution for extract data from map
-//        CommandId commandId = Arrays
-//                .stream(help_GetSpecificMiniappCommands("DATING", this.springApplicationName, email, null, null))
-//                .findAny()
-//                .get()
-//                .getCommandId();
-//
-//        Object boundary = ((Map<String, Object>) commandRes)
-//                .get(ConvertHelp.concatenateIds(new String[] {commandId.getSuperapp(), commandId.getMiniapp(), commandId.getInternalCommandId()}));
-//
-//        assertThat(boundary)
-//                .isNotNull()
-//                .usingRecursiveComparison()
-//                .isEqualTo(postedObject);
-
     }
 
 

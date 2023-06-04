@@ -12,7 +12,7 @@ import superapp.logic.utils.convertors.ConvertIdsHelper;
 import superapp.miniapps.Gender;
 import superapp.miniapps.MiniAppNames;
 import superapp.miniapps.command.MiniAppsCommand;
-import superapp.miniapps.datingMiniApp.MatchEntity;
+import superapp.miniapps.datingMiniApp.Match;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
 import superapp.miniapps.datingMiniApp.PublicDatingProfile;
 
@@ -207,7 +207,7 @@ public class TestSetDating extends BaseTestSet {
                 .range(0, 5)
                 .mapToObj( i -> {
 
-                    MatchEntity match = new MatchEntity(idsOfDatingProfileWithActiveTrue.get(i),
+                    Match match = new Match(idsOfDatingProfileWithActiveTrue.get(i),
                         ConvertIdsHelper.concatenateIds(new String[] {objectBoundary.getObjectId().getSuperapp(),
                                 objectBoundary.getObjectId().getInternalObjectId()}));
 

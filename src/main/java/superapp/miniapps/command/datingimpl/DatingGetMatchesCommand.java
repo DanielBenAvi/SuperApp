@@ -13,7 +13,7 @@ import superapp.logic.mongo.NotFoundException;
 import superapp.logic.utils.UtilHelper;
 import superapp.logic.utils.convertors.ObjectConvertor;
 import superapp.miniapps.command.MiniAppsCommand;
-import superapp.miniapps.datingMiniApp.MatchEntity;
+import superapp.miniapps.datingMiniApp.Match;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
 
 import java.util.HashMap;
@@ -36,7 +36,7 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
 
     /**
      * This method retrieve all dating profile of my matches as
-     * Map<"MatchID", SuperAppObjectBoundary with objectDetails PrivateDatingProfile>.
+     * Map<String, SuperAppObjectBoundary with objectDetails PrivateDatingProfile>.
      *
      * command attributes required : page, size
      * command as define in MiniAppCommand. command
@@ -94,7 +94,7 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
         for (SuperAppObjectBoundary match: matches) {
             ObjectId matchId = match.getObjectId();
 
-            MatchEntity matchEntity = UtilHelper.jacksonHandle(match.getObjectDetails(), MatchEntity.class);
+            Match matchEntity = UtilHelper.jacksonHandle(match.getObjectDetails(), Match.class);
 
             String id = matchEntity.getProfileDatingId1().equals(targetObjectId) ?
                                                 matchEntity.getProfileDatingId2() : matchEntity.getProfileDatingId1();
@@ -103,7 +103,7 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
                 SuperAppObjectBoundary matchDatingProfile
                         = this.objectCrudDB
                         .findById(id)
-                        .map(this.objectConvertor::toBoundary).get();
+                        .map(this.objectConvertor::toBoundary).orElseThrow();
 
                 if (matchDatingProfile.getActive())
                     res.put( matchId.getInternalObjectId(), matchDatingProfile);

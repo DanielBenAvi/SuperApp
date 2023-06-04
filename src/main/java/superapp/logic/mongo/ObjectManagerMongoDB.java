@@ -401,7 +401,7 @@ public class ObjectManagerMongoDB implements ObjectsServiceWithPaging {
 
     private void checkPermission(String userId, String operationName) {
         // check role permission
-        if (!accessControl.hasPermission(userId, operationName))
+        if (accessControl.hasPermission(userId, operationName))
             throw new UnauthorizedRequestException("User " + userId + " has no permission to " + operationName);
     }
 

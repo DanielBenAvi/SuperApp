@@ -10,7 +10,7 @@ import superapp.logic.mongo.NotFoundException;
 import superapp.logic.utils.convertors.ObjectConvertor;
 import superapp.logic.utils.UtilHelper;
 import superapp.miniapps.command.MiniAppsCommand;
-import superapp.miniapps.datingMiniApp.MatchEntity;
+import superapp.miniapps.datingMiniApp.Match;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
 
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class DatingUnmatchProfileCommand implements MiniAppsCommand {
 
         String matchId;
         SuperAppObjectEntity matchObject, datingObject_1, datingObject_2;
-        MatchEntity matchEntity;
+        Match match;
         PrivateDatingProfile datingProfile_1, datingProfile_2;
 
         Map<String, Object> commandRes = new HashMap<>();
@@ -64,12 +64,12 @@ public class DatingUnmatchProfileCommand implements MiniAppsCommand {
             matchObject = objectCrudDB.findById(matchId).orElseThrow(() ->
                     new NotFoundException("Match Object with id " + matchId + " not exist in data base"));
 
-            matchEntity = UtilHelper.jacksonHandle(matchObject.getObjectDetails(), MatchEntity.class);
+            match = UtilHelper.jacksonHandle(matchObject.getObjectDetails(), Match.class);
 
-            datingObject_1 = objectCrudDB.findById(matchEntity.getProfileDatingId1()).orElseThrow(() ->
+            datingObject_1 = objectCrudDB.findById(match.getProfileDatingId1()).orElseThrow(() ->
                     new NotFoundException("Match Object with id " + matchId + " not exist in data base"));
 
-            datingObject_2 = objectCrudDB.findById(matchEntity.getProfileDatingId2()).orElseThrow(() ->
+            datingObject_2 = objectCrudDB.findById(match.getProfileDatingId2()).orElseThrow(() ->
                     new NotFoundException("Match Object with id " + matchId + " not exist in data base"));
 
             datingProfile_1 = UtilHelper.jacksonHandle(datingObject_1.getObjectDetails(), PrivateDatingProfile.class);

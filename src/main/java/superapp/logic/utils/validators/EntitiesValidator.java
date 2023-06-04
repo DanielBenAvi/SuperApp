@@ -12,8 +12,8 @@ import superapp.logic.utils.convertors.ConvertIdsHelper;
 @Component
 public class EntitiesValidator {
 
-    private UserCrud usersCrud;
-    private ObjectCrud objectCrud;
+    private final UserCrud usersCrud;
+    private final ObjectCrud objectCrud;
 
     @Autowired
     public EntitiesValidator(UserCrud usersCrud, ObjectCrud objectCrud) {

@@ -107,7 +107,7 @@ public class SuperAppObjectEntity {
     }
 
     public boolean isActive() {
-        return active;
+        return !active;
     }
 
     public Set<SuperAppObjectEntity> getChildren() {

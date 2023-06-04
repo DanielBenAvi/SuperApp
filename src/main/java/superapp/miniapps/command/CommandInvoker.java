@@ -12,35 +12,35 @@ import superapp.miniapps.command.marketplaceimpl.*;
 public class CommandInvoker {
 
     /******************** Dating Commands ********************/
-    private DatingLikeProfileCommand datingLikeProfile;
-    private DatingUnmatchProfileCommand datingUnmatch;
-    private DatingGetPotentialDatesCommand datingGetPotentialDates;
-    private DatingGetMatchesCommand datingGetMatches;
-    private DatingGetLikesCommand datingGetLikes;
+    private final DatingLikeProfileCommand datingLikeProfile;
+    private final DatingUnmatchProfileCommand datingUnmatch;
+    private final DatingGetPotentialDatesCommand datingGetPotentialDates;
+    private final DatingGetMatchesCommand datingGetMatches;
+    private final DatingGetLikesCommand datingGetLikes;
 
     /******************** Event Commands ********************/
-    private EventGetMyEventsCommand eventGetMyEventsCommand;
-    private EventJoinEventCommand eventJoinEventCommand;
-    private EventLeaveEventCommand eventLeaveEventCommand;
-    private EventSearchEventByName eventSearchEventByName;
-    private EventSearchEventByDate eventSearchEventByDate;
-    private EventSearchEventByPreferences eventSearchEventByPreferences;
-    private EventGetEventsBaseOnPreferencesCommand eventGetEventsBaseOnPreferencesCommand;
-    private EventGetCreatedByMeEventsCommand eventGetCreatedByMeEventsCommand;
-    private EventGetAllFutureEventsCommand eventGetAllFutureEventsCommand;
+    private final EventGetMyEventsCommand eventGetMyEventsCommand;
+    private final EventJoinEventCommand eventJoinEventCommand;
+    private final EventLeaveEventCommand eventLeaveEventCommand;
+    private final EventSearchEventByName eventSearchEventByName;
+    private final EventSearchEventByDate eventSearchEventByDate;
+    private final EventSearchEventByPreferences eventSearchEventByPreferences;
+    private final EventGetEventsBaseOnPreferencesCommand eventGetEventsBaseOnPreferencesCommand;
+    private final EventGetCreatedByMeEventsCommand eventGetCreatedByMeEventsCommand;
+    private final EventGetAllFutureEventsCommand eventGetAllFutureEventsCommand;
 
     /******************** Marketplace Commands ********************/
 
-    private SearchProductByCategory searchProductByCategory;
-    private SearchProductByPrice searchProductByPrice;
+    private final SearchProductByCategory searchProductByCategory;
+    private final SearchProductByPrice searchProductByPrice;
 
-    private GetAllMyProducts getAllMyProducts;
+    private final GetAllMyProducts getAllMyProducts;
 
-    private SearchProductByName searchProductByName;
-    private GetProductsByPreferences getProductsByPreferences;
+    private final SearchProductByName searchProductByName;
+    private final GetProductsByPreferences getProductsByPreferences;
     /******************** General Commands ********************/
-    private GetUserDetailsCommand getUserDetailsCommand;
-    private DefaultCommand defaultCommand;
+    private final GetUserDetailsCommand getUserDetailsCommand;
+    private final DefaultCommand defaultCommand;
 
     @Autowired
     public CommandInvoker(DefaultCommand defaultCommand,

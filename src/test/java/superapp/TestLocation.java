@@ -12,9 +12,9 @@ public class TestLocation extends BaseTestSet{
 
 
 
-    private String admin = "ADMIN";
-    private String miniappRole = "MINIAPP_USER";
-    private String superappRole = "SUPERAPP_USER";
+    private final String admin = "ADMIN";
+    private final String miniappRole = "MINIAPP_USER";
+    private final String superappRole = "SUPERAPP_USER";
 
     private UserBoundary createUser(String email, String role) {
 

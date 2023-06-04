@@ -1,19 +1,17 @@
 package superapp.miniapps.datingMiniApp;
 
-import superapp.miniapps.chat.objects.Chat;
-
-public class MatchEntity {
+public class Match {
 
 	private String profileDatingId1;
 	private String profileDatingId2;
 
 
-	public MatchEntity() {
+	public Match() {
 
 	}
 
 
-	public MatchEntity(String profileDatingId1, String profileDatingId2) {
+	public Match(String profileDatingId1, String profileDatingId2) {
 		this.profileDatingId1 = profileDatingId1;
 		this.profileDatingId2 = profileDatingId2;
 	}
@@ -22,7 +20,7 @@ public class MatchEntity {
 		return profileDatingId1;
 	}
 
-	public MatchEntity setProfileDatingId1(String profileDatingId1) {
+	public Match setProfileDatingId1(String profileDatingId1) {
 		this.profileDatingId1 = profileDatingId1;
 		return this;
 	}
@@ -31,7 +29,7 @@ public class MatchEntity {
 		return profileDatingId2;
 	}
 
-	public MatchEntity setProfileDatingId2(String profileDatingId2) {
+	public Match setProfileDatingId2(String profileDatingId2) {
 		this.profileDatingId2 = profileDatingId2;
 		return this;
 	}

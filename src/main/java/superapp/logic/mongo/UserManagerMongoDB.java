@@ -110,7 +110,7 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
         UserEntity userEntity = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
         this.checkPermission(userEntity.getUserID(), "login");
 
-        return userEntity != null ? Optional.of(this.userConvertor.toBoundary(userEntity)) : Optional.empty();
+        return Optional.of(this.userConvertor.toBoundary(userEntity));
     }
 
     /**
@@ -204,7 +204,7 @@ public class UserManagerMongoDB implements UserServiceWithPaging {
 
     private void checkPermission(String userId, String operationName) {
         // check role permission
-        if (!accessControl.hasPermission(userId, operationName))
+        if (accessControl.hasPermission(userId, operationName))
             throw new UnauthorizedRequestException("User " + userId + " has no permission to " + operationName);
     }
 
