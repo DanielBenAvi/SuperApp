@@ -107,8 +107,7 @@ public interface ObjectCrud extends MongoRepository<SuperAppObjectEntity, String
             "'active': true, " +
             "'_id': {$nin: ?1}, " +
             "'objectDetails.publicProfile.gender': {$in: ?2}, " +
-//            "'parent.objectDetails.interests': {$all: ?3}, " +
-//            "'objectDetails.publicProfile.age': {$gte: ?4, $lte: ?5}" +
+            "'objectDetails.publicProfile.age': {$gte: ?4, $lte: ?5}" +
             "}")
     public List<SuperAppObjectEntity> findAllMyPotentialDates(String type,
                                                               String[] likesIds,

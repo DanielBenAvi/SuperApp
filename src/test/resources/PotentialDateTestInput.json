@@ -15,15 +15,15 @@
       "publicProfile": {
         "nickName": "public_profile_1",
         "gender": "OTHER",
-        "age": "20",
+        "age": 20,
         "bio": "bio 1",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "1",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["MALE", "FEMALE", "OTHER"],
       "matches": [],
       "likes": []
@@ -45,15 +45,15 @@
       "publicProfile": {
         "nickName": "public_profile_2",
         "gender": "OTHER",
-        "age": "20",
+        "age": 20,
         "bio": "bio 2",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "2",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["MALE", "FEMALE"],
       "matches": [],
       "likes": []
@@ -75,15 +75,15 @@
       "publicProfile": {
         "nickName": "public_profile_3",
         "gender": "OTHER",
-        "age": "20",
+        "age": 20,
         "bio": "bio 3",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "3",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["FEMALE"],
       "matches": [],
       "likes": []
@@ -105,15 +105,15 @@
       "publicProfile": {
         "nickName": "public_profile_4",
         "gender": "OTHER",
-        "age": "20",
+        "age": 20,
         "bio": "bio 4",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "4",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["MALE"],
       "matches": [],
       "likes": []
@@ -135,15 +135,15 @@
       "publicProfile": {
         "nickName": "public_profile_5",
         "gender": "OTHER",
-        "age": "20",
+        "age": 20,
         "bio": "bio 5",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "5",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["OTHER"],
       "matches": [],
       "likes": []
@@ -167,15 +167,15 @@
       "publicProfile": {
         "nickName": "public_profile_6",
         "gender": "FEMALE",
-        "age": "20",
+        "age": 20,
         "bio": "bio 6",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "6",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["MALE", "FEMALE", "OTHER"],
       "matches": [],
       "likes": []
@@ -197,46 +197,16 @@
       "publicProfile": {
         "nickName": "public_profile_7",
         "gender": "FEMALE",
-        "age": "20",
+        "age": 20,
         "bio": "bio 7",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "7",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["MALE", "OTHER"],
-      "matches": [],
-      "likes": []
-    }
-  },
-  {
-    "user": {
-      "email": "8@gmail.com",
-      "role": "SUPERAPP_USER",
-      "username": "user 8",
-      "avatar": "none"
-    },
-    "userDetails": {
-      "name": "8",
-      "phoneNum": "8",
-      "preferences" : ["A", "B", "C", "D", "E"]
-    },
-    "datingProfile": {
-      "publicProfile": {
-        "nickName": "public_profile_8",
-        "gender": "FEMALE",
-        "age": "20",
-        "bio": "bio 8",
-        "pictures": []
-      },
-      "dateOfBirthday": "1622911217839",
-      "phoneNumber": "8",
-      "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
-      "genderPreferences": ["FEMALE"],
       "matches": [],
       "likes": []
     }
@@ -257,15 +227,15 @@
       "publicProfile": {
         "nickName": "public_profile_9",
         "gender": "FEMALE",
-        "age": "20",
+        "age": 20,
         "bio": "bio 9",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "9",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["MALE"],
       "matches": [],
       "likes": []
@@ -287,16 +257,46 @@
       "publicProfile": {
         "nickName": "public_profile_10",
         "gender": "FEMALE",
-        "age": "20",
+        "age": 20,
         "bio": "bio 10",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "10",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["OTHER"],
+      "matches": [],
+      "likes": []
+    }
+  },
+  {
+    "user": {
+      "email": "8@gmail.com",
+      "role": "SUPERAPP_USER",
+      "username": "user 8",
+      "avatar": "none"
+    },
+    "userDetails": {
+      "name": "8",
+      "phoneNum": "8",
+      "preferences" : ["A", "B", "C", "D", "E"]
+    },
+    "datingProfile": {
+      "publicProfile": {
+        "nickName": "public_profile_8",
+        "gender": "FEMALE",
+        "age": 20,
+        "bio": "bio 8",
+        "pictures": []
+      },
+      "dateOfBirthday": "1622911217839",
+      "phoneNumber": "8",
+      "distanceRange": "0",
+      "maxAge": 25,
+      "minAge": 18,
+      "genderPreferences": ["FEMALE"],
       "matches": [],
       "likes": []
     }
@@ -319,15 +319,15 @@
       "publicProfile": {
         "nickName": "public_profile_11",
         "gender": "MALE",
-        "age": "20",
+        "age": 20,
         "bio": "bio 11",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "11",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["MALE", "FEMALE", "OTHER"],
       "matches": [],
       "likes": []
@@ -349,15 +349,15 @@
       "publicProfile": {
         "nickName": "public_profile_12",
         "gender": "MALE",
-        "age": "20",
+        "age": 20,
         "bio": "bio 12",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "12",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["FEMALE", "OTHER"],
       "matches": [],
       "likes": []
@@ -379,46 +379,16 @@
       "publicProfile": {
         "nickName": "public_profile_13",
         "gender": "MALE",
-        "age": "20",
+        "age": 20,
         "bio": "bio 13",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "13",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["FEMALE"],
-      "matches": [],
-      "likes": []
-    }
-  },
-  {
-    "user": {
-      "email": "14@gmail.com",
-      "role": "SUPERAPP_USER",
-      "username": "user 14",
-      "avatar": "none"
-    },
-    "userDetails": {
-      "name": "14",
-      "phoneNum": "14",
-      "preferences" : ["A", "B", "C", "D", "E"]
-    },
-    "datingProfile": {
-      "publicProfile": {
-        "nickName": "public_profile_14",
-        "gender": "MALE",
-        "age": "20",
-        "bio": "bio 14",
-        "pictures": []
-      },
-      "dateOfBirthday": "1622911217839",
-      "phoneNumber": "14",
-      "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
-      "genderPreferences": ["MALE"],
       "matches": [],
       "likes": []
     }
@@ -439,19 +409,48 @@
       "publicProfile": {
         "nickName": "public_profile_15",
         "gender": "MALE",
-        "age": "20",
+        "age": 20,
         "bio": "bio 15",
         "pictures": []
       },
       "dateOfBirthday": "1622911217839",
       "phoneNumber": "15",
       "distanceRange": "0",
-      "maxAge": "25",
-      "minAge": "18",
+      "maxAge": 25,
+      "minAge": 18,
       "genderPreferences": ["OTHER"],
       "matches": [],
       "likes": []
     }
+  },
+  {
+    "user": {
+      "email": "14@gmail.com",
+      "role": "SUPERAPP_USER",
+      "username": "user 14",
+      "avatar": "none"
+    },
+    "userDetails": {
+      "name": "14",
+      "phoneNum": "14",
+      "preferences" : ["A", "B", "C", "D", "E"]
+    },
+    "datingProfile": {
+      "publicProfile": {
+        "nickName": "public_profile_14",
+        "gender": "MALE",
+        "age": 20,
+        "bio": "bio 14",
+        "pictures": []
+      },
+      "dateOfBirthday": "1622911217839",
+      "phoneNumber": "14",
+      "distanceRange": "0",
+      "maxAge": 25,
+      "minAge": 18,
+      "genderPreferences": ["MALE"],
+      "matches": [],
+      "likes": []
+    }
   }
-
 ]
