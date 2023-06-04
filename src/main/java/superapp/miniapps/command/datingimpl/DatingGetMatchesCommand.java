@@ -99,13 +99,14 @@ public class DatingGetMatchesCommand implements MiniAppsCommand {
             String id = matchEntity.getProfileDatingId1().equals(targetObjectId) ?
                                                 matchEntity.getProfileDatingId2() : matchEntity.getProfileDatingId1();
             if (this.objectCrudDB.existsById(id)) {
+
                 SuperAppObjectBoundary matchDatingProfile
                         = this.objectCrudDB
                         .findById(id)
                         .map(this.objectConvertor::toBoundary).get();
 
                 if (matchDatingProfile.getActive())
-                    res.put(matchId, matchDatingProfile);
+                    res.put(new ObjectId(matchId.getSuperapp(), matchId.getInternalObjectId()), matchDatingProfile);
             }
         }
 
