@@ -1249,6 +1249,78 @@ public class CommandTestSet extends BaseTestSet {
                 .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Test
+    public void testAsyncCommandNotChangeTimestampAndId(){
+        //GIVEN The server is up
+        //database is up
+        // user exists in database
+
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        //WHEN A POST request is made to the path "/superapp/miniapp/{miniAppName}?async={true}"
+
+        String command = "GET_USER"; // unknown command
+
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId()
+                        .setSuperapp(this.springApplicationName)
+                        .setInternalObjectId(this.internalObjectIdForCommand));
+
+        changeRole(miniappRole, email);
+
+        MiniAppCommandBoundary commandBoundary = new MiniAppCommandBoundary()
+                .setCommandId(null)
+                .setCommand(command)
+                .setTargetObject(targetObject)
+                .setInvocationTimestamp(null)
+                .setInvokedBy(new InvokedBy().setUserId(new UserId(this.springApplicationName, email)))
+                .setCommandAttributes(new HashMap<>());
+
+        MiniAppCommandBoundary result = this.restTemplate
+                .postForObject(
+                        this.baseUrl + "/superapp/miniapp/{miniAppName}?async={asyncFlag}"
+                        , commandBoundary
+                        , MiniAppCommandBoundary.class
+                        , "DATING"
+                        , "true");
+
+        assert result != null;
+
+        CommandId commandIdBeforeExecution = result.getCommandId();
+
+        Map<String, Object> statusJms = result.getCommandAttributes();
+
+        changeRole(admin, email);
+        assertThat(help_GetAllMiniappCommands(this.springApplicationName, email, null, null))
+                .isNotNull()
+                .isEmpty();
+
+        assertThat(statusJms.get("status")).isNotNull().isEqualTo("in process");
+
+        //THEN The server response with status 2xx code and command stored in db
+        // and return SuperAppObjectBoundary with UserDetails in object details
+
+        try {
+            Thread.sleep(5000);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        changeRole(admin, email);
+        assertThat(help_GetAllMiniappCommands(this.springApplicationName, email, null, null))
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(1);
+
+        List<MiniAppCommandBoundary> resultAfterExecution = List.of(this.help_GetAllMiniappCommands(this.springApplicationName, email, null, null));
+
+        assertThat(commandIdBeforeExecution).usingRecursiveComparison().isEqualTo(resultAfterExecution.get(0).getCommandId());
+
+    }
+
 
     @Test
     public void basicTestAsyncCommand(){

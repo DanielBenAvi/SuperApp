@@ -79,62 +79,77 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
 
     /**
      * This methode execute the commands by commandInvoker
+     *
      * @param commandBoundary
      * @return Object command result
      */
     @Override
     public Object invokeCommand(MiniAppCommandBoundary commandBoundary) {
 
+
+        // validate command attributes, and init id and timestamp
+        this.validateAndInitIdCommandBeforeExecute(commandBoundary);
+
+        /////////////////////// execute command ///////////////////////
+
+        return this.executeAndStoreCommand(commandBoundary);
+    }
+
+
+
+    private void validateAndInitIdCommandBeforeExecute(MiniAppCommandBoundary command) {
+
         // set command id and invocation timestamp
-        CommandId commandId = commandBoundary
-                .getCommandId()
+        CommandId commandId = command.getCommandId()
                 .setInternalCommandId(UUID.randomUUID().toString())
                 .setSuperapp(this.springApplicationName);
 
-        commandBoundary
+        command
                 .setCommandId(commandId)
                 .setInvocationTimestamp(new Date());
 
         // validation
-        this.boundaryValidator.validateCommandBoundary(commandBoundary);
-        this.boundaryValidator.validateInvokedBy(commandBoundary.getInvokedBy());
-        this.boundaryValidator.validateTargetObject(commandBoundary.getTargetObject());
+        this.boundaryValidator.validateCommandBoundary(command);
+        this.boundaryValidator.validateInvokedBy(command.getInvokedBy());
+        this.boundaryValidator.validateTargetObject(command.getTargetObject());
 
 
         // validate that user exist and retrieve the user from database
-        UserId userId = commandBoundary.getInvokedBy().getUserId();
+        UserId userId = command.getInvokedBy().getUserId();
         UserEntity userEntity = this.entitiesValidator.validateExistingUser(userId.getSuperapp(), userId.getEmail());
 
         // validate target object exist in database
-        ObjectId objectId = commandBoundary.getTargetObject().getObjectId();
+        ObjectId objectId = command.getTargetObject().getObjectId();
         SuperAppObjectEntity targetObject =
                 this.entitiesValidator.validateExistingObject(objectId.getSuperapp(), objectId.getInternalObjectId());
 
         // validate object exist is not active:false
-        if (!targetObject.getActive())
+        if (!targetObject.isActive())
             throw new NotFoundException("target object id " + targetObject + "not found - active:false");
 
-        checkPermission(userEntity.getUserID(), "invokeCommand");
+        this.checkPermission(userEntity.getUserID(), "invokeCommand");
+    }
 
-        /////////////////////// execute command ///////////////////////
+    private Map<String, Object> executeAndStoreCommand(MiniAppCommandBoundary command) {
+
         Object resultObjectOfCommand;
 
-        MiniAppNames miniappName = MiniAppNames.strToMiniAppName(commandBoundary.getCommandId().getMiniapp());
-        MiniAppsCommand.commands commandsToExecute = MiniAppsCommand.strToCommand(commandBoundary.getCommand());
+        MiniAppNames miniappName = MiniAppNames.strToMiniAppName(command.getCommandId().getMiniapp());
+        MiniAppsCommand.commands commandsToExecute = MiniAppsCommand.strToCommand(command.getCommand());
 
         if (miniappName.equals(MiniAppNames.UNKNOWN))
             resultObjectOfCommand = new InvalidCommand(miniappName + " miniapp name: "
-                                                        + commandBoundary.getCommandId().getMiniapp() + " not supported");
+                    + command.getCommandId().getMiniapp() + " not supported");
         else if (commandsToExecute.equals(MiniAppsCommand.commands.UNKNOWN_COMMAND))
             resultObjectOfCommand = new InvalidCommand(miniappName + " miniapp command: "
-                                                    + commandBoundary.getCommand() + " not supported");
+                    + command.getCommand() + " not supported");
         else
             resultObjectOfCommand = commandInvoker
-                                        .create(commandsToExecute)
-                                        .execute(commandBoundary);
+                    .create(commandsToExecute)
+                    .execute(command);
 
         // convert to entity
-        MiniAppCommandEntity commandEntity = this.commandConvertor.toEntity(commandBoundary);
+        MiniAppCommandEntity commandEntity = this.commandConvertor.toEntity(command);
 
         // save command to database
         this.miniAppCommandCrud.save(commandEntity);
@@ -145,7 +160,6 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
 
         return commandResult;
     }
-
 
     /**
      * This method retrieve all commands history of miniapp
@@ -240,31 +254,26 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
 
     /**** Support Async *****/
     @Override
-    public Object asyncHandle(MiniAppCommandBoundary miniAppCommandBoundary) {
+    public Object asyncHandle(MiniAppCommandBoundary command) {
 
-        miniAppCommandBoundary
-                .getCommandId()
-                .setInternalCommandId(UUID.randomUUID()
-                        .toString()).setSuperapp(this.springApplicationName);
+        this.validateAndInitIdCommandBeforeExecute(command);
 
-        miniAppCommandBoundary.setInvocationTimestamp(new Date());
-
-        if (miniAppCommandBoundary.getCommandAttributes() == null) {
-            miniAppCommandBoundary.setCommandAttributes(new HashMap<>());
+        if (command.getCommandAttributes() == null) {
+            command.setCommandAttributes(new HashMap<>());
         }
 
-        miniAppCommandBoundary.getCommandAttributes().put("status", "in process");
+        command.getCommandAttributes().put("status", "in process");
         try {
 
-            String json = this.jackson.writeValueAsString(miniAppCommandBoundary);
+            String json = this.jackson.writeValueAsString(command);
             System.err.println("*** sending: " + json);
             this.jmsTemplate.convertAndSend("commandsQueue", json);
 
-            return miniAppCommandBoundary;
+            return command;
 
         } catch (Exception e) {
-            System.err.println("in handler : " + e.getMessage());
 
+            System.err.println("in handler : " + e.getMessage());
             throw new RuntimeException(e);
         }
 
@@ -274,8 +283,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
     public void handleCommand(String json) {
 
         try {
-
-            this.invokeCommand(
+            this.executeAndStoreCommand(
                     commandConvertor.toBoundary(
                             commandConvertor.toEntity(
                                     this.setStatus(
@@ -287,6 +295,7 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
         }
 
     }
+
 
     private MiniAppCommandBoundary setStatus(MiniAppCommandBoundary miniapp, String status) {
 
