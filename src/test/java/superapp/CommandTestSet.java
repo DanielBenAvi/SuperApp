@@ -187,6 +187,37 @@ public class CommandTestSet extends BaseTestSet {
                 .isNotEmpty();
     }
 
+
+    @Test
+    @DisplayName("Get command history of specific miniapp that not exist in our miniapp")
+    public void testGetCommandHistoryOfSpecificMiniappNotInOurMiniapp() {
+
+        // GIVEN The server is up
+        // database is up
+        // db contain commands objects of any 2 miniapps exists and 1 command of unknown miniapp
+
+
+        String email = "demo@gmail.com";
+        createUser(email, admin);
+
+        String command = "command ";
+        TargetObject targetObject = new TargetObject()
+                .setObjectId(new ObjectId(this.springApplicationName, this.internalObjectIdForCommand));
+
+        createCommand(email, miniappRole, "BLA", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "DATING", command, targetObject, new HashMap<>());
+        createCommand(email, miniappRole, "EVENT", command, targetObject, new HashMap<>());
+        //  WHEN A GET request is made to the path "superapp/admin/miniapp/{BLA}"
+
+        //  THEN The server response with status 2xx code
+        changeRole(admin, email);
+
+        assertThat(help_GetSpecificMiniappCommands("BLA", this.springApplicationName, email, null, null))
+                .isNotNull()
+                .isNotEmpty().hasSize(1);
+
+    }
+
     @Test
     @DisplayName("Get command history of specific miniapp")
     public void testSuccessfulGetCommandHistoryOfSpecificMiniapp() {

@@ -160,17 +160,16 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
     public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName, String userSuperapp, String userEmail,
                                                               int size, int page) {
 
+        // check miniApp name, page, size is valid
+        ValidatorHelper.validateStringNotNullAndNotEmpty(miniAppName, "Mini App Name");
+        ValidatorHelper.validatePage(page);
+        ValidatorHelper.validateSize(size);
+
         // validate that user exist and retrieve the user from database
         UserEntity userEntity = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
         this.checkPermission(userEntity.getUserID(), "getAllMiniAppCommands");
 
-        // Check if the miniApp name is valid
-        if (MiniAppNames.strToMiniAppName(miniAppName).equals(MiniAppNames.UNKNOWN))
-            throw new BadRequestException("MiniApp name is not valid");
-
-        ValidatorHelper.validatePage(page);
-        ValidatorHelper.validateSize(size);
 
         PageRequest pageRequest = PageRequest
                 .of(page, size, Sort.Direction.ASC,"invocationTimestamp", "targetObject", "commandId");
@@ -194,13 +193,15 @@ public class MiniAppCommandManagerMongoDB implements MiniAppCommandWithAsyncSupp
     @Override
     public List<MiniAppCommandBoundary> getAllCommands(String userSuperapp, String userEmail, int size, int page) {
 
+
+        ValidatorHelper.validatePage(page);
+        ValidatorHelper.validateSize(size);
+
+
         // validate that user exist and retrieve the user from database
         UserEntity userEntity = this.entitiesValidator.validateExistingUser(userSuperapp, userEmail);
 
         this.checkPermission(userEntity.getUserID(), "getAllCommands");
-
-        ValidatorHelper.validatePage(page);
-        ValidatorHelper.validateSize(size);
 
         PageRequest pageRequest = PageRequest
                 .of(page, size, Sort.Direction.ASC,"invocationTimestamp", "targetObject", "commandId");

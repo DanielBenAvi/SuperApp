@@ -13,4 +13,12 @@ public class ValidatorHelper {
         if (size <= 0)
             throw new BadRequestException("Size must be positive");
     }
+
+
+    public static void validateStringNotNullAndNotEmpty(String value, String valueType) {
+
+        if (value == null || value.isEmpty()) {
+            throw new BadRequestException( valueType + " is not valid");
+        }
+    }
 }
