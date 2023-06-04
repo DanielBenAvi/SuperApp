@@ -44,7 +44,7 @@ public class DatingGetPotentialDatesCommand implements MiniAppsCommand {
      *
      * command attributes required :
      * key: 'userDetailsId' value: ObjectId of UserDetails,
-     * key: 'page' and value,
+     * key: 'page' and page value,
      * key: 'size' and size value
      *
      * command as define in MiniAppCommand. command
@@ -59,8 +59,6 @@ public class DatingGetPotentialDatesCommand implements MiniAppsCommand {
 
         String type = "PRIVATE_DATING_PROFILE";
         int page = 0, size = 15;
-
-
 
 
         // parse all data needed to execute

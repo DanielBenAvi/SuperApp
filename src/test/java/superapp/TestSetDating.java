@@ -12,6 +12,7 @@ import superapp.logic.utils.convertors.ConvertIdsHelper;
 import superapp.miniapps.Gender;
 import superapp.miniapps.MiniAppNames;
 import superapp.miniapps.command.MiniAppsCommand;
+import superapp.miniapps.datingMiniApp.MatchEntity;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
 import superapp.miniapps.datingMiniApp.PublicDatingProfile;
 
@@ -48,7 +49,6 @@ public class TestSetDating extends BaseTestSet {
         return privateDatingProfile;
     }
 
-
     private PublicDatingProfile createPublicProfile(String nickName, int age,
                                                     Gender gender, String bio,
                                                     List<String> pictures) {
@@ -63,7 +63,7 @@ public class TestSetDating extends BaseTestSet {
 
 
     @Test
-    @DisplayName("Successfully get all private dating profiles that user already liked")
+    @DisplayName("Successfully get all private dating profiles that user liked")
     public void testGetMyLikes(){
 
         // create user
@@ -145,8 +145,12 @@ public class TestSetDating extends BaseTestSet {
                 null,
                 new InvokedBy().setUserId(new UserId(this.springApplicationName, email)),
                 commandAttr);
-        // TODO add assert
-        int x = 1;
+
+
+        List<SuperAppObjectBoundary> objectBoundaries = this.objectToListOfObjectBoundaries(result);
+
+        assertEquals(5, objectBoundaries.size());
+
     }
 
 
@@ -154,10 +158,120 @@ public class TestSetDating extends BaseTestSet {
     @DisplayName("Successfully get all private dating profiles that user has match with")
     public void testGetMyMatches(){
 
+        // create user
+        String email = "charming@gmail.com";
+        this.help_PostUserBoundary(email, UserRole.SUPERAPP_USER.name(), "username", "avatar");
+
+
+        String type = "PRIVATE_DATING_PROFILE";
+
+        // post 5 dating profile objects : active is true
+        List<String> idsOfDatingProfileWithActiveTrue = IntStream
+                .range(0, 5)
+                .mapToObj(privateProfileId -> {
+                    PublicDatingProfile publicProfile =
+                            createPublicProfile("true", 20, Gender.FEMALE, "mybio ", null);
+                    Map<String, Object> datingProfile =
+                            createPrivateProfileAsMap(publicProfile, new Date(), 10, new ArrayList<>(),
+                                    "052-8976625", 18, 99, null, null);
+
+                    SuperAppObjectBoundary boundary = this.help_PostObjectBoundary(null, type, "alias",
+                            null, true, null,
+                            new CreatedBy().setUserId(new UserId(this.springApplicationName, email)), datingProfile);
+
+                    // return objectId
+                    return ConvertIdsHelper
+                            .concatenateIds(new String[] {boundary.getObjectId().getSuperapp(),
+                                    boundary.getObjectId().getInternalObjectId()});
+                })
+                .toList();
+
+
+        List<String> likes = new ArrayList<>();
+        likes.addAll(idsOfDatingProfileWithActiveTrue);
+
+        // post dating profile objects with active is true
+        // this dating profile is a profile that likes other profile
+        PublicDatingProfile profile = createPublicProfile("i liked everyone", 20, Gender.MALE, "bio ", null);
+        Map<String, Object> privateProfile = createPrivateProfileAsMap(profile, new Date(), 10, new ArrayList<>(),
+                "052-8976625", 18, 99, likes, null);
+
+        SuperAppObjectBoundary objectBoundary = this.help_PostObjectBoundary(null, type, "alias",
+                null, true, null,
+                new CreatedBy().setUserId(new UserId(this.springApplicationName, email)), privateProfile);
+
+
+        // post 5 matches objects
+
+        List<String> idsOfMatches = IntStream
+                .range(0, 5)
+                .mapToObj( i -> {
+
+                    MatchEntity match = new MatchEntity(idsOfDatingProfileWithActiveTrue.get(i),
+                        ConvertIdsHelper.concatenateIds(new String[] {objectBoundary.getObjectId().getSuperapp(),
+                                objectBoundary.getObjectId().getInternalObjectId()}));
+
+
+                    Map<String,Object> matchEntity = UtilHelper.jacksonHandle(match, Map.class);
+
+                    SuperAppObjectBoundary boundary = this.help_PostObjectBoundary(null, "MATCH", "match",
+                            null, true, null,
+                            new CreatedBy().setUserId(new UserId(this.springApplicationName, email)), matchEntity);
+
+                    return ConvertIdsHelper
+                            .concatenateIds(new String[] {boundary.getObjectId().getSuperapp(),
+                                    boundary.getObjectId().getInternalObjectId()});
+                })
+                .toList();
+
+        List<String> matches = new ArrayList<>();
+
+        matches.addAll(idsOfMatches);
+
+        privateProfile = createPrivateProfileAsMap(profile, new Date(), 10, new ArrayList<>(),
+                "052-8976625", 18, 99, likes, matches);
+
+
+        objectBoundary.setObjectDetails(privateProfile);
+
+
+        this.help_PutUserBoundary(new UserBoundary().setRole(UserRole.SUPERAPP_USER.name()), email);
+
+        this.help_PutObjectBoundary(objectBoundary,
+                objectBoundary.getObjectId().getInternalObjectId(),
+                this.springApplicationName,
+                this.springApplicationName, email);
+
+
+        this.help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.name()), email);
+        Map<String, Object> commandAttr = new HashMap<>();
+        commandAttr.put("page", 0);
+        commandAttr.put("size", 100);
+
+        Map<String, Object> result = UtilHelper.jacksonHandle(this.help_PostCommandBoundary(MiniAppNames.DATING.name(),
+                null,
+                MiniAppsCommand.commands.GET_MATCHES.name(),
+                new TargetObject()
+                        .setObjectId(new ObjectId(this.springApplicationName, objectBoundary.getObjectId().getInternalObjectId())),
+                null,
+                new InvokedBy().setUserId(new UserId(this.springApplicationName, email)),
+                commandAttr), Map.class);
+
+        List<Object> objectBoundaries = new ArrayList<>();
+        for (Map.Entry<String, Object> entry: result.entrySet()) {
+
+            Map<Object, Object>  insideRes = UtilHelper.jacksonHandle(entry.getValue(), Map.class);
+            for (Map.Entry<Object, Object> objectEntry: insideRes.entrySet()) {
+                objectBoundaries.add(objectEntry.getValue());
+            }
+        }
+
+        assertEquals(5, objectBoundaries.size());
+
     }
 
     @Test
-    @DisplayName("Successfully get potential date by gender and not in my likes")
+    @DisplayName("Successfully get potential date by gender and in ageRange and not in my likes")
     public void testGetPotentialDate(){
 
         // GIVEN
@@ -208,22 +322,19 @@ public class TestSetDating extends BaseTestSet {
                         null,true, null,
                         new CreatedBy().setUserId(new UserId(this.springApplicationName, userBoundary.getUserId().getEmail())),
                         datingProfilesAsMap);
+
                 objectIdsOfDatingProfile.add(datingProfileBoundary.getObjectId());
 
                 this.putRelationBetweenObjects(userDetailsBoundary.getObjectId().getInternalObjectId(),
                         datingProfileBoundary.getObjectId(), this.springApplicationName,
                         userBoundary.getUserId().getEmail());
 
-
-
-
             }
         } catch (Exception e) {
             System.err.println(e);
-
         }
 
-        int[] potentialExpected = new int[] {14, 10, 5, 5, 4, 14, 10, 5, 5, 4, 14, 10, 5, 5, 4,};
+        int[] potentialExpected = new int[] {11, 8, 4,4, 4, 11, 8, 4, 4, 4, 11, 8, 4, 4, 4,};
 
         for (int i =0 ; i< inputs.size() ; i++){
             Map<String, Object> commandAttribute = new HashMap<>();
@@ -231,7 +342,7 @@ public class TestSetDating extends BaseTestSet {
             commandAttribute.put("page", 0);
             commandAttribute.put("userDetailsId", objectIdsOfUserDetails.get(i));
 
-            help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.name()), emails.get(i));
+            this.help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.name()), emails.get(i));
 
             Object results =
                             this.help_PostCommandBoundary(
@@ -244,11 +355,12 @@ public class TestSetDating extends BaseTestSet {
                                     commandAttribute);
 
 
-            List<SuperAppObjectBoundary> objectBoundaries = objectToListOfObjectBoundaries(results);
+            List<SuperAppObjectBoundary> objectBoundaries = this.objectToListOfObjectBoundaries(results);
 
             assertEquals(potentialExpected[i], objectBoundaries.size());
 
-            if (potentialExpected[i] == 14) {
+            // test of not in my likes list
+            if (potentialExpected[i] == 11) {
                 SuperAppObjectBoundary objectBoundary = this.help_GetObjectBoundary(
                         objectIdsOfDatingProfile.get(i).getInternalObjectId(),
                         this.springApplicationName,
@@ -272,7 +384,7 @@ public class TestSetDating extends BaseTestSet {
                                 "userEmail={email}"
                         , objectBoundary, this.springApplicationName, objectBoundary.getObjectId().getInternalObjectId(), this.springApplicationName, emails.get(i));
 
-                help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.name()), emails.get(i));
+                this.help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.name()), emails.get(i));
 
 
                 results =
@@ -286,9 +398,9 @@ public class TestSetDating extends BaseTestSet {
                                 commandAttribute);
 
 
-                objectBoundaries = objectToListOfObjectBoundaries(results);
+                objectBoundaries = this.objectToListOfObjectBoundaries(results);
 
-                assertEquals(potentialExpected[i] - 4, objectBoundaries.size());
+                assertEquals(potentialExpected[i] - 3, objectBoundaries.size());
 
             }
 
@@ -297,9 +409,78 @@ public class TestSetDating extends BaseTestSet {
     }
 
 
+
+    @Test
+    @DisplayName("Successfully get potential date by common preferences")
+    public void testGetPotentialDateByCommonPreferences(){
+
+        // GIVEN
+        // server and database is up
+        // db contain the follow objects
+
+    }
+
+
     @Test
     @DisplayName("Successfully like other profile without match")
     public void testLikeProfile(){
+
+        // create user
+        String email = "charming@gmail.com";
+        this.help_PostUserBoundary(email, UserRole.SUPERAPP_USER.name(), "username", "avatar");
+
+        String type = "PRIVATE_DATING_PROFILE";
+
+        // post 2 dating profile objects with active is true
+
+        Map<String, Object> privateProfileA = createPrivateProfileAsMap(new PublicDatingProfile()
+                .setNickName("i liked everyone A")
+                .setAge(20)
+                .setGender(Gender.MALE)
+                .setBio("bio A"), new Date(), 10, new ArrayList<>(),
+                "052-8976625", 18, 99, null, null);
+
+        SuperAppObjectBoundary objectBoundaryA = this.help_PostObjectBoundary(null, type, "alias A",
+                null, true, null,
+                new CreatedBy().setUserId(new UserId(this.springApplicationName, email)), privateProfileA);
+
+
+        Map<String, Object> privateProfileB = createPrivateProfileAsMap(new PublicDatingProfile()
+                        .setNickName("i liked everyone B")
+                        .setAge(20)
+                        .setGender(Gender.MALE)
+                        .setBio("bio B"), new Date(), 10, new ArrayList<>(),
+                "052-8976625", 18, 99, null, null);
+
+        SuperAppObjectBoundary objectBoundaryB = this.help_PostObjectBoundary(null, type, "alias",
+                null, true, null,
+                new CreatedBy().setUserId(new UserId(this.springApplicationName, email)), privateProfileB);
+
+
+        this.help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.name()), email);
+
+
+        Map<String, Object> commandAttr = new HashMap<>();
+        commandAttr.put("myDatingProfileId", objectBoundaryA.getObjectId());
+
+        Map<String, Map> result = UtilHelper.jacksonHandle(this.help_PostCommandBoundary(MiniAppNames.DATING.name(),
+                null,
+                MiniAppsCommand.commands.LIKE_PROFILE.name(),
+                new TargetObject()
+                        .setObjectId(new ObjectId(this.springApplicationName, objectBoundaryB.getObjectId().getInternalObjectId())),
+                null,
+                new InvokedBy().setUserId(new UserId(this.springApplicationName, email)),
+                commandAttr), Map.class);
+
+
+        for (Map.Entry<String, Map> entry: result.entrySet()) {
+
+            Map<String, Object>  insideRes = UtilHelper.jacksonHandle(entry.getValue(), Map.class);
+
+            assertEquals(true, insideRes.get("like_status"));
+            assertEquals(false, insideRes.get("match_status"));
+
+        }
 
     }
 
@@ -308,11 +489,176 @@ public class TestSetDating extends BaseTestSet {
     @DisplayName("Successfully like other profile with match")
     public void testLikeProfileWithMatch(){
 
+        // create user
+        String email = "charming@gmail.com";
+        this.help_PostUserBoundary(email, UserRole.SUPERAPP_USER.name(), "username", "avatar");
+
+        String type = "PRIVATE_DATING_PROFILE";
+
+        // post 2 dating profile objects with active is true
+
+        Map<String, Object> privateProfileA = createPrivateProfileAsMap(new PublicDatingProfile()
+                        .setNickName("i liked everyone A")
+                        .setAge(20)
+                        .setGender(Gender.MALE)
+                        .setBio("bio A"), new Date(), 10, new ArrayList<>(),
+                "052-8976625", 18, 99, null, null);
+
+        SuperAppObjectBoundary objectBoundaryA = this.help_PostObjectBoundary(null, type, "alias A",
+                null, true, null,
+                new CreatedBy().setUserId(new UserId(this.springApplicationName, email)), privateProfileA);
+
+
+        Map<String, Object> privateProfileB = createPrivateProfileAsMap(new PublicDatingProfile()
+                        .setNickName("i liked everyone B")
+                        .setAge(20)
+                        .setGender(Gender.MALE)
+                        .setBio("bio B"), new Date(), 10, new ArrayList<>(),
+                "052-8976625", 18, 99, null, null);
+
+        SuperAppObjectBoundary objectBoundaryB = this.help_PostObjectBoundary(null, type, "alias",
+                null, true, null,
+                new CreatedBy().setUserId(new UserId(this.springApplicationName, email)), privateProfileB);
+
+
+        this.help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.name()), email);
+
+        Map<String, Object> commandAttrB = new HashMap<>();
+        commandAttrB.put("myDatingProfileId", objectBoundaryB.getObjectId());
+        this.help_PostCommandBoundary(MiniAppNames.DATING.name(),
+                null,
+                MiniAppsCommand.commands.LIKE_PROFILE.name(),
+                new TargetObject()
+                        .setObjectId(new ObjectId(this.springApplicationName, objectBoundaryA.getObjectId().getInternalObjectId())),
+                null,
+                new InvokedBy().setUserId(new UserId(this.springApplicationName, email)),
+                commandAttrB);
+
+        Map<String, Object> commandAttrA = new HashMap<>();
+        commandAttrA.put("myDatingProfileId", objectBoundaryA.getObjectId());
+        this.help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.name()), email);
+        Map<String, Map> result = UtilHelper.jacksonHandle(this.help_PostCommandBoundary(MiniAppNames.DATING.name(),
+                null,
+                MiniAppsCommand.commands.LIKE_PROFILE.name(),
+                new TargetObject()
+                        .setObjectId(new ObjectId(this.springApplicationName, objectBoundaryB.getObjectId().getInternalObjectId())),
+                null,
+                new InvokedBy().setUserId(new UserId(this.springApplicationName, email)),
+                commandAttrA), Map.class);
+
+
+        for (Map.Entry<String, Map> entry: result.entrySet()) {
+
+            Map<String, Object>  insideRes = UtilHelper.jacksonHandle(entry.getValue(), Map.class);
+
+            assertEquals(true, insideRes.get("like_status"));
+            assertEquals(true, insideRes.get("match_status"));
+
+        }
+
     }
 
     @Test
     @DisplayName("Successfully do unmatch")
     public void testUnmatch(){
+
+
+        // create user
+        String email = "charming@gmail.com";
+        this.help_PostUserBoundary(email, UserRole.SUPERAPP_USER.name(), "username", "avatar");
+
+        String type = "PRIVATE_DATING_PROFILE";
+
+        // post 2 dating profile objects with active is true
+
+        Map<String, Object> privateProfileA = createPrivateProfileAsMap(new PublicDatingProfile()
+                        .setNickName("i liked everyone A")
+                        .setAge(20)
+                        .setGender(Gender.MALE)
+                        .setBio("bio A"), new Date(), 10, new ArrayList<>(),
+                "052-8976625", 18, 99, null, null);
+
+        SuperAppObjectBoundary objectBoundaryA = this.help_PostObjectBoundary(null, type, "alias A",
+                null, true, null,
+                new CreatedBy().setUserId(new UserId(this.springApplicationName, email)), privateProfileA);
+
+
+        Map<String, Object> privateProfileB = createPrivateProfileAsMap(new PublicDatingProfile()
+                        .setNickName("i liked everyone B")
+                        .setAge(20)
+                        .setGender(Gender.MALE)
+                        .setBio("bio B"), new Date(), 10, new ArrayList<>(),
+                "052-8976625", 18, 99, null, null);
+
+        SuperAppObjectBoundary objectBoundaryB = this.help_PostObjectBoundary(null, type, "alias",
+                null, true, null,
+                new CreatedBy().setUserId(new UserId(this.springApplicationName, email)), privateProfileB);
+
+
+        this.help_PutUserBoundary(new UserBoundary().setRole(UserRole.MINIAPP_USER.name()), email);
+
+        Map<String, Object> commandAttrB = new HashMap<>();
+        commandAttrB.put("myDatingProfileId", objectBoundaryB.getObjectId());
+        this.help_PostCommandBoundary(MiniAppNames.DATING.name(),
+                null,
+                MiniAppsCommand.commands.LIKE_PROFILE.name(),
+                new TargetObject()
+                        .setObjectId(new ObjectId(this.springApplicationName, objectBoundaryA.getObjectId().getInternalObjectId())),
+                null,
+                new InvokedBy().setUserId(new UserId(this.springApplicationName, email)),
+                commandAttrB);
+
+        Map<String, Object> commandAttrA = new HashMap<>();
+        commandAttrA.put("myDatingProfileId", objectBoundaryA.getObjectId());
+
+        Map<String, Map> result = UtilHelper.jacksonHandle(this.help_PostCommandBoundary(MiniAppNames.DATING.name(),
+                null,
+                MiniAppsCommand.commands.LIKE_PROFILE.name(),
+                new TargetObject()
+                        .setObjectId(new ObjectId(this.springApplicationName, objectBoundaryB.getObjectId().getInternalObjectId())),
+                null,
+                new InvokedBy().setUserId(new UserId(this.springApplicationName, email)),
+                commandAttrA), Map.class);
+
+
+        ObjectId matchId = null;
+        for (Map.Entry<String, Map> entry: result.entrySet()) {
+            Map<String, Object>  insideRes = UtilHelper.jacksonHandle(entry.getValue(), Map.class);
+            matchId = UtilHelper.jacksonHandle(insideRes.get("match_id"), ObjectId.class);
+        }
+
+        Map<String, Map> unmatchResult = UtilHelper
+                .jacksonHandle(this.help_PostCommandBoundary(MiniAppNames.DATING.name(),
+                null,
+                MiniAppsCommand.commands.UNMATCH_PROFILE.name(),
+                new TargetObject()
+                        .setObjectId(new ObjectId(this.springApplicationName, matchId.getInternalObjectId())),
+                null,
+                new InvokedBy().setUserId(new UserId(this.springApplicationName, email)),
+                commandAttrA), Map.class);
+
+        for (Map.Entry<String, Map> entry: unmatchResult.entrySet()) {
+            Map<String, Object>  insideRes = UtilHelper.jacksonHandle(entry.getValue(), Map.class);
+            assertEquals("canceled", insideRes.get("match_status"));
+            assertEquals("removed", insideRes.get("like_status"));
+        }
+
+        this.help_PutUserBoundary(new UserBoundary().setRole(UserRole.SUPERAPP_USER.name()), email);
+
+        SuperAppObjectBoundary profile1 = help_GetObjectBoundary(objectBoundaryB.getObjectId().getInternalObjectId(), springApplicationName, springApplicationName, email);
+        assertThat(UtilHelper.jacksonHandle(profile1.getObjectDetails(), PrivateDatingProfile.class).getMatches())
+                .isEmpty();
+        assertThat(UtilHelper.jacksonHandle(profile1.getObjectDetails(), PrivateDatingProfile.class).getLikes())
+                .isEmpty();
+
+        SuperAppObjectBoundary profile2 = help_GetObjectBoundary(objectBoundaryA.getObjectId().getInternalObjectId(), springApplicationName, springApplicationName, email);
+        assertThat(UtilHelper.jacksonHandle(profile2.getObjectDetails(), PrivateDatingProfile.class).getMatches())
+                .isEmpty();
+        assertThat(UtilHelper.jacksonHandle(profile2.getObjectDetails(), PrivateDatingProfile.class).getLikes())
+                .isEmpty();
+
+        SuperAppObjectBoundary match = help_GetObjectBoundary(matchId.getInternalObjectId(), springApplicationName, springApplicationName, email);
+        assertEquals(false, match.getActive());
 
     }
 

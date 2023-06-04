@@ -24,28 +24,27 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
     private final ObjectCrud objectCrudDB;
     private final CommandConvertor commandConvertor;
     private final ObjectConvertor objectConvertor;
-    private final ObjectsService objectsService;
+
 
 
     @Autowired
     public DatingLikeProfileCommand(ObjectCrud objectCrudDB,
                                     CommandConvertor commandConvertor,
-                                    ObjectConvertor objectConvertor,
-                                    ObjectsService objectsService) {
+                                    ObjectConvertor objectConvertor) {
 
         this.objectCrudDB = objectCrudDB;
         this.commandConvertor =  commandConvertor;
         this.objectConvertor = objectConvertor;
-        this.objectsService = objectsService;
+
     }
 
 
     /**
      * This method do like and if the other profile already like the profile --> match occurs
      *
-     * command attributes required : <
+     * command attributes required :
      * key 'myDatingProfileId', value: ObjectId
-     * command as define in MiniAppCommand.command
+     * command as define in MiniAppCommand. command
      * targetObject = dating profile objectId (of other profile that my profile likes)
      * invokedBy - userId of client user
      *
@@ -109,10 +108,9 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
         if (!myDatingProfile.getLikes().contains(iLikeDatingProfileId))
             myDatingProfile.getLikes().add(iLikeDatingProfileId);
 
+        // TODO: check if match already occur
         // check if match occurs
         if (iLikeDatingProfile.getLikes().contains(myDatingProfileId)) {
-
-            // TODO: check if match already occur
 
             // match creator and store the match
             SuperAppObjectBoundary createdMatch
@@ -165,25 +163,30 @@ public class DatingLikeProfileCommand implements MiniAppsCommand {
 
         SuperAppObjectBoundary newMatch
                 = new SuperAppObjectBoundary()
+                .setObjectId(new ObjectId(
+                        this.objectConvertor.objectIdToBoundary(myDatingProfileId).getSuperapp(),
+                         UUID.randomUUID().toString()))
+                .setCreationTimestamp(new Date())
+                .setLocation(new Location(0,0))
                 .setActive(true)
                 .setAlias("match between 2 dating profile")
                 .setType("MATCH")
                 .setCreatedBy(this.objectConvertor.createByToBoundary(myObjectEntity.getCreatedBy()))
                 .setObjectDetails(match);
 
-        SuperAppObjectBoundary createObjectRes
-                = this.objectsService.createObject(newMatch);
+        SuperAppObjectEntity createObjectRes = this.objectCrudDB.save(this.objectConvertor.toEntity(newMatch));
 
-
-        return createObjectRes
-                .setObjectDetails(
-                        UtilHelper.jacksonHandle(
-                                this.matchToBoundary(
+        return this.objectConvertor
+                .toBoundary(
+                        createObjectRes
+                                .setObjectDetails(
                                         UtilHelper.jacksonHandle(
-                                                createObjectRes.getObjectDetails(),
-                                                MatchEntity.class)),
-                                Map.class)
-                );
+                                                this.matchToBoundary(
+                                                        UtilHelper.jacksonHandle(
+                                                                createObjectRes.getObjectDetails(),
+                                                                MatchEntity.class)),
+                                                Map.class)
+                ));
 
     }
 

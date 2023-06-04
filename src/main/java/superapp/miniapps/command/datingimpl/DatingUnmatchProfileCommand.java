@@ -14,6 +14,7 @@ import superapp.miniapps.datingMiniApp.MatchEntity;
 import superapp.miniapps.datingMiniApp.PrivateDatingProfile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -82,14 +83,22 @@ public class DatingUnmatchProfileCommand implements MiniAppsCommand {
             return commandRes;
         }
 
-        // TODO: validate that remove succeed
-        // remove likes
+        // remove matches
         datingProfile_1.getMatches().remove(matchId);
         datingProfile_2.getMatches().remove(matchId);
 
-        // remove matches
-        datingProfile_1.getLikes().remove(datingObject_2.getObjectId());
-        datingProfile_2.getLikes().remove(datingObject_1.getObjectId());
+
+        // remove likes
+        List<String> likes_1 = datingProfile_1.getLikes();
+        likes_1.remove(likes_1.contains(datingObject_1.getObjectId()) ? datingObject_1.getObjectId(): datingObject_2.getObjectId());
+        datingProfile_1.setLikes(likes_1);
+
+        List<String> likes_2 = datingProfile_2.getLikes();
+        likes_2.remove(likes_2.contains(datingObject_2.getObjectId()) ? datingObject_2.getObjectId(): datingObject_1.getObjectId());
+        datingProfile_2.setLikes(likes_2);
+
+        datingObject_1.setObjectDetails(UtilHelper.jacksonHandle(datingProfile_1, Map.class));
+        datingObject_2.setObjectDetails(UtilHelper.jacksonHandle(datingProfile_2, Map.class));
 
         matchObject.setActive(false);
         this.objectCrudDB.save(datingObject_1);

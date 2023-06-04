@@ -15,7 +15,7 @@
       "publicProfile": {
         "nickName": "public_profile_1",
         "gender": "OTHER",
-        "age": 20,
+        "age": 18,
         "bio": "bio 1",
         "pictures": []
       },
@@ -75,7 +75,7 @@
       "publicProfile": {
         "nickName": "public_profile_3",
         "gender": "OTHER",
-        "age": 20,
+        "age": 22,
         "bio": "bio 3",
         "pictures": []
       },
@@ -105,7 +105,7 @@
       "publicProfile": {
         "nickName": "public_profile_4",
         "gender": "OTHER",
-        "age": 20,
+        "age": 24,
         "bio": "bio 4",
         "pictures": []
       },
@@ -135,7 +135,7 @@
       "publicProfile": {
         "nickName": "public_profile_5",
         "gender": "OTHER",
-        "age": 20,
+        "age": 26,
         "bio": "bio 5",
         "pictures": []
       },
@@ -167,7 +167,7 @@
       "publicProfile": {
         "nickName": "public_profile_6",
         "gender": "FEMALE",
-        "age": 20,
+        "age": 18,
         "bio": "bio 6",
         "pictures": []
       },
@@ -227,7 +227,7 @@
       "publicProfile": {
         "nickName": "public_profile_9",
         "gender": "FEMALE",
-        "age": 20,
+        "age": 22,
         "bio": "bio 9",
         "pictures": []
       },
@@ -257,7 +257,7 @@
       "publicProfile": {
         "nickName": "public_profile_10",
         "gender": "FEMALE",
-        "age": 20,
+        "age": 24,
         "bio": "bio 10",
         "pictures": []
       },
@@ -287,7 +287,7 @@
       "publicProfile": {
         "nickName": "public_profile_8",
         "gender": "FEMALE",
-        "age": 20,
+        "age": 26,
         "bio": "bio 8",
         "pictures": []
       },
@@ -319,7 +319,7 @@
       "publicProfile": {
         "nickName": "public_profile_11",
         "gender": "MALE",
-        "age": 20,
+        "age": 18,
         "bio": "bio 11",
         "pictures": []
       },
@@ -379,7 +379,7 @@
       "publicProfile": {
         "nickName": "public_profile_13",
         "gender": "MALE",
-        "age": 20,
+        "age": 22,
         "bio": "bio 13",
         "pictures": []
       },
@@ -409,7 +409,7 @@
       "publicProfile": {
         "nickName": "public_profile_15",
         "gender": "MALE",
-        "age": 20,
+        "age": 24,
         "bio": "bio 15",
         "pictures": []
       },
@@ -439,7 +439,7 @@
       "publicProfile": {
         "nickName": "public_profile_14",
         "gender": "MALE",
-        "age": 20,
+        "age": 26,
         "bio": "bio 14",
         "pictures": []
       },

@@ -7,7 +7,7 @@ public class UtilHelper {
 
     private static ObjectMapper jackson = new ObjectMapper();
 
-    public static <T> T jacksonHandle(Object toRead, Class<T> readAs){
+    public static <T> T jacksonHandle(Object toRead, Class<T> readAs) {
 
         try {
             String json = jackson.writeValueAsString(toRead);
